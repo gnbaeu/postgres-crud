@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="mn">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#111318">
+  <title>Customer Management · GANBAT</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <div class="matrix-loader" id="matrix-loader" role="status" aria-live="polite" aria-label="GANBAT ачаалж байна">
+    <canvas class="matrix-canvas" id="matrix-canvas" aria-hidden="true"></canvas>
+    <div class="matrix-vignette" aria-hidden="true"></div>
+    <div class="matrix-loader-content">
+      <div class="loader-brandline"><span class="loader-live-dot"></span><span>GANBAT <i>DATA SYSTEM</i></span></div>
+      <h1 class="loader-wordmark">GANBAT<span class="loader-cursor">_</span></h1>
+      <p class="loader-message" id="loader-message">Хэрэглэгчийн орчныг ачаалж байна</p>
+      <div class="loader-progress-track" aria-hidden="true"><span id="loader-progress"></span></div>
+      <div class="loader-meta"><span id="loader-subtext">Өгөгдөлтэй холболт үүсгэж байна</span><strong id="loader-percent">00%</strong></div>
+      <div class="loader-footer"><span>POSTGRESQL · POSTGREST</span><span>SECURE SESSION</span></div>
+    </div>
+  </div>
+
+  <div class="app-layout">
+    <aside class="sidebar" aria-label="Үндсэн цэс">
+      <a class="brand" href="#overview" data-page-link="overview" aria-label="GANBAT нүүр хуудас">
+        <span class="brand-mark" aria-hidden="true"><span class="brand-monogram">G</span></span>
+        <span class="brand-name">GANBAT<span>.</span></span>
+      </a>
+
+      <div class="nav-label" data-i18n="nav.workspace">WORKSPACE</div>
+      <nav class="side-nav">
+        <a class="nav-item" href="#overview" data-page-link="overview">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.5"/></svg>
+          <span data-i18n="nav.overview">Тойм</span>
+        </a>
+        <a class="nav-item" href="#customers" data-page-link="customers">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 20.5v-1.8a4.2 4.2 0 0 0-4.2-4.2H7.7a4.2 4.2 0 0 0-4.2 4.2v1.8"/><circle cx="9.8" cy="7.4" r="3.9"/><path d="M16.2 3.7a4 4 0 0 1 0 7.6M20.5 20.5v-1.8a4.2 4.2 0 0 0-3.1-4.1"/></svg>
+          <span data-i18n="nav.customers">Хэрэглэгчид</span>
+          <span class="nav-count" id="sidebar-count">—</span>
+        </a>
+        <a class="nav-item" href="#analytics" data-page-link="analytics">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19V9m8 10V5m8 14v-7"/><path d="M2 21h20"/></svg>
+          <span data-i18n="nav.analytics">Аналитик</span>
+        </a>
+        <a class="nav-item" href="#settings" data-page-link="settings">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="m19.4 15 .1.1a1.7 1.7 0 0 1-2.4 2.4l-.1-.1a1.7 1.7 0 0 0-2.9 1.2v.2a1.7 1.7 0 0 1-3.4 0v-.2a1.7 1.7 0 0 0-2.9-1.2l-.1.1a1.7 1.7 0 1 1-2.4-2.4l.1-.1a1.7 1.7 0 0 0-1.2-2.9H4a1.7 1.7 0 0 1 0-3.4h.2a1.7 1.7 0 0 0 1.2-2.9l-.1-.1a1.7 1.7 0 1 1 2.4-2.4l.1.1a1.7 1.7 0 0 0 2.9-1.2V2a1.7 1.7 0 0 1 3.4 0v.2a1.7 1.7 0 0 0 2.9 1.2l.1-.1a1.7 1.7 0 1 1 2.4 2.4l-.1.1a1.7 1.7 0 0 0 1.2 2.9h.2a1.7 1.7 0 0 1 0 3.4h-.2a1.7 1.7 0 0 0-1.2 2.9Z"/></svg>
+          <span data-i18n="nav.settings">Тохиргоо</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-bottom">
+        <div class="connection-card">
+          <span class="connection-dot" id="connection-dot"></span>
+          <div><strong id="connection-label">API холболт</strong><span id="connection-detail">Шалгаж байна…</span></div>
+        </div>
+        <div class="profile-card">
+          <div class="profile-avatar">NS</div>
+          <div class="profile-copy"><strong>GANBAT</strong><span data-i18n="profile.role">Администратор</span></div>
+          <button class="profile-menu" id="profile-settings" type="button" data-navigate="settings" aria-label="Тохиргоо" title="Тохиргоо" data-i18n-aria="nav.settings" data-i18n-title="nav.settings">•••</button>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main-shell" id="main">
+      <header class="topbar">
+        <div class="breadcrumbs"><a class="breadcrumb-link" href="#overview" data-page-link="overview" data-i18n="nav.workspace">Ажлын орчин</a><span class="crumb-slash">/</span><strong id="breadcrumb-current" data-i18n="nav.overview">Тойм</strong></div>
+        <div class="topbar-right">
+          <span class="today-label" id="today-label"></span>
+          <button class="utility-button theme-toggle" id="theme-toggle" type="button" aria-label="Цайвар горимд шилжих" title="Цайвар горимд шилжих" aria-pressed="false">
+            <svg class="sun-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"/></svg>
+            <svg class="moon-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.2 15.4A8.5 8.5 0 0 1 8.6 3.8 8.5 8.5 0 1 0 20.2 15.4Z"/></svg>
+          </button>
+          <button class="utility-button language-toggle" id="language-toggle" type="button" aria-label="Switch language to English" title="Switch language to English">MN</button>
+          <span class="topbar-divider"></span>
+          <div class="top-avatar" aria-label="GANBAT хэрэглэгч">G</div>
+        </div>
+      </header>
+
+      <div class="page-content" id="page-content">
+        <section class="page-intro">
+          <div>
+            <div class="eyebrow"><span class="eyebrow-line"></span><span id="page-eyebrow">Тойм</span></div>
+            <h1 id="page-title">Тойм</h1>
+            <p class="page-description" id="page-description">Хэрэглэгчдийн ерөнхий мэдээлэл.</p>
+          </div>
+          <div class="page-actions">
+            <button class="button button-secondary" id="refresh-button" type="button">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 7v5h-5M4 17v-5h5"/><path d="M5.7 9A7 7 0 0 1 18 6l2 2M4 16l2 2a7 7 0 0 0 12.3-3"/></svg>
+              <span data-i18n="actions.refresh">Шинэчлэх</span>
+            </button>
+            <button class="button button-primary" id="add-button" type="button" data-page-action="customers">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+              <span data-i18n="actions.add">Хэрэглэгч нэмэх</span>
+            </button>
+          </div>
+        </section>
+
+        <section class="stats-grid" id="overview" data-page-view="overview" aria-label="Хэрэглэгчийн статистик">
+          <article class="stat-card">
+            <div class="stat-heading"><span data-i18n="stats.total">Нийт хэрэглэгч</span><span class="stat-icon icon-violet"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 20.5v-1.8a4.2 4.2 0 0 0-4.2-4.2H7.7a4.2 4.2 0 0 0-4.2 4.2v1.8"/><circle cx="9.8" cy="7.4" r="3.9"/><path d="M16.2 3.7a4 4 0 0 1 0 7.6M20.5 20.5v-1.8a4.2 4.2 0 0 0-3.1-4.1"/></svg></span></div>
+            <div class="stat-value" id="total-count">—</div>
+            <div class="stat-foot"><span class="stat-foot-dot violet-dot"></span><span data-i18n="stats.totalHint">Бүртгэлтэй бүх хэрэглэгч</span></div>
+          </article>
+          <article class="stat-card">
+            <div class="stat-heading"><span data-i18n="stats.active">Идэвхтэй</span><span class="stat-icon icon-green"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></span></div>
+            <div class="stat-value" id="active-count">—</div>
+            <div class="stat-foot"><span class="stat-foot-dot green-dot"></span><span data-i18n="stats.activeHint">Үйлчилгээ авч буй</span></div>
+          </article>
+          <article class="stat-card">
+            <div class="stat-heading"><span data-i18n="stats.inactive">Идэвхгүй</span><span class="stat-icon icon-amber"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M8.5 12h7"/></svg></span></div>
+            <div class="stat-value" id="inactive-count">—</div>
+            <div class="stat-foot"><span class="stat-foot-dot amber-dot"></span><span data-i18n="stats.inactiveHint">Түр зогсоосон бүртгэл</span></div>
+          </article>
+        </section>
+
+        <section class="overview-card" data-page-view="overview" aria-labelledby="recent-title">
+          <div class="overview-card-heading"><div><h2 id="recent-title" data-i18n="overview.recentTitle">Сүүлд бүртгэгдсэн</h2><p data-i18n="overview.recentSubtitle">Хамгийн сүүлд нэмэгдсэн хэрэглэгчид</p></div><button class="text-button" type="button" data-navigate="customers"><span data-i18n="overview.viewAll">Бүгдийг харах</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></button></div>
+          <div class="recent-list" id="recent-customers"></div>
+        </section>
+
+        <section class="analytics-grid" data-page-view="analytics" aria-label="Хэрэглэгчийн статистикийн графикууд" data-i18n-aria="analytics.aria">
+          <article class="analytics-card store-chart-card">
+            <div class="analytics-heading">
+              <div><h2 data-i18n="analytics.storeTitle">Store ID-аар хэрэглэгчид</h2><p data-i18n="analytics.storeSubtitle">Бүртгэлтэй хэрэглэгчдийн хуваарилалт</p></div>
+              <span class="analytics-icon bars-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 19V9m7 10V5m7 14v-7"/></svg></span>
+            </div>
+            <div class="store-chart" id="store-chart" role="list" aria-label="Store бүрийн хэрэглэгчийн тоо" data-i18n-aria="analytics.storeChartAria"></div>
+          </article>
+          <article class="analytics-card active-chart-card">
+            <div class="analytics-heading">
+              <div><h2 data-i18n="analytics.activeTitle">Идэвхийн түвшин</h2><p data-i18n="analytics.activeSubtitle">Нийт хэрэглэгчдийн төлөв</p></div>
+              <span class="analytics-icon pulse-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 12h4l3-7 4 14 3-7h4"/></svg></span>
+            </div>
+            <div class="active-chart-content" id="active-chart-content">
+              <div class="donut-chart" id="active-donut" role="img" aria-label="Идэвхтэй хэрэглэгчийн хувь"><span id="active-percentage">—</span></div>
+              <div class="chart-legend">
+                <div><span class="legend-dot active-legend-dot"></span><span data-i18n="stats.active">Идэвхтэй</span><strong id="chart-active-count">—</strong></div>
+                <div><span class="legend-dot inactive-legend-dot"></span><span data-i18n="stats.inactive">Идэвхгүй</span><strong id="chart-inactive-count">—</strong></div>
+              </div>
+            </div>
+          </article>
+        </section>
+
+        <section class="directory-card" data-page-view="customers" aria-labelledby="directory-title">
+          <div class="directory-header">
+            <div class="directory-title-wrap">
+              <div class="title-row"><h2 id="directory-title" data-i18n="table.title">Бүх хэрэглэгч</h2><span class="result-pill" id="result-count">—</span></div>
+              <p data-i18n="table.subtitle">Хэрэглэгчдийн бүртгэл болон төлөв</p>
+            </div>
+            <label class="search-box" for="search-input">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8"/><path d="m16 16 4.5 4.5"/></svg>
+              <input id="search-input" type="search" placeholder="Нэр эсвэл email хайх…" data-i18n-placeholder="search.placeholder" autocomplete="off">
+              <kbd>/</kbd>
+            </label>
+          </div>
+
+          <div class="table-scroll">
+            <table class="customer-table">
+              <thead><tr>
+                <th scope="col" data-i18n="table.customer">ХЭРЭГЛЭГЧ</th>
+                <th scope="col" data-i18n="table.customerId">CUSTOMER ID</th>
+                <th scope="col" data-i18n="table.storeId">STORE ID</th>
+                <th scope="col" data-i18n="table.addressId">ADDRESS ID</th>
+                <th scope="col" data-i18n="table.status">ТӨЛӨВ</th>
+                <th scope="col" class="actions-heading"><span class="visually-hidden" data-i18n="table.actions">Үйлдэл</span></th>
+              </tr></thead>
+              <tbody id="customer-rows"></tbody>
+            </table>
+            <div class="table-state" id="table-state" hidden></div>
+          </div>
+
+          <div class="table-footer">
+            <span id="range-label">—</span>
+            <div class="pagination">
+              <button class="page-button" id="previous-page" type="button" aria-label="Өмнөх хуудас" data-i18n-aria="pagination.previous" disabled><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m14.5 18-6-6 6-6"/></svg></button>
+              <span id="page-label">1 / 1</span>
+              <button class="page-button" id="next-page" type="button" aria-label="Дараагийн хуудас" data-i18n-aria="pagination.next" disabled><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9.5 18 6-6-6-6"/></svg></button>
+            </div>
+          </div>
+        </section>
+
+        <section class="settings-grid" data-page-view="settings" aria-label="Тохиргоо" data-i18n-aria="nav.settings">
+          <article class="settings-card"><span class="settings-card-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"/></svg></span><div class="settings-card-copy"><h2 data-i18n="settings.themeTitle">Загвар</h2><p data-i18n="settings.themeDescription">Цайвар болон бараан горимын хооронд сонгоно.</p></div><button class="button button-secondary setting-action" id="settings-theme-toggle" type="button"><span data-i18n="settings.themeAction">Загвар солих</span></button></article>
+          <article class="settings-card"><span class="settings-card-icon language-settings-icon">Aa</span><div class="settings-card-copy"><h2 data-i18n="settings.languageTitle">Хэл</h2><p data-i18n="settings.languageDescription">Dashboard-ийн хэлийг сонгоно.</p></div><button class="button button-secondary setting-action" id="settings-language-toggle" type="button"><span data-i18n="settings.languageAction">Хэл солих</span></button></article>
+          <article class="settings-card settings-info"><div><h2 data-i18n="settings.dataTitle">Өгөгдлийн холболт</h2><p data-i18n="settings.dataDescription">Customer мэдээллийг PostgREST API-аас шууд уншина.</p></div><span class="settings-endpoint">http://localhost:3000</span></article>
+        </section>
+        <footer class="page-footer"><span>GANBAT <span data-i18n="footer.title">Customer Management</span></span><span data-i18n="footer.source">Өгөгдөл PostgREST API-аас шууд уншигдана</span></footer>
+      </div>
+    </main>
+  </div>
+
+  <div class="modal-backdrop" id="customer-modal" hidden>
+    <section class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" aria-describedby="modal-description">
+      <div class="modal-heading">
+        <div class="modal-heading-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 20.5v-1.8a4.2 4.2 0 0 0-4.2-4.2H7.7a4.2 4.2 0 0 0-4.2 4.2v1.8"/><circle cx="9.8" cy="7.4" r="3.9"/><path d="M19 8v6M16 11h6"/></svg></div>
+        <div class="modal-heading-copy"><h2 id="modal-title">Хэрэглэгч нэмэх</h2><p id="modal-description">Шинэ бүртгэлийн мэдээллийг оруулна уу.</p></div>
+        <button class="icon-button modal-close" type="button" data-close-modal aria-label="Цонх хаах" data-i18n-aria="actions.close"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
+      </div>
+      <form id="customer-form" novalidate>
+        <div class="form-grid">
+          <label class="field"><span><span data-i18n="form.firstName">Нэр</span> <b>*</b></span><input id="first-name" name="first_name" type="text" maxlength="45" autocomplete="given-name" required placeholder="Жишээ: Бат" data-i18n-placeholder="form.firstPlaceholder"></label>
+          <label class="field"><span><span data-i18n="form.lastName">Овог</span> <b>*</b></span><input id="last-name" name="last_name" type="text" maxlength="45" autocomplete="family-name" required placeholder="Жишээ: Эрдэнэ" data-i18n-placeholder="form.lastPlaceholder"></label>
+          <label class="field field-wide"><span>Email <small data-i18n="form.optional">Сонголтоор</small></span><input id="email" name="email" type="email" maxlength="50" autocomplete="email" placeholder="name@example.com" data-i18n-placeholder="form.emailPlaceholder"></label>
+          <label class="field"><span>Store ID <b>*</b></span><input id="store-id" name="store_id" type="number" min="1" step="1" inputmode="numeric" required placeholder="1"></label>
+          <label class="field"><span>Address ID <b>*</b></span><input id="address-id" name="address_id" type="number" min="1" step="1" inputmode="numeric" required placeholder="1"></label>
+          <label class="status-field field-wide"><span class="status-field-copy"><strong data-i18n="form.activeStatus">Идэвхтэй төлөв</strong><small data-i18n="form.activeHint">Энэ хэрэглэгч идэвхтэй хэвээр байна.</small></span><span class="toggle"><input id="active-status" name="active" type="checkbox" checked><span class="toggle-track"></span></span></label>
+        </div>
+        <div class="form-error" id="form-error" role="alert" hidden></div>
+        <div class="modal-actions"><button class="button button-secondary" type="button" data-close-modal data-i18n="actions.cancel">Болих</button><button class="button button-primary" id="save-button" type="submit"><span id="save-label">Хадгалах</span><span class="button-spinner" hidden></span></button></div>
+      </form>
+    </section>
+  </div>
+
+  <div class="modal-backdrop confirm-backdrop" id="delete-modal" hidden>
+    <section class="modal confirm-modal" role="alertdialog" aria-modal="true" aria-labelledby="delete-title" aria-describedby="delete-description">
+      <div class="confirm-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M10 11v6M14 11v6M5.5 7l1 13h11l1-13M9 7V4h6v3"/></svg></div>
+      <h2 id="delete-title" data-i18n="delete.title">Хэрэглэгч устгах уу?</h2>
+      <p id="delete-description">Энэ үйлдлийг буцаах боломжгүй.</p>
+      <div class="confirm-actions"><button class="button button-secondary" id="cancel-delete" type="button" data-i18n="actions.cancel">Болих</button><button class="button button-danger" id="confirm-delete" type="button"><span data-i18n="actions.delete">Устгах</span><span class="button-spinner" hidden></span></button></div>
+    </section>
+  </div>
+
+  <div class="toast-region" id="toast-region" aria-live="polite" aria-atomic="true"></div>
+</body>
+</html>
