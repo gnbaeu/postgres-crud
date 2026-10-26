@@ -433,7 +433,6 @@ async function loadCustomers() {
 
   const allCustomers = [];
   let offset = 0;
-  let total = null;
   try {
     while (true) {
       const query = new URLSearchParams({
@@ -442,17 +441,11 @@ async function loadCustomers() {
         limit: String(API_PAGE_SIZE),
         offset: String(offset)
       });
-      const { data, response } = await apiRequest(`${TABLE}?${query.toString()}`, {
-        method: "GET",
-        headers: { Prefer: "count=exact" }
-      });
+      const { data } = await apiRequest(`${TABLE}?${query.toString()}`, { method: "GET" });
       const batch = Array.isArray(data) ? data : [];
       allCustomers.push(...batch);
-      const contentRange = response.headers.get("Content-Range");
-      const totalMatch = contentRange && contentRange.match(/\/(\d+)$/);
-      if (totalMatch) total = Number(totalMatch[1]);
+      if (batch.length === 0) break;
       offset += batch.length;
-      if (batch.length < API_PAGE_SIZE || (total !== null && offset >= total)) break;
     }
     state.customers = allCustomers;
     state.page = 1;
@@ -746,7 +739,6 @@ async function saveCustomer(event) {
   try {
     await apiRequest(url, {
       method: isEditing ? "PATCH" : "POST",
-      headers: { Prefer: "return=representation" },
       body: JSON.stringify(payload)
     });
     closeCustomerModalAfterSave();
@@ -799,8 +791,7 @@ async function deleteCustomer() {
   try {
     const query = new URLSearchParams({ customer_id: `eq.${customer.customer_id}` });
     await apiRequest(`${TABLE}?${query.toString()}`, {
-      method: "DELETE",
-      headers: { Prefer: "return=representation" }
+      method: "DELETE"
     });
     el.deleteModal.hidden = true;
     state.deleting = null;
