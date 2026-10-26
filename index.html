@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#111318">
-  <title>Customer Management · GANBAT</title>
+  <meta name="theme-color" content="#060b12">
+  <title>Customer Management · GNWAA</title>
   <link rel="stylesheet" href="style.css">
   <script src="app.js" defer></script>
 </head>
@@ -23,28 +23,42 @@
   </div>
 
   <div class="app-layout">
-    <aside class="sidebar" aria-label="Үндсэн цэс">
-      <a class="brand" href="#overview" data-page-link="overview" aria-label="GANBAT нүүр хуудас">
-        <span class="brand-mark" aria-hidden="true"><span class="brand-monogram">G</span></span>
-        <span class="brand-name">GANBAT<span>.</span></span>
-      </a>
+    <aside class="sidebar" id="sidebar" aria-label="Үндсэн цэс">
+      <div class="sidebar-header">
+        <a class="brand" href="#home" data-page-link="home" aria-label="GNWAA нүүр хуудас">
+          <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 44 44" focusable="false">
+            <path class="shield-outline" d="M22 3 37 8v12c0 9-5.7 16-15 21C12.7 36 7 29 7 20V8l15-5Z"/>
+            <path class="shield-inner" d="M22 7 33 10.7v9c0 6.9-4.1 12.3-11 16-6.9-3.7-11-9.1-11-16v-9L22 7Z"/>
+            <path class="shield-check" d="m16 21 4 4 8-9"/>
+            <circle class="logo-node" cx="22" cy="3" r="1.6"/>
+          </svg></span>
+          <span class="brand-name">GNWAA</span>
+        </a>
+        <button class="sidebar-toggle" id="sidebar-toggle" type="button" aria-expanded="true" aria-controls="side-nav" aria-label="Цэс хумих" title="Цэс хумих" data-i18n-aria="sidebar.collapse" data-i18n-title="sidebar.collapse">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m14 5-7 7 7 7M7 12h12"/></svg>
+        </button>
+      </div>
 
       <div class="nav-label" data-i18n="nav.workspace">WORKSPACE</div>
-      <nav class="side-nav">
-        <a class="nav-item" href="#overview" data-page-link="overview">
+      <nav class="side-nav" id="side-nav" aria-label="Хуудасны цэс">
+        <a class="nav-item" href="#home" data-page-link="home" aria-label="Нүүр" title="Нүүр" data-i18n-aria="nav.home" data-i18n-title="nav.home">
           <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.5"/></svg>
-          <span data-i18n="nav.overview">Тойм</span>
+          <span data-i18n="nav.home">Нүүр</span>
         </a>
-        <a class="nav-item" href="#customers" data-page-link="customers">
+        <a class="nav-item" href="#customers" data-page-link="customers" aria-label="Customer CRM" title="Customer CRM" data-i18n-aria="nav.customers" data-i18n-title="nav.customers">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 20.5v-1.8a4.2 4.2 0 0 0-4.2-4.2H7.7a4.2 4.2 0 0 0-4.2 4.2v1.8"/><circle cx="9.8" cy="7.4" r="3.9"/><path d="M16.2 3.7a4 4 0 0 1 0 7.6M20.5 20.5v-1.8a4.2 4.2 0 0 0-3.1-4.1"/></svg>
           <span data-i18n="nav.customers">Хэрэглэгчид</span>
           <span class="nav-count" id="sidebar-count">—</span>
         </a>
-        <a class="nav-item" href="#analytics" data-page-link="analytics">
+        <a class="nav-item" href="#about" data-page-link="about" aria-label="GNWAA тухай" title="GNWAA тухай" data-i18n-aria="nav.about" data-i18n-title="nav.about">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.6 2.6 0 1 1 4.4 1.9c-1.2 1-1.9 1.4-1.9 3.1M12 17.5h.01"/></svg>
+          <span data-i18n="nav.about">GNWAA тухай</span>
+        </a>
+        <a class="nav-item" href="#analytics" data-page-link="analytics" aria-label="Аналитик" title="Аналитик" data-i18n-aria="nav.analytics" data-i18n-title="nav.analytics">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19V9m8 10V5m8 14v-7"/><path d="M2 21h20"/></svg>
           <span data-i18n="nav.analytics">Аналитик</span>
         </a>
-        <a class="nav-item" href="#settings" data-page-link="settings">
+        <a class="nav-item" href="#settings" data-page-link="settings" aria-label="Тохиргоо" title="Тохиргоо" data-i18n-aria="nav.settings" data-i18n-title="nav.settings">
           <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="m19.4 15 .1.1a1.7 1.7 0 0 1-2.4 2.4l-.1-.1a1.7 1.7 0 0 0-2.9 1.2v.2a1.7 1.7 0 0 1-3.4 0v-.2a1.7 1.7 0 0 0-2.9-1.2l-.1.1a1.7 1.7 0 1 1-2.4-2.4l.1-.1a1.7 1.7 0 0 0-1.2-2.9H4a1.7 1.7 0 0 1 0-3.4h.2a1.7 1.7 0 0 0 1.2-2.9l-.1-.1a1.7 1.7 0 1 1 2.4-2.4l.1.1a1.7 1.7 0 0 0 2.9-1.2V2a1.7 1.7 0 0 1 3.4 0v.2a1.7 1.7 0 0 0 2.9 1.2l.1-.1a1.7 1.7 0 1 1 2.4 2.4l-.1.1a1.7 1.7 0 0 0 1.2 2.9h.2a1.7 1.7 0 0 1 0 3.4h-.2a1.7 1.7 0 0 0-1.2 2.9Z"/></svg>
           <span data-i18n="nav.settings">Тохиргоо</span>
         </a>
@@ -57,7 +71,7 @@
         </div>
         <div class="profile-card">
           <div class="profile-avatar">NS</div>
-          <div class="profile-copy"><strong>GANBAT</strong><span data-i18n="profile.role">Администратор</span></div>
+          <div class="profile-copy"><strong>GNWAA</strong><span data-i18n="profile.role">Администратор</span></div>
           <button class="profile-menu" id="profile-settings" type="button" data-navigate="settings" aria-label="Тохиргоо" title="Тохиргоо" data-i18n-aria="nav.settings" data-i18n-title="nav.settings">•••</button>
         </div>
       </div>
@@ -65,7 +79,7 @@
 
     <main class="main-shell" id="main">
       <header class="topbar">
-        <div class="breadcrumbs"><a class="breadcrumb-link" href="#overview" data-page-link="overview" data-i18n="nav.workspace">Ажлын орчин</a><span class="crumb-slash">/</span><strong id="breadcrumb-current" data-i18n="nav.overview">Тойм</strong></div>
+        <div class="breadcrumbs"><a class="breadcrumb-link" href="#home" data-page-link="home" data-i18n="nav.home">Нүүр</a><span class="crumb-slash">/</span><strong id="breadcrumb-current" data-i18n="nav.home">Нүүр</strong></div>
         <div class="topbar-right">
           <span class="today-label" id="today-label"></span>
           <button class="utility-button theme-toggle" id="theme-toggle" type="button" aria-label="Цайвар горимд шилжих" title="Цайвар горимд шилжих" aria-pressed="false">
@@ -74,7 +88,7 @@
           </button>
           <button class="utility-button language-toggle" id="language-toggle" type="button" aria-label="Switch language to English" title="Switch language to English">MN</button>
           <span class="topbar-divider"></span>
-          <div class="top-avatar" aria-label="GANBAT хэрэглэгч">G</div>
+          <div class="top-avatar" aria-label="GNWAA хэрэглэгч">G</div>
         </div>
       </header>
 
@@ -97,7 +111,77 @@
           </div>
         </section>
 
-        <section class="stats-grid" id="overview" data-page-view="overview" aria-label="Хэрэглэгчийн статистик">
+        <section class="home-view" data-page-view="home" aria-label="GNWAA нүүр хуудас">
+          <div class="home-hero">
+            <div class="home-hero-copy">
+              <div class="home-kicker"><span class="home-live-dot"></span><span data-i18n="home.kicker">GNWAA / DIGITAL PLAYGROUND</span><span class="home-kicker-tag">01—04</span></div>
+              <h2 data-i18n="home.heroTitle">Өгөгдөл, тоглоом, шинэ санааны жижиг ертөнц.</h2>
+              <p data-i18n="home.heroText">GNWAA-ийн хэсгүүдээр аялж, customer dashboard-аа удирдаад, завсарлагаараа од цуглуулаарай.</p>
+              <div class="home-hero-actions">
+                <a class="button button-primary" href="#customers" data-page-link="customers"><span data-i18n="home.openCrm">Customer CRM нээх</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></a>
+                <a class="home-discover-link" href="#about" data-page-link="about"><span class="discover-link-icon">✦</span><span data-i18n="home.discover">GNWAA-тай танилцах</span></a>
+              </div>
+              <div class="home-hero-foot"><span><i></i><span data-i18n="home.localTag">YOUR SPACE ON THE WEB</span></span><span data-i18n="home.version">GNWAA / v1.0</span></div>
+            </div>
+            <div class="home-visual" role="img" aria-label="GNWAA-ийн өхөөрдөм кибер муур" data-i18n-aria="home.catAria">
+              <div class="home-orbit orbit-one"></div><div class="home-orbit orbit-two"></div><div class="home-orb"></div>
+              <svg class="home-cat" viewBox="0 0 240 220" aria-hidden="true">
+                <path class="cat-shadow" d="M38 177c10-19 32-30 82-30s72 11 82 30c-19 20-48 30-82 30s-63-10-82-30Z"/>
+                <path class="cat-ear" d="m59 72 4-44 42 33m72 11-4-44-42 33"/>
+                <path class="cat-ear-inner" d="m71 58 1-17 20 15m76 2-1-17-20 15"/>
+                <path class="cat-face" d="M46 92c0-38 33-66 74-66s74 28 74 66v38c0 36-31 61-74 61s-74-25-74-61V92Z"/>
+                <path class="cat-face-panel" d="M64 98c0-26 23-47 56-47s56 21 56 47v28c0 27-23 46-56 46s-56-19-56-46V98Z"/>
+                <path class="cat-eye" d="M82 111c6-9 16-9 22 0m32 0c6-9 16-9 22 0"/>
+                <path class="cat-smile" d="M109 130c4 5 8 7 11 7s7-2 11-7m-11 7v7"/>
+                <path class="cat-whisker" d="m74 128-22-5m23 13-21 3m112-11 22-5m-23 13 21 3"/>
+                <path class="cat-circuit" d="M120 51V37m0 0h18m-18 0h-18"/>
+                <circle class="cat-sensor" cx="120" cy="29" r="5"/>
+                <circle class="cat-cheek" cx="77" cy="128" r="5"/><circle class="cat-cheek" cx="163" cy="128" r="5"/>
+              </svg>
+              <span class="home-visual-label">PIXEL / COMPANION-01</span>
+              <span class="home-visual-status"><i></i>ONLINE</span>
+              <span class="home-star star-a">✦</span><span class="home-star star-b">✧</span>
+            </div>
+          </div>
+
+          <div class="home-section-heading"><div><span data-i18n="home.sectionsEyebrow">PICK A CORNER</span><h2 data-i18n="home.sectionsTitle">Юу хиймээр байна?</h2></div><p data-i18n="home.sectionsHint">Хэсгээ сонгоод үргэлжлүүлээрэй</p></div>
+          <div class="home-cards">
+            <a class="home-card crm-home-card" href="#customers" data-page-link="customers">
+              <span class="home-card-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 20.5v-1.8a4.2 4.2 0 0 0-4.2-4.2H7.7a4.2 4.2 0 0 0-4.2 4.2v1.8"/><circle cx="9.8" cy="7.4" r="3.9"/><path d="M16.2 3.7a4 4 0 0 1 0 7.6M20.5 20.5v-1.8a4.2 4.2 0 0 0-3.1-4.1"/></svg></span>
+              <span class="home-card-index">01 / DATA</span><strong data-i18n="home.crmTitle">Customer CRM</strong><span class="home-card-copy" data-i18n="home.crmText">Харилцагчдын мэдээллээ нэг дороос удирд.</span><span class="home-card-link" data-i18n="home.explore">Нээх <b>↗</b></span>
+            </a>
+            <a class="home-card about-home-card" href="#about" data-page-link="about">
+              <span class="home-card-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 19 6v6c0 4.1-2.6 7.4-7 9-4.4-1.6-7-4.9-7-9V6l7-3Z"/><path d="m9 12 2 2 4-4"/></svg></span>
+              <span class="home-card-index">02 / GNWAA</span><strong data-i18n="home.aboutTitle">Энэ булангийн тухай</strong><span class="home-card-copy" data-i18n="home.aboutText">GNWAA-ийн санаа, бүтээлүүдтэй танилц.</span><span class="home-card-link" data-i18n="home.explore">Үзэх <b>↗</b></span>
+            </a>
+            <a class="home-card analytics-home-card" href="#analytics" data-page-link="analytics">
+              <span class="home-card-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19V9m8 10V5m8 14v-7"/><path d="M2 21h20"/></svg></span>
+              <span class="home-card-index">03 / INSIGHT</span><strong data-i18n="home.analyticsTitle">Өгөгдлийн тойм</strong><span class="home-card-copy" data-i18n="home.analyticsText">Хуваарилалт, төлөвийн мэдээллийг хар.</span><span class="home-card-link" data-i18n="home.explore">Үзэх <b>↗</b></span>
+            </a>
+          </div>
+          <div class="home-note"><span class="home-note-icon">✦</span><p data-i18n="home.note">Өөрийн орон зайгаа бүтээж байгаа — удахгүй шинэ хэсгүүд нэмэгдэнэ.</p><span class="home-note-code">GNWAA / NEXT</span></div>
+        </section>
+
+        <section class="about-view" data-page-view="about" aria-labelledby="about-heading">
+          <div class="about-hero">
+            <div class="about-hero-copy">
+              <span class="about-kicker"><i></i><span data-i18n="about.kicker">WELCOME TO GNWAA</span></span>
+              <h2 id="about-heading" data-i18n="about.title">Сониуч зангаас эхэлсэн жижигхэн дижитал ертөнц.</h2>
+              <p data-i18n="about.description">Энэ бол миний бүтээж, туршиж, сурч байгаа зүйлсээ нэг дор цуглуулах орон зай. Одоогоор customer dashboard маань эхний булан нь.</p>
+              <div class="about-tags"><span>HTML</span><span>CSS</span><span>JavaScript</span><span>PostgreSQL</span><span>PostgREST</span></div>
+              <a class="button button-primary" href="#customers" data-page-link="customers"><span data-i18n="about.cta">Эхний төслийг үзэх</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></a>
+            </div>
+            <div class="about-orbit-art" aria-hidden="true"><div class="about-orbit-ring ring-outer"></div><div class="about-orbit-ring ring-inner"></div><div class="about-orbit-core"><svg viewBox="0 0 100 100"><path d="M50 8 81 20v25c0 21-12 37-31 47-19-10-31-26-31-47V20L50 8Z"/><path d="m34 51 11 11 22-24"/></svg></div><span class="orbit-node node-one">01</span><span class="orbit-node node-two">JS</span><span class="orbit-node node-three">✦</span><span class="about-art-caption">CURIOUS BY DESIGN</span></div>
+          </div>
+          <div class="about-detail-grid">
+            <article class="about-detail-card"><span class="about-detail-number">01</span><h3 data-i18n="about.cardOneTitle">Юу олж үзэх вэ?</h3><p data-i18n="about.cardOneText">Бодит өгөгдөлтэй customer dashboard, хайлт, бүртгэл болон хэрэглэгчийн төлөвийн аналитик.</p><a href="#customers" data-page-link="customers" data-i18n="about.cardLink">Customer CRM рүү →</a></article>
+            <article class="about-detail-card"><span class="about-detail-number">02</span><h3 data-i18n="about.cardTwoTitle">Яаж бүтээгдсэн бэ?</h3><p data-i18n="about.cardTwoText">Vanilla HTML, CSS, JavaScript дээр PostgreSQL 16 болон PostgREST-тэй холбосон сургалтын төсөл.</p><a href="#analytics" data-page-link="analytics" data-i18n="about.cardLinkTwo">Өгөгдлийн тойм →</a></article>
+            <article class="about-detail-card about-next-card"><span class="about-detail-number">03</span><h3 data-i18n="about.cardThreeTitle">Дараагийн хуудсууд</h3><p data-i18n="about.cardThreeText">Энэ сайт бол эхлэл. Шинэ санаа, жижиг бүтээлүүд нэмэгдэх тусам энд өөр өөр булан нээгдэнэ.</p><span class="about-coming"><i></i><span data-i18n="about.coming">IN PROGRESS</span></span></article>
+          </div>
+          <div class="about-signoff"><span class="signoff-mark">GNWAA</span><p data-i18n="about.signoff">Сониуч бай. Турш. Өөрийнхөөрөө бүтээ.</p><span class="signoff-spark">✦</span></div>
+        </section>
+
+        <section class="stats-grid" id="customer-metrics" data-page-view="customers" aria-label="Хэрэглэгчийн статистик">
           <article class="stat-card">
             <div class="stat-heading"><span data-i18n="stats.total">Нийт хэрэглэгч</span><span class="stat-icon icon-violet"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 20.5v-1.8a4.2 4.2 0 0 0-4.2-4.2H7.7a4.2 4.2 0 0 0-4.2 4.2v1.8"/><circle cx="9.8" cy="7.4" r="3.9"/><path d="M16.2 3.7a4 4 0 0 1 0 7.6M20.5 20.5v-1.8a4.2 4.2 0 0 0-3.1-4.1"/></svg></span></div>
             <div class="stat-value" id="total-count">—</div>
@@ -115,7 +199,7 @@
           </article>
         </section>
 
-        <section class="overview-card" data-page-view="overview" aria-labelledby="recent-title">
+        <section class="overview-card" data-page-view="customers" aria-labelledby="recent-title">
           <div class="overview-card-heading"><div><h2 id="recent-title" data-i18n="overview.recentTitle">Сүүлд бүртгэгдсэн</h2><p data-i18n="overview.recentSubtitle">Хамгийн сүүлд нэмэгдсэн хэрэглэгчид</p></div><button class="text-button" type="button" data-navigate="customers"><span data-i18n="overview.viewAll">Бүгдийг харах</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></button></div>
           <div class="recent-list" id="recent-customers"></div>
         </section>
@@ -186,7 +270,7 @@
           <article class="settings-card"><span class="settings-card-icon language-settings-icon">Aa</span><div class="settings-card-copy"><h2 data-i18n="settings.languageTitle">Хэл</h2><p data-i18n="settings.languageDescription">Dashboard-ийн хэлийг сонгоно.</p></div><button class="button button-secondary setting-action" id="settings-language-toggle" type="button"><span data-i18n="settings.languageAction">Хэл солих</span></button></article>
           <article class="settings-card settings-info"><div><h2 data-i18n="settings.dataTitle">Өгөгдлийн холболт</h2><p data-i18n="settings.dataDescription">Customer мэдээллийг PostgREST API-аас шууд уншина.</p></div><span class="settings-endpoint">http://localhost:3000</span></article>
         </section>
-        <footer class="page-footer"><span>GANBAT <span data-i18n="footer.title">Customer Management</span></span><span data-i18n="footer.source">Өгөгдөл PostgREST API-аас шууд уншигдана</span></footer>
+        <footer class="page-footer"><span>GNWAA <span data-i18n="footer.title">Customer Management</span></span><span data-i18n="footer.source">Өгөгдөл PostgREST API-аас шууд уншигдана</span></footer>
       </div>
     </main>
   </div>

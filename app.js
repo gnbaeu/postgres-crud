@@ -9,6 +9,7 @@ const LANGUAGE_KEY = "ganbat-customer-language";
 
 const UI_TEXT = {
   mn: {
+    "sidebar.collapse": "Цэс хумих", "sidebar.expand": "Цэс нээх",
     "splash.message": "Хэрэглэгчийн орчныг ачаалж байна", "splash.subtext": "Өгөгдөлтэй холболт үүсгэж байна",
     "theme.toLight": "Цайвар горимд шилжих", "theme.toDark": "Бараан горимд шилжих",
     "language.toEnglish": "Хэлийг англи болгох", "language.toMongolian": "Хэлийг монгол болгох",
@@ -32,6 +33,7 @@ const UI_TEXT = {
     "errors.foreignKey": "Store ID эсвэл Address ID бүртгэлгүй байна. Одоо байгаа ID утга оруулна уу.", "errors.required": "Заавал бөглөх талбар дутуу байна. Нэр, овог, Store ID, Address ID-г шалгана уу.", "errors.numeric": "ID талбарт зөв, боломжит тоон утга оруулна уу.", "errors.duplicate": "Ижил утгатай бүртгэл аль хэдийн байна. Мэдээллээ шалгаад дахин оролдоно уу.", "errors.schema": "API-ийн хүснэгтийн баганатай холбоотой алдаа гарлаа. PostgREST-ийн schema cache болон customer хүснэгтийг шалгана уу.", "errors.network": "API-д холбогдож чадсангүй. PostgREST http://localhost:3000 дээр ажиллаж байгаа эсэхийг шалгана уу.", "errors.generic": "Хүсэлтийг боловсруулах үед алдаа гарлаа. Дахин оролдоно уу.", "errors.nameRequired": "Нэр болон овог заавал бөглөх талбар.", "errors.idsRequired": "Store ID болон Address ID нь 0-ээс их бүхэл тоо байх ёстой.", "errors.email": "Email хаягийн форматыг шалгана уу."
   },
   en: {
+    "sidebar.collapse": "Collapse menu", "sidebar.expand": "Expand menu",
     "splash.message": "Loading your customer workspace", "splash.subtext": "Establishing a secure data connection",
     "theme.toLight": "Switch to light theme", "theme.toDark": "Switch to dark theme",
     "language.toEnglish": "Switch language to English", "language.toMongolian": "Switch language to Mongolian",
@@ -56,10 +58,42 @@ const UI_TEXT = {
   }
 };
 
+Object.assign(UI_TEXT.mn, {
+  "nav.home": "Нүүр", "nav.about": "GNWAA тухай", "nav.customers": "Customer CRM",
+  "page.homeTitle": "GNWAA-ийн булан", "page.homeDescription": "Төсөл, өгөгдөл, сонирхлын жижиг ертөнц.", "page.homeEyebrow": "WELCOME / GNWAA",
+  "page.aboutTitle": "GNWAA тухай", "page.aboutDescription": "Энэ орон зайны санаа, одоогийн төсөлтэй танилцаарай.", "page.aboutEyebrow": "A LITTLE INTRO",
+  "home.kicker": "GNWAA / DIGITAL PLAYGROUND", "home.heroTitle": "Өгөгдөл, бүтээл, шинэ санааны жижиг ертөнц.", "home.heroText": "Customer dashboard-аа удирдаж, GNWAA-ийн бусад булангаар аял. Энэ орон зай шинэ санаа, бүтээл нэмэгдэх тусам тэлнэ.",
+  "home.openCrm": "Customer CRM нээх", "home.discover": "GNWAA-тай танилцах", "home.localTag": "YOUR SPACE ON THE WEB", "home.version": "GNWAA / v1.0", "home.catAria": "GNWAA-ийн кибер бамбай дүрслэл",
+  "home.sectionsEyebrow": "PICK A CORNER", "home.sectionsTitle": "Юу үзмээр байна?", "home.sectionsHint": "Хэсгээ сонгоод үргэлжлүүлээрэй",
+  "home.crmTitle": "Customer CRM", "home.crmText": "Харилцагчдын мэдээллийг нэг дороос удирд.", "home.aboutTitle": "Энэ булангийн тухай", "home.aboutText": "GNWAA-ийн санаа, одоогийн төслүүдтэй танилц.", "home.analyticsTitle": "Өгөгдлийн тойм", "home.analyticsText": "Хуваарилалт, хэрэглэгчийн төлөвийг хар.", "home.explore": "Дэлгэрэнгүй",
+  "home.note": "Энэ бол эхлэл — шинэ санаа, булангууд нэмэгдэх тусам GNWAA тэлнэ.",
+  "about.kicker": "WELCOME TO GNWAA", "about.title": "Сониуч зангаас эхэлсэн жижигхэн дижитал ертөнц.", "about.description": "Энэ бол миний бүтээж, туршиж, сурч байгаа зүйлсээ нэг дор цуглуулах орон зай. Customer management dashboard маань эхний булан нь.", "about.cta": "Эхний төслийг үзэх",
+  "about.cardOneTitle": "Юу олж үзэх вэ?", "about.cardOneText": "Бодит өгөгдөлтэй customer dashboard, хайлт, бүртгэл болон төлөвийн аналитик.", "about.cardLink": "Customer CRM рүү →",
+  "about.cardTwoTitle": "Яаж бүтээгдсэн бэ?", "about.cardTwoText": "Vanilla HTML, CSS, JavaScript дээр PostgreSQL 16 болон PostgREST-тэй холбосон сургалтын төсөл.", "about.cardLinkTwo": "Өгөгдлийн тойм →",
+  "about.cardThreeTitle": "Дараагийн хуудсууд", "about.cardThreeText": "Энэ сайт бол эхлэл. Шинэ санаа, жижиг бүтээлүүд нэмэгдэх тусам энд өөр өөр булан нээгдэнэ.", "about.coming": "IN PROGRESS", "about.signoff": "Сониуч бай. Турш. Өөрийнхөөрөө бүтээ."
+});
+Object.assign(UI_TEXT.en, {
+  "nav.home": "Home", "nav.about": "About GNWAA", "nav.customers": "Customer CRM",
+  "page.homeTitle": "The GNWAA corner", "page.homeDescription": "A small world of projects, data, and things I enjoy.", "page.homeEyebrow": "WELCOME / GNWAA",
+  "page.aboutTitle": "About GNWAA", "page.aboutDescription": "A quick introduction to this space and the project inside it.", "page.aboutEyebrow": "A LITTLE INTRO",
+  "home.kicker": "GNWAA / DIGITAL PLAYGROUND", "home.heroTitle": "A little world for data, projects, and new ideas.", "home.heroText": "Explore the customer dashboard and the other corners of GNWAA. This space can grow as new ideas and projects arrive.",
+  "home.openCrm": "Open Customer CRM", "home.discover": "Get to know GNWAA", "home.localTag": "YOUR SPACE ON THE WEB", "home.version": "GNWAA / v1.0", "home.catAria": "A cyber shield illustration for GNWAA",
+  "home.sectionsEyebrow": "PICK A CORNER", "home.sectionsTitle": "What would you like to explore?", "home.sectionsHint": "Choose a section to continue",
+  "home.crmTitle": "Customer CRM", "home.crmText": "Manage customer records in one place.", "home.aboutTitle": "About this space", "home.aboutText": "Get to know GNWAA and the project behind it.", "home.analyticsTitle": "Data insights", "home.analyticsText": "Explore customer distribution and account status.", "home.explore": "Explore",
+  "home.note": "This is just the beginning. GNWAA will grow with new ideas and sections.",
+  "about.kicker": "WELCOME TO GNWAA", "about.title": "A small digital world that started with curiosity.", "about.description": "A place to bring together the things I build, try, and learn. The customer management dashboard is its first corner.", "about.cta": "Explore the first project",
+  "about.cardOneTitle": "What can you explore?", "about.cardOneText": "A customer dashboard with live records, search, CRUD actions, and status analytics.", "about.cardLink": "Open Customer CRM →",
+  "about.cardTwoTitle": "How is it built?", "about.cardTwoText": "A learning project using vanilla HTML, CSS, and JavaScript with PostgreSQL 16 and PostgREST.", "about.cardLinkTwo": "View data insights →",
+  "about.cardThreeTitle": "More pages ahead", "about.cardThreeText": "This site is a starting point. More sections can take shape as new ideas and small projects are added.", "about.coming": "IN PROGRESS", "about.signoff": "Stay curious. Keep trying. Make it your own."
+});
+
+UI_TEXT.mn["page.title"] = "GNWAA · Дижитал булан";
+UI_TEXT.en["page.title"] = "GNWAA · Digital corner";
+
 const state = {
   customers: [],
   page: 1,
-  currentPage: "overview",
+  currentPage: "home",
   loading: false,
   loadError: null,
   editing: null,
@@ -78,6 +112,9 @@ const state = {
 };
 
 const el = {
+  sidebar: document.querySelector("#sidebar"),
+  sidebarToggle: document.querySelector("#sidebar-toggle"),
+  pageIntro: document.querySelector(".page-intro"),
   matrixLoader: document.querySelector("#matrix-loader"),
   matrixCanvas: document.querySelector("#matrix-canvas"),
   loaderMessage: document.querySelector("#loader-message"),
@@ -155,7 +192,7 @@ function writePreference(key, value) {
 function applyTheme(theme, persist = true) {
   state.theme = theme === "light" ? "light" : "dark";
   document.documentElement.dataset.theme = state.theme;
-  document.querySelector('meta[name="theme-color"]').content = state.theme === "light" ? "#f4f5f8" : "#111318";
+  document.querySelector('meta[name="theme-color"]').content = state.theme === "light" ? "#f4f5f8" : "#060b12";
   const nextThemeLabel = t(state.theme === "dark" ? "theme.toLight" : "theme.toDark");
   el.themeToggle.setAttribute("aria-label", nextThemeLabel);
   el.themeToggle.title = nextThemeLabel;
@@ -205,18 +242,20 @@ function applyLanguage(language, persist = true) {
 }
 
 const PAGE_COPY = {
-  overview: { title: "page.overviewTitle", description: "page.overviewDescription", eyebrow: "page.overviewEyebrow", breadcrumb: "nav.overview" },
+  home: { title: "page.homeTitle", description: "page.homeDescription", eyebrow: "page.homeEyebrow", breadcrumb: "nav.home" },
+  about: { title: "page.aboutTitle", description: "page.aboutDescription", eyebrow: "page.aboutEyebrow", breadcrumb: "nav.about" },
   customers: { title: "page.customersTitle", description: "page.customersDescription", eyebrow: "page.customersEyebrow", breadcrumb: "nav.customers" },
   analytics: { title: "page.analyticsTitle", description: "page.analyticsDescription", eyebrow: "page.analyticsEyebrow", breadcrumb: "nav.analytics" },
   settings: { title: "page.settingsTitle", description: "page.settingsDescription", eyebrow: "page.settingsEyebrow", breadcrumb: "nav.settings" }
 };
 
 function updatePageCopy() {
-  const copy = PAGE_COPY[state.currentPage] || PAGE_COPY.overview;
+  const copy = PAGE_COPY[state.currentPage] || PAGE_COPY.home;
   el.pageTitle.textContent = t(copy.title);
   el.pageDescription.textContent = t(copy.description);
   el.pageEyebrow.textContent = t(copy.eyebrow);
   el.breadcrumbCurrent.textContent = t(copy.breadcrumb);
+  el.pageIntro.hidden = state.currentPage === "home" || state.currentPage === "about";
   el.addButton.hidden = state.currentPage !== "customers";
   document.querySelectorAll("[data-page-view]").forEach((view) => {
     view.hidden = view.dataset.pageView !== state.currentPage;
@@ -233,7 +272,7 @@ function updatePageCopy() {
 }
 
 function setActivePage(page, updateUrl = true) {
-  if (!Object.prototype.hasOwnProperty.call(PAGE_COPY, page)) page = "overview";
+  if (!Object.prototype.hasOwnProperty.call(PAGE_COPY, page)) page = "home";
   state.currentPage = page;
   updatePageCopy();
   if (updateUrl && window.location.hash !== `#${page}`) window.location.hash = page;
@@ -814,6 +853,19 @@ function findCustomer(id) {
   return state.customers.find((customer) => String(customer.customer_id) === String(id));
 }
 
+function setSidebarCollapsed(collapsed) {
+  el.sidebar.classList.toggle("is-collapsed", collapsed);
+  el.sidebarToggle.setAttribute("aria-expanded", String(!collapsed));
+  const labelKey = collapsed ? "sidebar.expand" : "sidebar.collapse";
+  el.sidebarToggle.dataset.i18nAria = labelKey;
+  el.sidebarToggle.dataset.i18nTitle = labelKey;
+  el.sidebarToggle.setAttribute("aria-label", t(labelKey));
+  el.sidebarToggle.title = t(labelKey);
+}
+
+el.sidebarToggle.addEventListener("click", () => {
+  setSidebarCollapsed(!el.sidebar.classList.contains("is-collapsed"));
+});
 el.refreshButton.addEventListener("click", refreshCustomers);
 el.addButton.addEventListener("click", () => openCustomerModal());
 el.themeToggle.addEventListener("click", () => applyTheme(state.theme === "dark" ? "light" : "dark"));
@@ -824,6 +876,9 @@ document.querySelectorAll("[data-page-link]").forEach((link) => {
   link.addEventListener("click", (event) => {
     event.preventDefault();
     setActivePage(link.dataset.pageLink);
+    if (link.closest(".side-nav") && window.matchMedia("(max-width: 780px)").matches) {
+      setSidebarCollapsed(true);
+    }
   });
 });
 document.addEventListener("click", (event) => {
@@ -870,7 +925,7 @@ document.addEventListener("keydown", (event) => {
   }
 });
 
-state.currentPage = PAGE_COPY[window.location.hash.slice(1)] ? window.location.hash.slice(1) : "overview";
+state.currentPage = PAGE_COPY[window.location.hash.slice(1)] ? window.location.hash.slice(1) : "home";
 applyTheme(readPreference(THEME_KEY, ["dark", "light"], "dark"), false);
 applyLanguage(readPreference(LANGUAGE_KEY, ["mn", "en"], "mn"), false);
 setActivePage(state.currentPage, false);
