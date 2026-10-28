@@ -1,0 +1,24 @@
+{
+  "name": "gnwaa-customer-management",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "check:env": "node scripts/test-env-safety.mjs",
+    "check:markup": "node scripts/test-static-markup.mjs",
+    "check:discover": "node scripts/test-discover.mjs",
+    "check": "npm run check:env && npm run check:markup && npm run check:discover"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.118.0"
+  },
+  "devDependencies": {
+    "supabase": "^2.122.0",
+    "vite": "^8.3.5"
+  },
+  "engines": {
+    "node": ">=22.12.0"
+  }
+}

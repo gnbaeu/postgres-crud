@@ -1,36 +1,59 @@
 <!doctype html>
-<html lang="mn">
+<html lang="mn" data-accent-theme="aurora-purple">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#060b12">
+  <meta name="theme-color" content="#080c18">
+  <script>
+    (() => {
+      try {
+        const root = document.documentElement;
+        const accents = ["aurora-purple", "ocean-night", "emerald-matrix", "sunset-neon", "moonlight"];
+        const accent = localStorage.getItem("gnwaa-aurora-accent-v1");
+        const appearance = localStorage.getItem("ganbat-customer-theme");
+        if (accents.includes(accent)) root.dataset.accentTheme = accent;
+        if (appearance === "light" || appearance === "dark") root.dataset.theme = appearance;
+      } catch { /* Preferences are optional when browser storage is unavailable. */ }
+    })();
+  </script>
   <title>Customer Management · GNWAA</title>
   <link rel="stylesheet" href="style.css">
-  <script src="app.js" defer></script>
+  <script type="module" src="/app.js"></script>
 </head>
 <body>
-  <div class="matrix-loader" id="matrix-loader" role="status" aria-live="polite" aria-label="Take a deep breath ачаалж байна">
+  <section class="matrix-loader" id="matrix-loader" role="dialog" aria-modal="true" aria-label="GNWAA Welcome Intro" hidden>
+    <button class="loader-skip" id="skip-intro" type="button" data-i18n="splash.skip" data-i18n-aria="splash.skip">Танилцуулгыг алгасах</button>
     <canvas class="matrix-canvas" id="matrix-canvas" aria-hidden="true"></canvas>
     <div class="matrix-vignette" aria-hidden="true"></div>
-    <div class="matrix-loader-content">
-      <div class="loader-brandline"><span class="loader-live-dot"></span><span>POSTGRESQL <i>DATA SYSTEM</i></span></div>
-      <h1 class="loader-wordmark">TAKE A DEEP BREATH<span class="loader-cursor">_</span></h1>
-      <p class="loader-message" id="loader-message">Хэрэглэгчийн орчныг ачаалж байна</p>
-      <div class="loader-progress-track" aria-hidden="true"><span id="loader-progress"></span></div>
-      <div class="loader-meta"><span id="loader-subtext">Өгөгдөлтэй холболт үүсгэж байна</span><strong id="loader-percent">00%</strong></div>
-      <div class="loader-footer"><span>POSTGRESQL · POSTGREST</span><span>SECURE SESSION</span></div>
+    <div class="loader-portal" aria-hidden="true">
+      <span class="loader-aurora loader-aurora-violet"></span>
+      <span class="loader-aurora loader-aurora-cyan"></span>
+      <span class="loader-portal-ring"></span>
+      <span class="loader-portal-point"></span>
+      <span class="loader-light-wave"></span>
+      <span class="loader-light-wave loader-light-wave-secondary"></span>
+      <span class="loader-screen-bloom"></span>
     </div>
-  </div>
+    <div class="matrix-loader-content">
+      <p class="loader-init"><span class="loader-init-text">INITIALIZING GNWAA...</span><span class="loader-cursor">_</span></p>
+      <h1 class="loader-gnwaa" id="welcome-intro-title">GNWAA</h1>
+      <p class="loader-ready">SYSTEM READY <span aria-hidden="true">✓</span></p>
+    </div>
+  </section>
 
-  <div class="app-layout">
+  <div class="app-layout" inert aria-hidden="true">
     <aside class="sidebar" id="sidebar" aria-label="Үндсэн цэс">
       <div class="sidebar-header">
         <a class="brand" href="#home" data-page-link="home" aria-label="GNWAA нүүр хуудас">
-          <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 44 44" focusable="false">
-            <path class="shield-outline" d="M22 3 37 8v12c0 9-5.7 16-15 21C12.7 36 7 29 7 20V8l15-5Z"/>
-            <path class="shield-inner" d="M22 7 33 10.7v9c0 6.9-4.1 12.3-11 16-6.9-3.7-11-9.1-11-16v-9L22 7Z"/>
-            <path class="shield-check" d="m16 21 4 4 8-9"/>
-            <circle class="logo-node" cx="22" cy="3" r="1.6"/>
+          <span class="brand-mark brand-mark-electric" aria-hidden="true"><svg viewBox="0 0 44 44" focusable="false">
+            <path class="brand-electric-shield" d="M22 3.5 36.5 8v11.3c0 8.1-5.8 15.1-14.5 20.2C13.3 34.4 7.5 27.4 7.5 19.3V8L22 3.5Z"/>
+            <path class="brand-electric-inner" d="M22 8 32.5 11v8.2c0 6.1-4 11.6-10.5 15.7-6.5-4.1-10.5-9.6-10.5-15.7V11L22 8Z"/>
+            <path class="brand-electric-check" d="m15.5 21.5 4 4 9-10"/>
+            <path class="brand-electric-arc brand-electric-arc-one" d="m5.5 10.5 2.7 1.1-1.8 3.2 3-.4"/>
+            <path class="brand-electric-arc brand-electric-arc-two" d="m36.5 13.5 2.6-1.3-1.4 3.6 2.1.7"/>
+            <path class="brand-electric-arc brand-electric-arc-three" d="m8.2 29.5-2.1 1.7 3-.1-.5 2.6"/>
+            <circle class="brand-electric-spark brand-electric-spark-one" cx="37.2" cy="28.5" r="1.2"/>
+            <circle class="brand-electric-spark brand-electric-spark-two" cx="11.2" cy="7.2" r=".8"/>
           </svg></span>
           <span class="brand-name">GNWAA</span>
         </a>
@@ -45,7 +68,11 @@
           <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.5"/></svg>
           <span data-i18n="nav.home">Нүүр</span>
         </a>
-        <a class="nav-item" href="#customers" data-page-link="customers" aria-label="Customer CRM" title="Customer CRM" data-i18n-aria="nav.customers" data-i18n-title="nav.customers">
+        <a class="nav-item" href="/discover" data-page-link="discover" aria-label="Discover" title="Discover" data-i18n-aria="nav.discover" data-i18n-title="nav.discover">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="7.2"/><path d="m16.1 16.1 4.4 4.4M10.8 7.5v6.6m-3.3-3.3h6.6"/></svg>
+          <span data-i18n="nav.discover">Discover</span>
+        </a>
+        <a class="nav-item" href="#customers" data-page-link="customers" data-admin-only hidden aria-label="Customer CRM" title="Customer CRM" data-i18n-aria="nav.customers" data-i18n-title="nav.customers">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 20.5v-1.8a4.2 4.2 0 0 0-4.2-4.2H7.7a4.2 4.2 0 0 0-4.2 4.2v1.8"/><circle cx="9.8" cy="7.4" r="3.9"/><path d="M16.2 3.7a4 4 0 0 1 0 7.6M20.5 20.5v-1.8a4.2 4.2 0 0 0-3.1-4.1"/></svg>
           <span data-i18n="nav.customers">Хэрэглэгчид</span>
           <span class="nav-count" id="sidebar-count">—</span>
@@ -54,11 +81,19 @@
           <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.6 2.6 0 1 1 4.4 1.9c-1.2 1-1.9 1.4-1.9 3.1M12 17.5h.01"/></svg>
           <span data-i18n="nav.about">GNWAA тухай</span>
         </a>
-        <a class="nav-item" href="#analytics" data-page-link="analytics" aria-label="Аналитик" title="Аналитик" data-i18n-aria="nav.analytics" data-i18n-title="nav.analytics">
+        <a class="nav-item" href="/lab" data-page-link="lab" aria-label="Сонирхолтой лаборатори" title="Сонирхолтой лаборатори" data-i18n-aria="nav.lab" data-i18n-title="nav.lab">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3h6M10 3v6.2l-4.8 8.2A2.4 2.4 0 0 0 7.3 21h9.4a2.4 2.4 0 0 0 2.1-3.6L14 9.2V3"/><path d="M8 15h8"/><circle cx="10" cy="17.5" r=".7"/><circle cx="14" cy="18" r=".7"/></svg>
+          <span data-i18n="nav.lab">Сонирхолтой лаборатори</span>
+        </a>
+        <a class="nav-item" href="/login" data-login-only hidden aria-label="Нэвтрэх" title="Нэвтрэх" data-i18n-aria="nav.login" data-i18n-title="nav.login">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 4H5.5A1.5 1.5 0 0 0 4 5.5v13A1.5 1.5 0 0 0 5.5 20H10M14 16l4-4-4-4m4 4H9"/></svg>
+          <span data-i18n="nav.login">Нэвтрэх</span>
+        </a>
+        <a class="nav-item" href="#analytics" data-page-link="analytics" data-admin-only hidden aria-label="Аналитик" title="Аналитик" data-i18n-aria="nav.analytics" data-i18n-title="nav.analytics">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19V9m8 10V5m8 14v-7"/><path d="M2 21h20"/></svg>
           <span data-i18n="nav.analytics">Аналитик</span>
         </a>
-        <a class="nav-item" href="#settings" data-page-link="settings" aria-label="Тохиргоо" title="Тохиргоо" data-i18n-aria="nav.settings" data-i18n-title="nav.settings">
+        <a class="nav-item" href="#settings" data-page-link="settings" data-admin-only hidden aria-label="Тохиргоо" title="Тохиргоо" data-i18n-aria="nav.settings" data-i18n-title="nav.settings">
           <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="m19.4 15 .1.1a1.7 1.7 0 0 1-2.4 2.4l-.1-.1a1.7 1.7 0 0 0-2.9 1.2v.2a1.7 1.7 0 0 1-3.4 0v-.2a1.7 1.7 0 0 0-2.9-1.2l-.1.1a1.7 1.7 0 1 1-2.4-2.4l.1-.1a1.7 1.7 0 0 0-1.2-2.9H4a1.7 1.7 0 0 1 0-3.4h.2a1.7 1.7 0 0 0 1.2-2.9l-.1-.1a1.7 1.7 0 1 1 2.4-2.4l.1.1a1.7 1.7 0 0 0 2.9-1.2V2a1.7 1.7 0 0 1 3.4 0v.2a1.7 1.7 0 0 0 2.9 1.2l.1-.1a1.7 1.7 0 1 1 2.4 2.4l-.1.1a1.7 1.7 0 0 0 1.2 2.9h.2a1.7 1.7 0 0 1 0 3.4h-.2a1.7 1.7 0 0 0-1.2 2.9Z"/></svg>
           <span data-i18n="nav.settings">Тохиргоо</span>
         </a>
@@ -70,15 +105,18 @@
           <div><strong id="connection-label">API холболт</strong><span id="connection-detail">Шалгаж байна…</span></div>
         </div>
         <div class="profile-card">
-          <div class="profile-avatar">NS</div>
-          <div class="profile-copy"><strong>GNWAA</strong><span data-i18n="profile.role">Администратор</span></div>
+          <div class="profile-avatar" id="profile-avatar">G</div>
+          <div class="profile-copy"><strong id="profile-name">GNWAA</strong><span id="profile-role" data-i18n="profile.role">Нэвтэрсэн хэрэглэгч</span></div>
           <button class="profile-menu" id="profile-settings" type="button" data-navigate="settings" aria-label="Тохиргоо" title="Тохиргоо" data-i18n-aria="nav.settings" data-i18n-title="nav.settings">•••</button>
         </div>
       </div>
     </aside>
 
-    <main class="main-shell" id="main">
+    <main class="main-shell" id="main" tabindex="-1">
       <header class="topbar">
+        <button class="utility-button mobile-nav-toggle" id="mobile-nav-toggle" type="button" aria-label="Open navigation" title="Open navigation" aria-expanded="false" aria-controls="sidebar" data-i18n-aria="nav.openMenu" data-i18n-title="nav.openMenu">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+        </button>
         <div class="breadcrumbs"><a class="breadcrumb-link" href="#home" data-page-link="home" data-i18n="nav.home">Нүүр</a><span class="crumb-slash">/</span><strong id="breadcrumb-current" data-i18n="nav.home">Нүүр</strong></div>
         <div class="topbar-right">
           <span class="today-label" id="today-label"></span>
@@ -86,9 +124,30 @@
             <svg class="sun-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"/></svg>
             <svg class="moon-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.2 15.4A8.5 8.5 0 0 1 8.6 3.8 8.5 8.5 0 1 0 20.2 15.4Z"/></svg>
           </button>
+          <button class="utility-button theme-studio-toggle" id="theme-studio-toggle" type="button" aria-label="Aurora Theme Studio нээх" title="Aurora Theme Studio" aria-haspopup="dialog" aria-expanded="false" aria-controls="theme-studio-dialog" data-i18n-aria="themeStudio.open" data-i18n-title="themeStudio.open">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 1 0 0 18h1.2a2 2 0 0 0 1.4-3.4 1.7 1.7 0 0 1 1.2-2.9H18a3 3 0 0 0 3-3c0-4.8-4-8.7-9-8.7Z"/><circle cx="7.5" cy="11" r="1"/><circle cx="10" cy="7.5" r="1"/><circle cx="14.5" cy="7.5" r="1"/></svg>
+          </button>
           <button class="utility-button language-toggle" id="language-toggle" type="button" aria-label="Switch language to English" title="Switch language to English">MN</button>
+          <a class="utility-button" id="login-link" href="/login" aria-label="Owner login">Login</a>
           <span class="topbar-divider"></span>
-          <div class="top-avatar" aria-label="GNWAA хэрэглэгч">G</div>
+          <button class="utility-button sign-out-button" id="sign-out-button" type="button" aria-label="Бүртгэлээс гарах" title="Бүртгэлээс гарах" data-auth-i18n-aria="signOut" data-auth-i18n-title="signOut">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 4H5.5A1.5 1.5 0 0 0 4 5.5v13A1.5 1.5 0 0 0 5.5 20H10M14 16l4-4-4-4m4 4H9"/></svg>
+          </button>
+          <div class="profile-dropdown-wrap" id="profile-dropdown-wrap">
+            <button class="top-avatar" id="top-avatar" type="button" aria-label="Профайл цэс нээх" title="Профайл цэс нээх" aria-haspopup="menu" aria-expanded="false" aria-controls="profile-dropdown" data-i18n-aria="profile.open" data-i18n-title="profile.open">G</button>
+            <section class="profile-dropdown" id="profile-dropdown" role="menu" aria-labelledby="top-avatar" hidden>
+              <div class="profile-dropdown-identity" id="profile-dropdown-identity" role="group" aria-label="Профайл" hidden>
+                <span class="profile-dropdown-heading" data-i18n="profile.title">Профайл</span>
+                <strong id="profile-menu-name"></strong>
+                <span class="profile-dropdown-email" id="profile-menu-email"></span>
+                <span class="profile-dropdown-role" id="profile-menu-role"></span>
+              </div>
+              <a class="profile-dropdown-item" id="profile-login" href="/login" role="menuitem" data-i18n="profile.login">Эзэмшигчээр нэвтрэх</a>
+              <button class="profile-dropdown-item" id="profile-settings-link" type="button" role="menuitem" data-navigate="settings" data-profile-owner-only hidden><span data-i18n="profile.settings">Хэрэглэгчийн тохиргоо</span></button>
+              <button class="profile-dropdown-item" id="profile-admin-link" type="button" role="menuitem" data-profile-owner-only hidden><span data-i18n="profile.adminDashboard">Удирдлагын самбар</span></button>
+              <button class="profile-dropdown-item profile-dropdown-logout" id="profile-logout" type="button" role="menuitem" data-i18n="profile.logout" hidden>Гарах</button>
+            </section>
+          </div>
         </div>
       </header>
 
@@ -146,7 +205,7 @@
 
           <div class="home-section-heading"><div><span data-i18n="home.sectionsEyebrow">PICK A CORNER</span><h2 data-i18n="home.sectionsTitle">Юу хиймээр байна?</h2></div><p data-i18n="home.sectionsHint">Хэсгээ сонгоод үргэлжлүүлээрэй</p></div>
           <div class="home-cards">
-            <a class="home-card crm-home-card" href="#customers" data-page-link="customers">
+            <a class="home-card crm-home-card" href="/admin#customers" data-page-link="customers" data-admin-only hidden>
               <span class="home-card-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 20.5v-1.8a4.2 4.2 0 0 0-4.2-4.2H7.7a4.2 4.2 0 0 0-4.2 4.2v1.8"/><circle cx="9.8" cy="7.4" r="3.9"/><path d="M16.2 3.7a4 4 0 0 1 0 7.6M20.5 20.5v-1.8a4.2 4.2 0 0 0-3.1-4.1"/></svg></span>
               <span class="home-card-index">01 / DATA</span><strong data-i18n="home.crmTitle">Customer CRM</strong><span class="home-card-copy" data-i18n="home.crmText">Харилцагчдын мэдээллээ нэг дороос удирд.</span><span class="home-card-link" data-i18n="home.explore">Нээх <b>↗</b></span>
             </a>
@@ -154,12 +213,75 @@
               <span class="home-card-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 19 6v6c0 4.1-2.6 7.4-7 9-4.4-1.6-7-4.9-7-9V6l7-3Z"/><path d="m9 12 2 2 4-4"/></svg></span>
               <span class="home-card-index">02 / GNWAA</span><strong data-i18n="home.aboutTitle">Энэ булангийн тухай</strong><span class="home-card-copy" data-i18n="home.aboutText">GNWAA-ийн санаа, бүтээлүүдтэй танилц.</span><span class="home-card-link" data-i18n="home.explore">Үзэх <b>↗</b></span>
             </a>
-            <a class="home-card analytics-home-card" href="#analytics" data-page-link="analytics">
+            <a class="home-card analytics-home-card" href="/admin#analytics" data-page-link="analytics" data-admin-only hidden>
               <span class="home-card-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19V9m8 10V5m8 14v-7"/><path d="M2 21h20"/></svg></span>
               <span class="home-card-index">03 / INSIGHT</span><strong data-i18n="home.analyticsTitle">Өгөгдлийн тойм</strong><span class="home-card-copy" data-i18n="home.analyticsText">Хуваарилалт, төлөвийн мэдээллийг хар.</span><span class="home-card-link" data-i18n="home.explore">Үзэх <b>↗</b></span>
             </a>
           </div>
           <div class="home-note"><span class="home-note-icon">✦</span><p data-i18n="home.note">Өөрийн орон зайгаа бүтээж байгаа — удахгүй шинэ хэсгүүд нэмэгдэнэ.</p><span class="home-note-code">GNWAA / NEXT</span></div>
+        </section>
+
+        <section class="discover-view" data-page-view="discover" aria-labelledby="discover-view-title" hidden>
+          <header class="discover-page-heading">
+            <div class="discover-heading-copy">
+              <span class="discover-kicker"><i aria-hidden="true"></i><span data-i18n="discover.eyebrow">FOLLOW YOUR CURIOSITY</span></span>
+              <h2 id="discover-view-title">Discover</h2>
+              <p data-i18n="discover.intro">Explore quick knowledge, safer digital habits, and Japan’s culture and technology in plain language.</p>
+              <p id="discover-surprise-status" class="discover-surprise-status" role="status" aria-live="polite" hidden></p>
+            </div>
+            <button class="discover-surprise-button" id="discover-surprise" type="button">
+              <span class="discover-surprise-sparkle" aria-hidden="true">✦</span><span data-i18n="discover.surprise">✨ Surprise Me</span>
+            </button>
+          </header>
+
+          <div id="discover-listing" class="discover-listing">
+            <a id="discover-featured" class="discover-featured" href="/discover/how-submarine-cables-carry-the-internet" data-discover-article="how-submarine-cables-carry-the-internet">
+              <span class="discover-featured-art" aria-hidden="true"><span>GNWAA</span><i></i><b></b><em></em></span>
+              <span class="discover-featured-copy" id="discover-featured-copy"></span>
+            </a>
+
+            <div class="discover-browser">
+              <div class="discover-browse-heading">
+                <div><span class="discover-section-kicker" data-i18n="discover.categories">Browse categories</span><h3 id="discover-listing-heading" tabindex="-1" data-i18n="discover.latest">Latest articles</h3></div>
+                <label class="discover-search">
+                  <span class="sr-only" data-i18n="discover.searchLabel">Search articles</span>
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="7.2"/><path d="m16.1 16.1 4.4 4.4"/></svg>
+                  <input id="discover-search" type="search" maxlength="100" autocomplete="off" data-i18n-placeholder="discover.searchPlaceholder" placeholder="Search by title…">
+                </label>
+              </div>
+              <nav class="discover-category-nav" id="discover-category-nav" aria-label="Ангиллаар үзэх" data-i18n-aria="discover.categories">
+                <button type="button" class="discover-category-button is-active" data-discover-category="all" aria-pressed="true" data-i18n="discover.all">All articles</button>
+                <button type="button" class="discover-category-button" data-discover-category="minute" aria-pressed="false" data-i18n="discover.minuteLabel">One Minute Knowledge</button>
+                <button type="button" class="discover-category-button" data-discover-category="digital" aria-pressed="false" data-i18n="discover.digitalLabel">Digital Survival Guide</button>
+                <button type="button" class="discover-category-button" data-discover-category="japan" aria-pressed="false" data-i18n="discover.japanLabel">Japan Explained</button>
+              </nav>
+              <p class="discover-result-count" id="discover-result-count" aria-live="polite"></p>
+              <div class="discover-article-grid" id="discover-article-grid"></div>
+              <div class="discover-empty glass-panel" id="discover-empty" hidden>
+                <span class="discover-empty-mark" aria-hidden="true">⌕</span>
+                <h3 data-i18n="discover.noResultsTitle">No articles found</h3>
+                <p data-i18n="discover.noResultsDescription">Try a different search term or category.</p>
+              </div>
+            </div>
+          </div>
+
+          <div id="discover-article-view" class="discover-article-view" hidden>
+            <div class="discover-reading-progress" id="discover-reading-progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="Article reading progress" data-i18n-aria="discover.progress"><span id="discover-reading-progress-fill"></span></div>
+            <div class="discover-article-topline">
+              <button class="discover-back-button" id="discover-back" type="button"><span aria-hidden="true">←</span><span data-i18n="discover.back">Back to Discover</span></button>
+              <div class="discover-article-tools">
+                <button class="discover-surprise-button discover-surprise-button-small" id="discover-another-surprise" type="button">
+                  <span class="discover-surprise-sparkle" aria-hidden="true">✦</span><span data-i18n="discover.anotherSurprise">Another Surprise</span>
+                </button>
+                <span class="discover-article-brand">GNWAA / DISCOVER</span>
+              </div>
+            </div>
+            <article class="discover-article-content" id="discover-article-content"></article>
+            <section class="discover-related-section" aria-labelledby="discover-related-title">
+              <div class="discover-related-heading"><span class="discover-section-kicker">GNWAA / CONTINUE</span><h2 id="discover-related-title" data-i18n="discover.related">Related articles</h2></div>
+              <div class="discover-article-grid discover-related-grid" id="discover-related-grid"></div>
+            </section>
+          </div>
         </section>
 
         <section class="about-view" data-page-view="about" aria-labelledby="about-heading">
@@ -179,9 +301,88 @@
             <article class="about-detail-card about-next-card"><span class="about-detail-number">03</span><h3 data-i18n="about.cardThreeTitle">Дараагийн хуудсууд</h3><p data-i18n="about.cardThreeText">Энэ сайт бол эхлэл. Шинэ санаа, жижиг бүтээлүүд нэмэгдэх тусам энд өөр өөр булан нээгдэнэ.</p><span class="about-coming"><i></i><span data-i18n="about.coming">IN PROGRESS</span></span></article>
           </div>
           <div class="about-signoff"><span class="signoff-mark">GNWAA</span><p data-i18n="about.signoff">Сониуч бай. Турш. Өөрийнхөөрөө бүтээ.</p><span class="signoff-spark">✦</span></div>
+
         </section>
 
-        <section class="stats-grid" id="customer-metrics" data-page-view="customers" aria-label="Хэрэглэгчийн статистик">
+        <section class="about-labs lab-view" id="gnwaa-labs" data-page-view="lab" aria-labelledby="about-labs-title">
+            <div class="about-labs-heading">
+              <div><span class="about-labs-kicker">GNWAA / INTERACTIVE</span><h3 id="about-labs-title" data-lab-mn="Сонирхолтой лаборатори" data-lab-en="Interactive Lab">Сонирхолтой лаборатори</h3></div>
+              <p data-lab-mn="Тоглож, туршиж, өөрийгөө болон интернэтийг шинээр тань." data-lab-en="Play, explore, and learn about yourself and the internet.">Тоглож, туршиж, өөрийгөө болон интернэтийг шинээр тань.</p>
+            </div>
+
+            <div class="about-labs-grid" id="about-labs-hub">
+              <button class="about-lab-launch du-launch" type="button" data-lab-open="universe">
+                <span class="about-lab-index">01 / CREATE</span><span class="about-lab-icon" aria-hidden="true">✦</span>
+                <strong data-lab-mn="Digital Universe" data-lab-en="Digital Universe">Digital Universe</strong>
+                <span data-lab-mn="Сонирхлоо гариг болгон өөрийн жижиг ертөнцийг байгуул." data-lab-en="Turn your interests into planets in a universe of your own.">Сонирхлоо гариг болгон өөрийн жижиг ертөнцийг байгуул.</span>
+                <b data-lab-mn="Ертөнцөө байгуулах ↗" data-lab-en="Build your universe ↗">Ертөнцөө байгуулах ↗</b>
+              </button>
+              <button class="about-lab-launch id-launch" type="button" data-lab-open="detective">
+                <span class="about-lab-index">02 / INVESTIGATE</span><span class="about-lab-icon" aria-hidden="true">⌕</span>
+                <strong data-lab-mn="Internet Detective" data-lab-en="Internet Detective">Internet Detective</strong>
+                <span data-lab-mn="Хуурамч мессежийг ялгаж, цахим орчинд аюулгүй шийдвэр гарга." data-lab-en="Spot fictional scams and practice safer decisions online.">Хуурамч мессежийг ялгаж, цахим орчинд аюулгүй шийдвэр гарга.</span>
+                <b data-lab-mn="Шалгалт эхлүүлэх ↗" data-lab-en="Start the challenge ↗">Шалгалт эхлүүлэх ↗</b>
+              </button>
+              <button class="about-lab-launch pl-launch" type="button" data-lab-open="personality">
+                <span class="about-lab-index">03 / REFLECT</span><span class="about-lab-icon" aria-hidden="true">◈</span>
+                <strong data-lab-mn="Personality Lab" data-lab-en="Personality Lab">Personality Lab</strong>
+                <span data-lab-mn="Богино асуултаар өөрийн сониуч зангийн хэв маягийг ол." data-lab-en="Answer a few playful questions to discover your curiosity style.">Богино асуултаар өөрийн сониуч зангийн хэв маягийг ол.</span>
+                <b data-lab-mn="Өөрийгөө таних ↗" data-lab-en="Explore your style ↗">Өөрийгөө таних ↗</b>
+              </button>
+            </div>
+
+            <section class="du-panel" data-lab-panel="universe" aria-labelledby="du-title" hidden>
+              <div class="lab-panel-heading"><button class="button button-secondary lab-back" type="button" data-lab-back><span aria-hidden="true">←</span> <span data-lab-mn="Сонирхолтой лаборатори" data-lab-en="Interactive Lab">Сонирхолтой лаборатори</span></button><div><span class="about-labs-kicker">01 / DIGITAL UNIVERSE</span><h3 id="du-title" data-lab-mn="Өөрийн ертөнцийг байгуул" data-lab-en="Build your universe">Өөрийн ертөнцийг байгуул</h3></div></div>
+              <p class="lab-panel-intro" data-lab-mn="Нэр болон сонирхлоо сонго. Сонголт бүр шинэ гариг болно." data-lab-en="Choose a nickname and a few interests. Each one becomes a planet.">Нэр болон сонирхлоо сонго. Сонголт бүр шинэ гариг болно.</p>
+              <form class="du-form" id="du-form">
+                <label class="du-nickname-field" for="du-nickname"><span data-lab-mn="Таны nickname" data-lab-en="Your nickname">Таны nickname</span><input id="du-nickname" name="nickname" type="text" maxlength="24" autocomplete="off" placeholder="Жишээ: Nova" data-lab-placeholder-mn="Жишээ: Nova" data-lab-placeholder-en="e.g. Nova" required></label>
+                <fieldset class="du-interest-fieldset"><legend data-lab-mn="Сонирхлоо сонго" data-lab-en="Pick your interests">Сонирхлоо сонго</legend>
+                  <div class="du-interest-grid">
+                    <label class="du-interest-card"><input type="checkbox" name="interest" value="gaming"><span aria-hidden="true">◉</span><b>Gaming</b></label>
+                    <label class="du-interest-card"><input type="checkbox" name="interest" value="music"><span aria-hidden="true">♫</span><b>Music</b></label>
+                    <label class="du-interest-card"><input type="checkbox" name="interest" value="technology"><span aria-hidden="true">⌘</span><b>Technology</b></label>
+                    <label class="du-interest-card"><input type="checkbox" name="interest" value="travel"><span aria-hidden="true">⌁</span><b>Travel</b></label>
+                    <label class="du-interest-card"><input type="checkbox" name="interest" value="art"><span aria-hidden="true">✎</span><b>Art</b></label>
+                    <label class="du-interest-card"><input type="checkbox" name="interest" value="science"><span aria-hidden="true">⚛</span><b>Science</b></label>
+                  </div>
+                </fieldset>
+                <div class="du-form-actions"><p class="du-message" id="du-message" role="status" aria-live="polite"></p><div><button class="button button-secondary" type="button" data-du-reset data-lab-mn="Reset" data-lab-en="Reset">Reset</button><button class="button button-primary" type="submit" data-lab-mn="Гариг үүсгэх" data-lab-en="Create planets">Гариг үүсгэх</button></div></div>
+              </form>
+              <div class="du-universe" id="du-universe" hidden>
+                <div class="du-universe-heading"><div><span class="about-labs-kicker">YOUR SPACE / LIVE</span><h4><span id="du-owner-name"></span><span data-lab-mn="-ийн ертөнц" data-lab-en="'s universe">-ийн ертөнц</span></h4></div><span class="du-planet-count" id="du-planet-count"></span></div>
+                <div class="du-planet-field"><div class="du-orbit du-orbit-one"></div><div class="du-orbit du-orbit-two"></div><div class="du-star du-star-one">✦</div><div class="du-star du-star-two">✧</div><div class="du-planet-list" id="du-planet-list" aria-label="Сонирхлын гаригууд"></div></div>
+                <article class="du-planet-detail" id="du-planet-detail" aria-live="polite" hidden><span class="du-detail-symbol" id="du-detail-symbol" aria-hidden="true">✦</span><div><span class="about-labs-kicker" data-lab-mn="ГАРИГИЙН ТЭМДЭГЛЭЛ" data-lab-en="PLANET LOG">ГАРИГИЙН ТЭМДЭГЛЭЛ</span><h4 id="du-detail-title"></h4><p id="du-detail-copy"></p></div></article>
+              </div>
+            </section>
+
+            <section class="id-panel" data-lab-panel="detective" aria-labelledby="id-title" hidden>
+              <div class="lab-panel-heading"><button class="button button-secondary lab-back" type="button" data-lab-back><span aria-hidden="true">←</span> <span data-lab-mn="Сонирхолтой лаборатори" data-lab-en="Interactive Lab">Сонирхолтой лаборатори</span></button><div><span class="about-labs-kicker">02 / INTERNET DETECTIVE</span><h3 id="id-title" data-lab-mn="Сэжигтэй юу, аюулгүй юу?" data-lab-en="Suspicious or safe?">Сэжигтэй юу, аюулгүй юу?</h3></div></div>
+              <p class="lab-panel-intro" data-lab-mn="Зохиомол жишээнүүдээс дохиог ол. Эдгээр нь ажиллах холбоос биш." data-lab-en="Spot the clues in fictional examples. None of the examples are working links.">Зохиомол жишээнүүдээс дохиог ол. Эдгээр нь ажиллах холбоос биш.</p>
+              <div class="id-score-row"><div><span data-lab-mn="Даалгавар" data-lab-en="Case">Даалгавар</span><strong id="id-case-count">1 / 4</strong></div><div><span data-lab-mn="Оноо" data-lab-en="Score">Оноо</span><strong id="id-score">0</strong></div></div>
+              <div class="id-progress" role="progressbar" aria-label="Даалгаврын ахиц" aria-valuemin="0" aria-valuemax="4" aria-valuenow="0"><span id="id-progress-fill"></span></div>
+              <article class="id-case-card" id="id-case-card">
+                <div class="id-case-meta"><span class="id-case-tag" id="id-case-type"></span><span class="id-case-source" id="id-case-source"></span></div>
+                <h4 id="id-case-title"></h4><p class="id-case-message" id="id-case-message"></p>
+                <div class="id-case-link" id="id-case-link" hidden></div>
+              </article>
+              <div class="id-choice-area" id="id-choice-area"><p data-lab-mn="Чиний бодлоор энэ жишээ..." data-lab-en="What do you think?">Чиний бодлоор энэ жишээ...</p><div class="id-choice-buttons"><button class="button button-secondary" type="button" data-detective-answer="true" data-lab-mn="Сэжигтэй" data-lab-en="Suspicious">Сэжигтэй</button><button class="button button-secondary" type="button" data-detective-answer="false" data-lab-mn="Аюулгүй" data-lab-en="Safe">Аюулгүй</button></div></div>
+              <div class="id-feedback" id="id-feedback" role="status" aria-live="polite" hidden><strong id="id-feedback-title"></strong><p id="id-feedback-copy"></p><small id="id-feedback-tip"></small></div>
+              <div class="id-actions"><button class="button button-secondary" type="button" data-detective-reset data-lab-mn="Дахин эхлэх" data-lab-en="Start over">Дахин эхлэх</button><button class="button button-primary" id="id-next" type="button" data-lab-mn="Дараагийн жишээ" data-lab-en="Next case" hidden>Дараагийн жишээ</button></div>
+            </section>
+
+            <section class="pl-panel" data-lab-panel="personality" aria-labelledby="pl-title" hidden>
+              <div class="lab-panel-heading"><button class="button button-secondary lab-back" type="button" data-lab-back><span aria-hidden="true">←</span> <span data-lab-mn="Сонирхолтой лаборатори" data-lab-en="Interactive Lab">Сонирхолтой лаборатори</span></button><div><span class="about-labs-kicker">03 / PERSONALITY LAB</span><h3 id="pl-title" data-lab-mn="Сониуч зангийн хэв маяг" data-lab-en="Your curiosity style">Сониуч зангийн хэв маяг</h3></div></div>
+              <p class="lab-panel-intro" data-lab-mn="Хамгийн өөрт тохирох хариултыг сонго. Энэ бол хөгжилтэй өөрийгөө эргэцүүлэх тест бөгөөд онош биш." data-lab-en="Choose what feels most like you. This is a playful reflection quiz, not a diagnosis.">Хамгийн өөрт тохирох хариултыг сонго. Энэ бол хөгжилтэй өөрийгөө эргэцүүлэх тест бөгөөд онош биш.</p>
+              <div class="pl-progress-row"><span id="pl-progress-label">1 / 5</span><span id="pl-progress-style"></span></div>
+              <div class="pl-progress" role="progressbar" aria-label="Асуултын ахиц" aria-valuemin="0" aria-valuemax="5" aria-valuenow="0"><span id="pl-progress-fill"></span></div>
+              <form id="pl-form" class="pl-form">
+                <fieldset class="pl-question-card"><legend id="pl-question"></legend><div class="pl-options" id="pl-options"></div></fieldset>
+                <div class="pl-actions"><button class="button button-secondary" id="pl-back" type="button" data-lab-mn="Өмнөх" data-lab-en="Back">Өмнөх</button><button class="button button-secondary" type="button" data-pl-reset data-lab-mn="Дахин эхлэх" data-lab-en="Restart">Дахин эхлэх</button><button class="button button-primary" id="pl-next" type="submit" data-lab-mn="Дараах" data-lab-en="Next">Дараах</button></div>
+              </form>
+              <article class="pl-result" id="pl-result" aria-live="polite" hidden><span class="pl-result-mark" aria-hidden="true">◈</span><span class="about-labs-kicker" data-lab-mn="ЧИНИЙ ХЭВ МАЯГ" data-lab-en="YOUR STYLE">ЧИНИЙ ХЭВ МАЯГ</span><h4 id="pl-result-title"></h4><p id="pl-result-copy"></p><div class="pl-result-tags" id="pl-result-tags"></div><button class="button button-primary" type="button" data-pl-reset data-lab-mn="Дахин бөглөх" data-lab-en="Take it again">Дахин бөглөх</button></article>
+            </section>
+          </section>
+        <section class="stats-grid" id="customer-metrics" data-page-view="customers" data-admin-only hidden aria-label="Хэрэглэгчийн статистик">
           <article class="stat-card">
             <div class="stat-heading"><span data-i18n="stats.total">Нийт хэрэглэгч</span><span class="stat-icon icon-violet"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 20.5v-1.8a4.2 4.2 0 0 0-4.2-4.2H7.7a4.2 4.2 0 0 0-4.2 4.2v1.8"/><circle cx="9.8" cy="7.4" r="3.9"/><path d="M16.2 3.7a4 4 0 0 1 0 7.6M20.5 20.5v-1.8a4.2 4.2 0 0 0-3.1-4.1"/></svg></span></div>
             <div class="stat-value" id="total-count">—</div>
@@ -199,12 +400,12 @@
           </article>
         </section>
 
-        <section class="overview-card" data-page-view="customers" aria-labelledby="recent-title">
+        <section class="overview-card" data-page-view="customers" data-admin-only hidden aria-labelledby="recent-title">
           <div class="overview-card-heading"><div><h2 id="recent-title" data-i18n="overview.recentTitle">Сүүлд бүртгэгдсэн</h2><p data-i18n="overview.recentSubtitle">Хамгийн сүүлд нэмэгдсэн хэрэглэгчид</p></div><button class="text-button" type="button" data-navigate="customers"><span data-i18n="overview.viewAll">Бүгдийг харах</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></button></div>
           <div class="recent-list" id="recent-customers"></div>
         </section>
 
-        <section class="analytics-grid" data-page-view="analytics" aria-label="Хэрэглэгчийн статистикийн графикууд" data-i18n-aria="analytics.aria">
+        <section class="analytics-grid" data-page-view="analytics" data-admin-only hidden aria-label="Хэрэглэгчийн статистикийн графикууд" data-i18n-aria="analytics.aria">
           <article class="analytics-card store-chart-card">
             <div class="analytics-heading">
               <div><h2 data-i18n="analytics.storeTitle">Store ID-аар хэрэглэгчид</h2><p data-i18n="analytics.storeSubtitle">Бүртгэлтэй хэрэглэгчдийн хуваарилалт</p></div>
@@ -227,7 +428,7 @@
           </article>
         </section>
 
-        <section class="directory-card" data-page-view="customers" aria-labelledby="directory-title">
+        <section class="directory-card" data-page-view="customers" data-admin-only hidden aria-labelledby="directory-title">
           <div class="directory-header">
             <div class="directory-title-wrap">
               <div class="title-row"><h2 id="directory-title" data-i18n="table.title">Бүх хэрэглэгч</h2><span class="result-pill" id="result-count">—</span></div>
@@ -265,15 +466,60 @@
           </div>
         </section>
 
-        <section class="settings-grid" data-page-view="settings" aria-label="Тохиргоо" data-i18n-aria="nav.settings">
+        <section class="settings-grid" data-page-view="settings" data-admin-only hidden aria-label="Тохиргоо" data-i18n-aria="nav.settings">
           <article class="settings-card"><span class="settings-card-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"/></svg></span><div class="settings-card-copy"><h2 data-i18n="settings.themeTitle">Загвар</h2><p data-i18n="settings.themeDescription">Цайвар болон бараан горимын хооронд сонгоно.</p></div><button class="button button-secondary setting-action" id="settings-theme-toggle" type="button"><span data-i18n="settings.themeAction">Загвар солих</span></button></article>
           <article class="settings-card"><span class="settings-card-icon language-settings-icon">Aa</span><div class="settings-card-copy"><h2 data-i18n="settings.languageTitle">Хэл</h2><p data-i18n="settings.languageDescription">Dashboard-ийн хэлийг сонгоно.</p></div><button class="button button-secondary setting-action" id="settings-language-toggle" type="button"><span data-i18n="settings.languageAction">Хэл солих</span></button></article>
-          <article class="settings-card settings-info"><div><h2 data-i18n="settings.dataTitle">Өгөгдлийн холболт</h2><p data-i18n="settings.dataDescription">Customer мэдээллийг PostgREST API-аас шууд уншина.</p></div><span class="settings-endpoint">http://localhost:3000</span></article>
+          <article class="settings-card settings-info"><div><h2 data-i18n="settings.dataTitle">Өгөгдлийн холболт</h2><p data-i18n="settings.dataDescription">Customer мэдээллийг хамгаалагдсан GNWAA API-аар удирдана.</p></div><span class="settings-endpoint">GNWAA REST API</span></article>
         </section>
-        <footer class="page-footer"><span>GNWAA <span data-i18n="footer.title">Customer Management</span></span><span data-i18n="footer.source">Өгөгдөл PostgREST API-аас шууд уншигдана</span></footer>
+        <footer class="page-footer" aria-label="GNWAA footer">
+          <div class="footer-main">
+            <div class="footer-brand-block">
+              <a class="footer-brand" href="#home" data-page-link="home" aria-label="GNWAA home">
+                <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 44 44" focusable="false"><path class="shield-outline" d="M22 3 37 8v12c0 9-5.7 16-15 21C12.7 36 7 29 7 20V8l15-5Z"/><path class="shield-inner" d="M22 7 33 10.7v9c0 6.9-4.1 12.3-11 16-6.9-3.7-11-9.1-11-16v-9L22 7Z"/><path class="shield-check" d="m16 21 4 4 8-9"/><circle class="logo-node" cx="22" cy="3" r="1.6"/></svg></span>
+                <span>GNWAA</span>
+              </a>
+              <p data-i18n="footer.tagline">Сониуч зан, технологи, жижиг дижитал ертөнц.</p>
+            </div>
+            <nav class="footer-navigation" aria-label="Quick navigation" data-i18n-aria="footer.navigation">
+              <strong data-i18n="footer.quickNav">Шуурхай холбоос</strong>
+              <a href="/discover" data-page-link="discover" data-i18n="nav.discover">Discover</a>
+              <a href="#about" data-page-link="about" data-i18n="footer.projects">Төслүүд</a>
+              <a href="#about" data-page-link="about" data-i18n="nav.about">GNWAA тухай</a>
+            </nav>
+          </div>
+          <div class="footer-bottom">
+            <span>© <span id="footer-year"></span> GNWAA · <span data-i18n="footer.rights">Бүх эрх хуулиар хамгаалагдсан.</span></span>
+            <div class="footer-shortcuts">
+              <button type="button" id="footer-language-toggle" data-footer-action="language" data-i18n="footer.language">Хэл солих</button>
+              <button type="button" id="footer-theme-toggle" data-footer-action="appearance" data-i18n="footer.appearance">Горим солих</button>
+            </div>
+          </div>
+        </footer>
       </div>
     </main>
   </div>
+  <button class="mobile-nav-backdrop" id="mobile-nav-backdrop" type="button" aria-label="Close navigation" data-i18n-aria="nav.closeMenu" hidden></button>
+
+  <dialog class="theme-studio-dialog" id="theme-studio-dialog" aria-labelledby="theme-studio-title" aria-describedby="theme-studio-description">
+    <div class="theme-studio-panel">
+      <div class="theme-studio-heading">
+        <div><span class="theme-studio-eyebrow">GNWAA / APPEARANCE</span><h2 id="theme-studio-title" data-i18n="themeStudio.title">Aurora Theme Studio</h2><p id="theme-studio-description" data-i18n="themeStudio.description">Өөрийн accent palette-ийг сонго. Өнгө шууд урьдчилан харагдана.</p></div>
+        <button class="icon-button" id="theme-studio-close" type="button" aria-label="Цонх хаах" title="Цонх хаах" data-i18n-aria="actions.close" data-i18n-title="actions.close"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
+      </div>
+      <div class="theme-studio-grid" id="theme-studio-presets" role="group" aria-label="Theme presets" data-i18n-aria="themeStudio.presets">
+        <button class="theme-preset-card" type="button" data-theme-preset="aurora-purple" aria-pressed="true"><span class="theme-preset-swatches"><i></i><i></i><i></i></span><strong data-i18n="themeStudio.aurora">Aurora Purple</strong><small data-i18n="themeStudio.default">Default</small><span class="theme-preset-selected" aria-hidden="true">✓</span></button>
+        <button class="theme-preset-card" type="button" data-theme-preset="ocean-night" aria-pressed="false"><span class="theme-preset-swatches"><i></i><i></i><i></i></span><strong data-i18n="themeStudio.ocean">Ocean Night</strong><small data-i18n="themeStudio.navyCyan">Navy · Cyan</small><span class="theme-preset-selected" aria-hidden="true">✓</span></button>
+        <button class="theme-preset-card" type="button" data-theme-preset="emerald-matrix" aria-pressed="false"><span class="theme-preset-swatches"><i></i><i></i><i></i></span><strong data-i18n="themeStudio.emerald">Emerald Matrix</strong><small data-i18n="themeStudio.darkGreen">Dark · Emerald</small><span class="theme-preset-selected" aria-hidden="true">✓</span></button>
+        <button class="theme-preset-card" type="button" data-theme-preset="sunset-neon" aria-pressed="false"><span class="theme-preset-swatches"><i></i><i></i><i></i></span><strong data-i18n="themeStudio.sunset">Sunset Neon</strong><small data-i18n="themeStudio.orangePink">Orange · Pink</small><span class="theme-preset-selected" aria-hidden="true">✓</span></button>
+        <button class="theme-preset-card" type="button" data-theme-preset="moonlight" aria-pressed="false"><span class="theme-preset-swatches"><i></i><i></i><i></i></span><strong data-i18n="themeStudio.moonlight">Moonlight</strong><small data-i18n="themeStudio.silverIndigo">Silver · Indigo</small><span class="theme-preset-selected" aria-hidden="true">✓</span></button>
+      </div>
+      <p class="theme-studio-live" id="theme-studio-live" role="status" aria-live="polite" data-i18n="themeStudio.livePreview">Live preview идэвхтэй · Light/Dark горим тусдаа тохиргоо.</p>
+      <div class="theme-studio-actions">
+        <button class="button button-secondary theme-reset-button" id="theme-studio-reset" type="button" data-i18n="themeStudio.reset">Анхдагч palette</button>
+        <div><button class="button button-secondary" id="theme-studio-cancel" type="button" data-i18n="actions.cancel">Болих</button><button class="button button-primary" id="theme-studio-apply" type="button" data-i18n="themeStudio.apply">Загвар хэрэглэх</button></div>
+      </div>
+    </div>
+  </dialog>
 
   <div class="modal-backdrop" id="customer-modal" hidden>
     <section class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" aria-describedby="modal-description">
@@ -307,5 +553,41 @@
   </div>
 
   <div class="toast-region" id="toast-region" aria-live="polite" aria-atomic="true"></div>
+
+  <section class="auth-gate" id="auth-gate" aria-labelledby="auth-title" hidden>
+    <div class="auth-grid" aria-hidden="true"></div>
+    <div class="auth-card">
+      <div class="auth-topline">
+        <a class="brand auth-brand" href="#home" aria-label="GNWAA">
+          <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 44 44" focusable="false">
+            <path class="shield-outline" d="M22 3 37 8v12c0 9-5.7 16-15 21C12.7 36 7 29 7 20V8l15-5Z"/>
+            <path class="shield-inner" d="M22 7 33 10.7v9c0 6.9-4.1 12.3-11 16-6.9-3.7-11-9.1-11-16v-9L22 7Z"/>
+            <path class="shield-check" d="m16 21 4 4 8-9"/>
+            <circle class="logo-node" cx="22" cy="3" r="1.6"/>
+          </svg></span>
+          <span class="brand-name">GNWAA</span>
+        </a>
+        <button class="utility-button auth-language-toggle" id="auth-language-toggle" type="button" aria-label="Switch language to English" title="Switch language to English">EN</button>
+      </div>
+      <div class="auth-kicker"><span class="home-live-dot"></span><span id="auth-kicker">IDENTITY / ACCESS GATE</span></div>
+      <h1 id="auth-title">GNWAA-д нэвтрэх</h1>
+      <p class="auth-description" id="auth-description">Өөрийн customer бүртгэлээ удирдахын тулд нэвтэрнэ үү.</p>
+      <p class="auth-session-check" id="auth-session-check" role="status" aria-live="polite" hidden><span class="button-spinner" aria-hidden="true"></span><span data-i18n="auth.checkingSession">Сесс шалгаж байна…</span></p>
+      <div class="auth-mode-switch" role="group" aria-label="Authentication mode">
+        <button class="auth-mode-button is-active" id="auth-login-mode" type="button" aria-pressed="true">Нэвтрэх</button>
+        <button class="auth-mode-button" id="auth-register-mode" type="button" aria-pressed="false">Бүртгүүлэх</button>
+      </div>
+      <form id="auth-form" novalidate>
+        <label class="auth-field" for="auth-email"><span id="auth-email-label">Email</span><input id="auth-email" name="email" type="email" autocomplete="username" maxlength="254" required></label>
+        <label class="auth-field" for="auth-password"><span id="auth-password-label">Нууц үг</span><input id="auth-password" name="password" type="password" autocomplete="current-password" minlength="12" maxlength="128" required></label>
+        <label class="auth-field" id="auth-confirm-row" for="auth-confirm-password" hidden><span id="auth-confirm-label">Нууц үг давтах</span><input id="auth-confirm-password" name="password_confirmation" type="password" autocomplete="new-password" minlength="12" maxlength="128"></label>
+        <div class="auth-message" id="auth-message" role="alert" aria-live="polite" hidden></div>
+        <div class="auth-config-notice" id="auth-config-notice" role="status" hidden></div>
+        <button class="button button-primary auth-submit" id="auth-submit" type="submit"><span id="auth-submit-label">Нэвтрэх</span><span class="button-spinner" id="auth-spinner" hidden></span></button>
+      </form>
+      <a class="auth-guest-link" href="/#home" data-page-link="home" data-i18n="auth.continueGuest">Нэвтрэхгүйгээр зочлох</a>
+      <p class="auth-footnote" id="auth-footnote">Нэвтэрсэн хэрэглэгч бүр зөвхөн өөрийн customer бүртгэлд хандана.</p>
+    </div>
+  </section>
 </body>
 </html>
