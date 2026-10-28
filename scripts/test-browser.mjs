@@ -5,6 +5,10 @@
 // This suite expects the backend to be unavailable and clears only the test
 // profile's storage for the tested origin. Never attach a personal profile.
 import assert from 'node:assert/strict';
+import { mkdir, writeFile } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+const screenshotDir = join(tmpdir(), 'gnwaa-intro-preview');
 const origin = process.env.GNWAA_TEST_ORIGIN || 'http://127.0.0.1:5175';
 const target = await (await fetch('http://127.0.0.1:9225/json/new?about:blank', {method:'PUT'})).json();
 const ws = new WebSocket(target.webSocketDebuggerUrl);
@@ -30,6 +34,11 @@ const evaluate = async expression => {
   return result.result.value;
 };
 const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
+const screenshot = async name => {
+  await mkdir(screenshotDir, {recursive:true});
+  const {data} = await send('Page.captureScreenshot', {format:'png'});
+  await writeFile(join(screenshotDir,name), Buffer.from(data,'base64'));
+};
 const reload = async () => {
   const start = events.length;
   await send('Page.reload');
@@ -39,7 +48,16 @@ const reload = async () => {
   }
   throw new Error('Reload did not finish');
 };
-const waitFor = async (expression, label, timeout = 7000) => {
+const navigate = async url => {
+  const start = events.length;
+  await send('Page.navigate', {url});
+  for (let attempt=0;attempt<100;attempt++) {
+    if(events.slice(start).some(event=>event.method==='Page.loadEventFired')) return;
+    await delay(60);
+  }
+  throw new Error('Navigation did not finish');
+};
+const waitFor = async (expression, label, timeout = 10500) => {
   const start = Date.now();
   while (Date.now() - start < timeout) {
     if (await evaluate(expression)) return;
@@ -72,15 +90,20 @@ try {
   await send('Runtime.enable');
   await send('Page.enable');
   await send('Network.enable');
-  await send('Page.navigate', { url: origin });
+  await navigate(origin);
   await waitFor(`document.readyState === 'complete'`, 'initial document');
   await evaluate(`sessionStorage.clear(); localStorage.clear()`);
-  await send('Emulation.setDeviceMetricsOverride', { width: 1280, height: 900, deviceScaleFactor: 1, mobile: false });
+  await send('Emulation.setDeviceMetricsOverride', { width: 1440, height: 1000, deviceScaleFactor: 1, mobile: false });
   await send('Emulation.setEmulatedMedia', { features: [{name:'prefers-reduced-motion',value:'no-preference'}] });
   await reload();
   await waitFor(`!document.querySelector('#matrix-loader').hidden`, 'first-session intro');
-  await click('#skip-intro');
-  await waitFor(`document.querySelector('#matrix-loader').hidden && !document.querySelector('.app-layout').inert`, 'skip releases UI');
+  const desktopStarted = Date.now();
+  assert.equal(await evaluate(`document.querySelector('#skip-intro') === null`), true);
+  await delay(6400);
+  await screenshot('desktop-1440.png');
+  await waitFor(`document.querySelector('#matrix-loader').hidden`, 'desktop automatic completion');
+  assert.ok(Date.now()-desktopStarted >= 7700 && Date.now()-desktopStarted < 9500, 'Desktop duration is about eight seconds');
+  await waitFor(`document.querySelector('#matrix-loader').hidden && !document.querySelector('.app-layout').inert`, 'completion releases UI');
   await waitFor(`document.querySelector('#matrix-canvas').width === 0`, 'canvas cleanup');
   await click('#language-toggle');
   assert.equal(await evaluate('document.documentElement.lang'), 'en');
@@ -128,6 +151,7 @@ try {
   assert.equal(await evaluate(`document.querySelector('#matrix-loader').hidden`), true);
   await click('#language-toggle');
   await send('Emulation.setDeviceMetricsOverride', { width: 390, height: 844, deviceScaleFactor: 1, mobile: true });
+  await send('Emulation.setTouchEmulationEnabled', {enabled:true, maxTouchPoints:5});
   await evaluate(`new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)))`);
   await click('#mobile-nav-toggle');
   await waitFor(`document.querySelector('#sidebar').classList.contains('is-mobile-open')`, 'mobile drawer');
@@ -152,11 +176,12 @@ try {
   await send('Emulation.setTouchEmulationEnabled', {enabled:true, maxTouchPoints:5});
   await send('Network.setUserAgentOverride', {userAgent:'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Mobile/15E148 Safari/604.1'});
   await send('Emulation.setEmulatedMedia', {features:[{name:'prefers-reduced-motion',value:'no-preference'}]});
-  for (const mode of ['denied', 'quota', 'canvas-options', 'canvas-error']) {
+  for (const mode of ['denied', 'quota', 'canvas-options', 'canvas-error', 'timer-stall']) {
     const injection = await send('Page.addScriptToEvaluateOnNewDocument', {source:`(() => {
       const mode = ${JSON.stringify(mode)};
+      if(mode === 'timer-stall') { const nativeTimeout=window.setTimeout; window.setTimeout=(callback,delay,...args)=>nativeTimeout(delay===7000 ? ()=>{} : callback,delay,...args); }
       const probe = window.__introProbe = {paints:0, plainContexts:0, touches:0, listeners:new Set()};
-      if(mode.startsWith('canvas-') && location.origin === ${JSON.stringify(origin)} && performance.getEntriesByType('navigation')[0]?.type === 'navigate') sessionStorage.removeItem('gnwaa-welcome-intro-seen-v1');
+      if((mode.startsWith('canvas-') || mode==='timer-stall') && location.origin === ${JSON.stringify(origin)} && performance.getEntriesByType('navigation')[0]?.type === 'navigate') sessionStorage.removeItem('gnwaa-welcome-intro-seen-v1');
       if (mode === 'denied') Object.defineProperty(window, 'sessionStorage', {get(){throw new DOMException('Test storage denied','SecurityError');}});
       if (mode === 'quota') Object.defineProperty(window, 'sessionStorage', {value:{getItem(){return null},setItem(){throw new DOMException('Test quota','QuotaExceededError')}}});
       const getContext = HTMLCanvasElement.prototype.getContext;
@@ -186,41 +211,99 @@ try {
       };
       window.addEventListener('pointerdown', event => {if(event.pointerType === 'touch') probe.touches++;}, {passive:true});
     })()`});
-    await send('Page.navigate', {url:'about:blank'});
-    await send('Page.navigate', {url:`${origin}/?intro-test=${mode}`});
+    await navigate('about:blank');
+    await navigate(`${origin}/?intro-test=${mode}`);
     await waitFor(`document.querySelector('#matrix-loader') && !document.querySelector('#matrix-loader').hidden`, `${mode} mobile first visit`);
+    const mobileStarted = Date.now();
+    assert.equal(await evaluate(`document.querySelector('#skip-intro') === null`), true);
     assert.equal(await evaluate(`document.documentElement.scrollWidth <= innerWidth`), true, `${mode}: no horizontal overflow`);
     if (mode !== 'canvas-error') await waitFor(`window.__introProbe.paints > 0`, `${mode} ASCII paints`);
     if (mode === 'canvas-options') assert.ok(await evaluate('window.__introProbe.plainContexts > 0'));
     await send('Input.dispatchTouchEvent', {type:'touchStart', touchPoints:[{x:180,y:420,id:1}]});
     await send('Input.dispatchTouchEvent', {type:'touchEnd', touchPoints:[]});
     assert.ok(await evaluate('window.__introProbe.touches > 0'), 'Native touch produces pointer input');
-    if (mode === 'quota' || mode === 'canvas-error') {
-      await waitFor(`document.querySelector('#matrix-loader').hidden`, `${mode} automatic completion`);
-    } else {
-      await click('#skip-intro', true);
-      await waitFor(`document.querySelector('#matrix-loader').hidden`, `${mode} touch Skip`);
-    }
+    await waitFor(`document.querySelector('#matrix-loader').hidden`, `${mode} automatic completion/failsafe`);
+    assert.ok(Date.now()-mobileStarted >= 7700 && Date.now()-mobileStarted < 9800, 'Mobile duration is about eight seconds');
     assert.equal(await evaluate('window.__introProbe.listeners.size'), 0, 'Pointer listeners cleaned');
     assert.equal(await evaluate(`document.querySelector('#matrix-canvas').width`), 0);
     const painted = await evaluate('window.__introProbe.paints');
     await delay(120);
     assert.equal(await evaluate('window.__introProbe.paints'), painted, 'No painting after cleanup');
     await click('#language-toggle', true);
+    if(mode==='denied') {
+      await click('#theme-toggle', true);
+      await click('#theme-studio-toggle', true);
+      await click('#theme-studio-cancel', true);
+      await click('#mobile-nav-toggle', true);
+      await delay(400);
+      await click('#sidebar-toggle', true);
+      assert.equal(await evaluate(`document.querySelector('#main').inert`), false);
+    }
+    if(mode.startsWith('canvas-') || mode==='timer-stall') {
+      await send('Page.removeScriptToEvaluateOnNewDocument', {identifier:injection.identifier});
+      continue;
+    }
     await reload();
     await waitFor(`document.readyState === 'complete' && !document.querySelector('.app-layout').inert`, `${mode} refresh ready`);
-    assert.equal(await evaluate(`document.querySelector('#matrix-loader').hidden`), true, `${mode} refresh must not replay`);
+    await waitFor(`!document.querySelector('#matrix-loader').hidden`, `${mode} mobile refresh replays`);
+    await waitFor(`document.querySelector('#matrix-loader').hidden`, 'automatic completion');
     await click('#language-toggle', true);
     await click('.home-card[data-page-link="about"]', true);
+    assert.equal(await evaluate(`document.querySelector('#matrix-loader').hidden`), true, 'Internal navigation must not replay');
     await reload();
     await waitFor(`document.readyState === 'complete' && !document.querySelector('.app-layout').inert`, `${mode} SPA-route refresh`);
-    assert.equal(await evaluate(`document.querySelector('#matrix-loader').hidden`), true, 'SPA route reload must not replay');
+    await waitFor(`!document.querySelector('#matrix-loader').hidden`, 'Reload of public SPA route replays on mobile');
+    await waitFor(`document.querySelector('#matrix-loader').hidden`, 'automatic completion');
+    await evaluate('history.back()');
+    await waitFor(`location.pathname === '/'`, 'mobile browser Back');
+    assert.equal(await evaluate(`document.querySelector('#matrix-loader').hidden`), true, 'Back must not replay');
+    await evaluate('history.forward()');
+    await waitFor(`location.pathname === '/about'`, 'mobile browser Forward');
+    assert.equal(await evaluate(`document.querySelector('#matrix-loader').hidden`), true, 'Forward must not replay');
     await send('Page.removeScriptToEvaluateOnNewDocument', {identifier:injection.identifier});
   }
-  console.log('Mobile intro regression passed: 390x844, touch Skip/input, blocked storage getter, quota failure, history/reload fallback, Canvas settings fallback/render failure, cleanup and no horizontal overflow. Chromium with Safari UA is not iPhone Safari.');
+  // Responsive visual QA on a fresh public document for each viewport.
+  for (const [width,height] of [[360,800],[375,812],[390,844],[430,932],[844,390]]) {
+    await send('Emulation.setDeviceMetricsOverride', {width,height,deviceScaleFactor:1,mobile:true});
+    await reload();
+    await waitFor(`!document.querySelector('#matrix-loader').hidden`, `${width} mobile reload`);
+    await delay(6400);
+    assert.equal(await evaluate(`document.querySelector('#matrix-loader').classList.contains('is-mobile-intro')`), true);
+    assert.equal(await evaluate(`(() => {
+      const loader=document.querySelector('#matrix-loader'), bounds=loader.getBoundingClientRect();
+      return document.documentElement.scrollWidth <= innerWidth && bounds.width <= innerWidth && Math.abs(bounds.height-innerHeight)<2 &&
+        [...loader.querySelectorAll('.loader-init,.loader-gnwaa,.loader-ready,.loader-progress-track')].every(node=>{
+          const r=node.getBoundingClientRect();return r.x>=0 && r.y>=0 && r.right<=innerWidth && r.bottom<=innerHeight && node.scrollWidth<=node.clientWidth+1;
+        });
+    })()`), true, `${width}x${height}: visible unclipped typography and progress within viewport`);
+    if(width===390) await screenshot('mobile-390.png');
+    if(width===844) await screenshot('mobile-landscape.png');
+    await waitFor(`document.querySelector('#matrix-loader').hidden`, 'automatic completion');
+    assert.equal(await evaluate(`document.body.classList.contains('splash-active')`), false);
+    assert.equal(await evaluate(`document.activeElement.id`), 'main', 'Focus returns to the public UI');
+    await click('#language-toggle', true);
+  }
+  await send('Emulation.setDeviceMetricsOverride', {width:768,height:1024,deviceScaleFactor:1,mobile:true});
+  await reload();
+  await waitFor(`document.readyState==='complete' && !document.querySelector('.app-layout').inert`, 'tablet ready');
+  assert.equal(await evaluate(`document.querySelector('#matrix-loader').hidden`), true, 'Larger tablet keeps desktop session behavior');
+  await evaluate(`sessionStorage.removeItem('gnwaa-welcome-intro-seen-v1')`);
+  await navigate('about:blank');
+  await navigate(`${origin}/?intro-test=tablet`);
+  await waitFor(`!document.querySelector('#matrix-loader').hidden`, '768px tablet first visit');
+  assert.equal(await evaluate(`document.querySelector('#matrix-loader').classList.contains('is-mobile-intro')`), false);
+  await delay(6400);
+  assert.equal(await evaluate(`document.documentElement.scrollWidth<=innerWidth && [...document.querySelectorAll('.loader-gnwaa,.loader-init,.loader-ready')].every(node=>{const r=node.getBoundingClientRect();return r.left>=0 && r.right<=innerWidth && node.scrollWidth<=node.clientWidth+1;})`), true);
+  await screenshot('tablet-768.png');
+  await waitFor(`document.querySelector('#matrix-loader').hidden`, 'tablet automatic completion');
+  console.log('Mobile intro regression passed: first visit, every reload, storage denial/quota, Canvas fallback/failure, touch input, cleanup, Back/Forward and SPA behavior; layouts 360/375/390/430 and 844x390; larger tablet desktop behavior. Chromium emulation is not iPhone Safari.');
+  console.log('Intro screenshots:', screenshotDir);
   await send('Page.navigate', {url: `${origin}/admin`});
   await waitFor(`location.pathname === '/admin' && !document.querySelector('#auth-gate').hidden`, 'admin authentication gate');
   assert.equal(await evaluate(`document.querySelector('.app-layout').inert`), true, 'Admin remains gated while API is unavailable');
+  assert.equal(await evaluate(`document.querySelector('#matrix-loader').hidden`), true);
+  await navigate(`${origin}/login`);
+  assert.equal(await evaluate(`document.querySelector('#matrix-loader').hidden`), true, 'Login has no intro');
   await send('Page.navigate', {url: origin});
   await waitFor(`location.pathname === '/' && document.readyState === 'complete' && !document.querySelector('.app-layout').inert`, 'return to public UI');
   await click('#language-toggle');
@@ -230,8 +313,11 @@ try {
     .map(e => ({ path: new URL(e.params.response.url).pathname, status: e.params.response.status }));
   assert.ok(failures.some(e => e.path.startsWith('/api/')), 'Exercise public UI while backend is unavailable');
   assert.deepEqual(failures.filter(e => !e.path.startsWith('/api/') && e.path !== '/favicon.ico'), [], 'No missing frontend modules/assets');
-  console.log('Browser regression passed: startup, real clicks, sidebar, MN/EN, themes, Discover, Surprise Me, Lab, Back/Forward, refresh, mobile drawer, intro Skip/completion/cleanup, reduced motion, API-offline public UI.');
+  console.log('Browser regression passed: startup, real clicks, sidebar, MN/EN, themes, Discover, Surprise Me, Lab, Back/Forward, refresh, mobile drawer, intro completion/cleanup, reduced motion, API-offline public UI.');
   console.log('Expected unavailable-backend responses:', JSON.stringify([...new Map(failures.map(e => [e.path,e])).values()]));
+} catch(error) {
+  console.error('Uncaught browser exceptions:', events.filter(event=>event.method==='Runtime.exceptionThrown').map(event=>event.params.exceptionDetails.exception?.description));
+  throw error;
 } finally {
   await send('Target.closeTarget', {targetId:target.id});
   ws.close();

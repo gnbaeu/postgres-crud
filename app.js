@@ -30,7 +30,6 @@ const UI_TEXT = {
     "sidebar.collapse": "Цэс хумих", "sidebar.expand": "Цэс нээх",
     "nav.openMenu": "Цэс нээх", "nav.closeMenu": "Цэс хаах",
     "splash.message": "Хэрэглэгчийн орчныг ачаалж байна", "splash.subtext": "Өгөгдөлтэй холболт үүсгэж байна",
-    "splash.skip": "Танилцуулгыг алгасах",
     "theme.toLight": "Цайвар горимд шилжих", "theme.toDark": "Бараан горимд шилжих",
     "language.toEnglish": "Хэлийг англи болгох", "language.toMongolian": "Хэлийг монгол болгох",
     "nav.workspace": "Ажлын орчин", "nav.overview": "Тойм", "nav.customers": "Хэрэглэгчид", "nav.analytics": "Аналитик", "nav.settings": "Тохиргоо", "profile.role": "Администратор",
@@ -59,7 +58,6 @@ const UI_TEXT = {
     "sidebar.collapse": "Collapse menu", "sidebar.expand": "Expand menu",
     "nav.openMenu": "Open navigation", "nav.closeMenu": "Close navigation",
     "splash.message": "Loading your customer workspace", "splash.subtext": "Establishing a secure data connection",
-    "splash.skip": "Skip intro",
     "theme.toLight": "Switch to light theme", "theme.toDark": "Switch to dark theme",
     "language.toEnglish": "Switch language to English", "language.toMongolian": "Switch language to Mongolian",
     "nav.workspace": "Workspace", "nav.overview": "Overview", "nav.customers": "Customers", "nav.analytics": "Analytics", "nav.settings": "Settings", "profile.role": "Administrator",
@@ -434,7 +432,6 @@ const state = {
   connection: null,
   matrixFrame: null,
   matrixCleanup: null,
-  splashFrame: null,
   splashSeen: false,
   splashRun: 0,
   splashHideTimer: null,
@@ -460,7 +457,6 @@ const el = {
   pageIntro: document.querySelector(".page-intro"),
   matrixLoader: document.querySelector("#matrix-loader"),
   matrixCanvas: document.querySelector("#matrix-canvas"),
-  skipIntroButton: document.querySelector("#skip-intro"),
   rows: document.querySelector("#customer-rows"),
   customerTable: document.querySelector(".customer-table"),
   tableState: document.querySelector("#table-state"),
@@ -1784,6 +1780,23 @@ function setActivePage(page, updateUrl = true, preserveAdminPath = false) {
   }
 }
 
+function isMobileIntroDevice() {
+  const shortEdge = Math.min(window.innerWidth, window.innerHeight);
+  const longEdge = Math.max(window.innerWidth, window.innerHeight);
+  const touch = navigator.maxTouchPoints > 0 || window.matchMedia("(pointer: coarse)").matches;
+  // Phone-sized touch viewports, including landscape. Larger tablets keep desktop behavior.
+  return touch && shortEdge <= 600 && longEdge <= 1024;
+}
+
+function introNavigationType() {
+  try {
+    const entry = window.performance?.getEntriesByType?.("navigation")?.[0];
+    if (entry) return entry.type;
+    const legacy = window.performance?.navigation?.type;
+    return legacy === 1 ? "reload" : legacy === 2 ? "back_forward" : "navigate";
+  } catch { return "navigate"; }
+}
+
 function startMatrixRain() {
   const canvas = el.matrixCanvas;
   if (!canvas?.getContext) return null;
@@ -1797,7 +1810,8 @@ function startMatrixRain() {
   if (!context) return null;
 
   const glyphs = "01<>[]{}/*+-=ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-  const frameInterval = 1000 / 24;
+  const mobile = isMobileIntroDevice();
+  const frameInterval = 1000 / (mobile ? 20 : 24);
   let active = true;
   let width = 0;
   let height = 0;
@@ -1835,15 +1849,14 @@ function startMatrixRain() {
       width = Math.max(0, bounds.width);
       height = Math.max(0, bounds.height);
       if (!width || !height) return;
-      const mobile = window.matchMedia("(max-width: 600px)").matches;
       const maxRatio = mobile ? 1.25 : 1.5;
-      const pixelBudgetRatio = Math.sqrt(1_600_000 / (width * height));
+      const pixelBudgetRatio = Math.sqrt((mobile ? 900_000 : 1_600_000) / (width * height));
       const ratio = Math.min(window.devicePixelRatio || 1, maxRatio, pixelBudgetRatio);
       canvas.width = Math.round(width * ratio);
       canvas.height = Math.round(height * ratio);
       context.setTransform(ratio, 0, 0, ratio, 0, 0);
-      fontSize = mobile ? 24 : 20;
-      const maxColumns = mobile ? 18 : 64;
+      fontSize = mobile ? 16 : 20;
+      const maxColumns = mobile ? 52 : 64;
       const columns = Math.max(1, Math.min(Math.ceil(width / fontSize), maxColumns));
       columnWidth = width / columns;
       drops = Array.from({ length: columns }, () => Math.random() * (height / fontSize));
@@ -1869,10 +1882,14 @@ function startMatrixRain() {
       gradient.addColorStop(1, "#38bdf8");
       for (let index = 0; index < drops.length; index += 1) {
         const glyph = glyphs[Math.floor(Math.random() * glyphs.length)];
-        const x = index * columnWidth;
+        const x = index * columnWidth + (mobile ? Math.sin(timestamp / 900 + index) * 2 : 0);
         const y = drops[index] * fontSize;
         const nearPointer = pointer && Math.hypot(x - pointer.x, y - pointer.y) < 120;
         context.fillStyle = nearPointer ? "#f6f8ff" : gradient;
+        if (mobile) {
+          context.shadowColor = nearPointer ? "#a5d8ff" : "#7c3aed";
+          context.shadowBlur = nearPointer ? 5 : 1;
+        }
         context.fillText(glyph, x, y);
         if (drops[index] * fontSize > height && Math.random() > 0.975) drops[index] = 0;
         drops[index] += 0.3 + Math.random() * 0.35;
@@ -1886,7 +1903,7 @@ function startMatrixRain() {
     state.matrixCleanup?.();
     state.matrixCleanup = cleanup;
     window.addEventListener("resize", resize, { passive: true });
-    // Pointer events include iPhone touch input; no preventDefault on Skip taps.
+    // Passive pointer events include iPhone touch input without blocking gestures.
     el.matrixLoader.addEventListener("pointermove", onPointerMove, { passive: true });
     el.matrixLoader.addEventListener("pointerdown", onPointerMove, { passive: true });
     el.matrixLoader.addEventListener("pointerleave", onPointerLeave);
@@ -1904,12 +1921,16 @@ function startMatrixRain() {
 
 function startMatrixSplash() {
   const loader = el.matrixLoader;
-  const skipButton = el.skipIntroButton;
-  if (!loader || !skipButton) {
-    if (loader) loader.hidden = true;
+  if (!loader) {
     document.body.classList.remove("splash-active");
     return;
   }
+  // One instance per document, even if initialization is accidentally invoked twice.
+  if (state.splashSeen) return;
+  const mobile = isMobileIntroDevice();
+  const navigationType = introNavigationType();
+  if (mobile) loader.classList.add("is-mobile-intro");
+  else loader.classList.remove("is-mobile-intro");
 
   const splashKey = "gnwaa-welcome-intro-seen-v1";
   const hideWithoutAnimation = () => {
@@ -1925,7 +1946,7 @@ function startMatrixSplash() {
     hideWithoutAnimation();
     return;
   }
-  let seen = state.splashSeen;
+  let seen = false;
   let storageUnavailable = false;
   try {
     seen ||= window.sessionStorage.getItem(splashKey) === "shown";
@@ -1936,10 +1957,12 @@ function startMatrixSplash() {
   try { seen ||= window.history?.state?.gnwaaWelcomeIntroSeen === true; } catch { /* Optional fallback. */ }
   if (storageUnavailable) {
     try {
-      const navigationType = window.performance?.getEntriesByType?.("navigation")?.[0]?.type;
       seen ||= navigationType === "reload" || navigationType === "back_forward";
     } catch { /* A first visit must still work without navigation timing. */ }
   }
+  // Real phone reloads replay, while SPA transitions and history traversal do not.
+  if (mobile && navigationType === "reload") seen = false;
+  if (navigationType === "back_forward") seen = true;
   state.splashSeen = true;
   if (storageUnavailable) {
     try {
@@ -1953,22 +1976,22 @@ function startMatrixSplash() {
 
   state.splashRun += 1;
   const currentRun = state.splashRun;
+  let finished = false;
   window.clearTimeout(state.splashHideTimer);
   window.clearTimeout(state.splashFailsafeTimer);
-  if (state.splashFrame !== null) window.cancelAnimationFrame(state.splashFrame);
 
   const hideSplash = () => {
-    if (currentRun !== state.splashRun) return;
+    if (finished || currentRun !== state.splashRun) return;
+    finished = true;
     window.clearTimeout(state.splashHideTimer);
     window.clearTimeout(state.splashFailsafeTimer);
     state.splashHideTimer = null;
     state.splashFailsafeTimer = null;
-    if (state.splashFrame !== null) window.cancelAnimationFrame(state.splashFrame);
-    state.splashFrame = null;
     try { state.splashCleanup?.(); } catch { /* Cleanup errors must never keep the site covered. */ }
     state.splashCleanup = null;
     hideWithoutAnimation();
-    if (loader.contains(document.activeElement)) {
+    // Visibility can blur the dialog at the end of the CSS fade, before this timer runs.
+    if (loader.contains(document.activeElement) || document.activeElement === document.body) {
       try { el.mainShell?.focus({ preventScroll: true }); } catch { /* Focus restoration is best-effort. */ }
     }
   };
@@ -1978,33 +2001,31 @@ function startMatrixSplash() {
     loader.classList.remove("is-exiting");
     document.body.classList.add("splash-active");
     const stopMatrix = startMatrixRain();
-    const onSkip = () => hideSplash();
     const onKeydown = (event) => {
-      if (event.key === "Escape" && !loader.hidden) {
+      if (event.key === "Tab" && !loader.hidden) {
         event.preventDefault();
-        hideSplash();
-      } else if (event.key === "Tab" && !loader.hidden) {
-        event.preventDefault();
-        skipButton.focus({ preventScroll: true });
+        loader.focus({ preventScroll: true });
       }
     };
     state.splashCleanup = () => {
-      try { skipButton.removeEventListener("click", onSkip); } catch { /* Best-effort listener cleanup. */ }
       try { document.removeEventListener("keydown", onKeydown); } catch { /* Best-effort listener cleanup. */ }
+      window.removeEventListener("popstate", hideSplash);
+      window.removeEventListener("pagehide", hideSplash);
       try { stopMatrix?.(); } catch { /* Best-effort Canvas cleanup. */ }
     };
-    skipButton.addEventListener("click", onSkip);
     document.addEventListener("keydown", onKeydown);
-    skipButton.focus({ preventScroll: true });
+    window.addEventListener("popstate", hideSplash);
+    window.addEventListener("pagehide", hideSplash);
+    loader.focus({ preventScroll: true });
 
-    // The intro exits before five seconds; Skip and Escape remain available throughout.
+    // Shared 8-second sequence: 7s animation + 1s fade, independent of API work.
     state.splashHideTimer = window.setTimeout(() => {
       if (currentRun !== state.splashRun) return;
       loader.classList.add("is-exiting");
-      state.splashHideTimer = window.setTimeout(hideSplash, 420);
-    }, 4500);
+      state.splashHideTimer = window.setTimeout(hideSplash, 1000);
+    }, 7000);
 
-    state.splashFailsafeTimer = window.setTimeout(hideSplash, 4980);
+    state.splashFailsafeTimer = window.setTimeout(hideSplash, 8200);
   } catch {
     hideSplash();
   }

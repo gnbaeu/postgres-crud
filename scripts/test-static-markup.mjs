@@ -48,7 +48,7 @@ assert.match(app, /function advancePersonality\(/);
 assert.match(app, /function applyTheme\(/);
 assert.match(app, /querySelector\('meta\[name="theme-color"\]'\)\.content = state\.theme === "light" \? "#f2f5ff" : "#080c18"/,
   "Browser chrome color must follow the Aurora light and dark surfaces.");
-assert.match(app, /function startMatrixRain\(\)[\s\S]*frameInterval = 1000 \/ 24[\s\S]*removeEventListener\("resize", resize\)/,
+assert.match(app, /function startMatrixRain\(\)[\s\S]*frameInterval = 1000 \/ \(mobile \? 20 : 24\)[\s\S]*removeEventListener\("resize", resize\)/,
   "The decorative Canvas renderer must be frame-limited and expose cleanup.");
 assert.match(app, /function applyLanguage\(/);
 assert.match(html, /id="theme-toggle"/);
@@ -133,37 +133,31 @@ assert.match(app, /function render\(\)[\s\S]*updateContentActionState\(\)/,
 assert.match(html, /id="matrix-loader"[^>]*\shidden/,
   "The Welcome Intro must start hidden so initialization or failure cannot block the site.");
 assert.match(html, /role="dialog" aria-modal="true" aria-label="GNWAA Welcome Intro"/);
-assert.match(html, /id="skip-intro"[^>]*data-i18n="splash\.skip"/,
-  "A visible, localized Skip Intro control must be available immediately.");
-assert.match(html, /INITIALIZING GNWAA\.\.\.[\s\S]*class="loader-gnwaa"[^>]*>GNWAA[\s\S]*SYSTEM READY/,
-  "The Welcome Intro should keep GNWAA as a separate accessible HTML heading.");
-assert.match(html, /<canvas class="matrix-canvas"[^>]*aria-hidden="true"/);
-assert.match(html, /<main class="main-shell" id="main" tabindex="-1"/,
-  "Focus must have a stable destination after the intro closes.");
-assert.match(css, /\.loader-init-text \{[\s\S]*animation: loader-type 1\.5s steps\(21, end\)/);
-assert.match(css, /\.loader-aurora-violet \{[\s\S]*animation: loader-aurora-violet 4\.5s/);
-assert.match(css, /\.loader-aurora-cyan \{[\s\S]*animation: loader-aurora-cyan 4\.5s/);
-assert.match(css, /\.loader-portal-ring \{[\s\S]*animation: loader-ring-open 4\.5s/);
-assert.match(css, /\.loader-portal-point \{[\s\S]*animation: loader-point-expand 4\.5s/);
-assert.match(css, /\.loader-screen-bloom \{[\s\S]*animation: loader-screen-bloom 1s 3\.5s/);
-assert.match(css, /\.loader-light-wave \{[\s\S]*animation: loader-light-wave 2s 1\.5s/);
-assert.match(css, /\.loader-ready \{[\s\S]*animation: loader-ready-reveal \.3s 3\.5s/);
-assert.match(css, /\.matrix-loader \{[\s\S]*transition: opacity 420ms ease, visibility 420ms ease/);
+assert.doesNotMatch(html + css + app, /skip-intro|loader-skip|skipIntroButton|splash\.skip/,
+  "Removed control markup, styles, DOM references and translations must stay absent.");
+assert.match(html, /class="matrix-loader-content" aria-hidden="true"/,
+  "Decorative text must not be read repeatedly by screen readers.");
+assert.match(html, /class="loader-gnwaa"[^>]*>GNWAA[\s\S]*INITIALIZING EXPERIENCE[\s\S]*WELCOME TO GNWAA/);
+assert.match(html, /id="matrix-loader"[^>]*tabindex="-1"/);
+assert.match(css, /loader-aurora-violet 8s/);
+assert.match(css, /loader-aurora-cyan 8s/);
+assert.match(css, /intro-progress 8s linear/);
+assert.match(css, /intro-initializing 6s/);
+assert.match(css, /intro-welcome \.6s 6s/);
+assert.match(css, /transition: opacity 1000ms ease, visibility 1000ms ease/);
 assert.match(css, /--intro-purple: #7c3aed[\s\S]*--intro-white: #f6f8ff[\s\S]*--intro-sky: #a5d8ff[\s\S]*--intro-cyan: #38bdf8/,
   "The intro keeps its requested palette independently of the site's saved accent.");
 assert.match(app, /createLinearGradient[\s\S]*addColorStop\(0, "#7c3aed"\)[\s\S]*addColorStop\(1, "#38bdf8"\)/);
 assert.match(app, /removeEventListener\("pointermove", onPointerMove\)/,
   "Intro cleanup must also remove mouse interaction listeners.");
-assert.match(css, /\.matrix-canvas \{ display: block; z-index: 0; opacity: \.16;/);
-assert.match(css, /\.loader-skip \{[\s\S]*position: absolute[\s\S]*z-index: 4[\s\S]*min-height: 42px/);
 const startupSplash = app.slice(app.indexOf("state.currentPage = pageFromCurrentLocation()"));
 assert.match(startupSplash, /const welcomeIntroKey = "gnwaa-welcome-intro-seen-v1"[\s\S]*if \(isAdminPath\(\) \|\| normalizedPath\(\) === "\/login"\)[\s\S]*sessionStorage\.setItem\(welcomeIntroKey, "shown"\)[\s\S]*startMatrixSplash\(\)[\s\S]*void initializeAuthentication\(\)/,
   "Only the initial public entry may show the intro, protected/login entries mark it seen, and auth initialization remains independent.");
 const splashFunction = extractFunction(app, "startMatrixSplash", "refreshCustomers");
 const matrixRainSource = extractFunction(app, "startMatrixRain", "startMatrixSplash");
-assert.match(matrixRainSource, /frameInterval = 1000 \/ 24/);
+assert.match(matrixRainSource, /frameInterval = 1000 \/ \(mobile \? 20 : 24\)/);
 assert.match(matrixRainSource, /devicePixelRatio || 1, maxRatio, pixelBudgetRatio/);
-assert.ok(matrixRainSource.includes("fontSize = mobile ? 24 : 20") && matrixRainSource.includes("maxColumns = mobile ? 18 : 64"));
+assert.ok(matrixRainSource.includes("fontSize = mobile ? 16 : 20") && matrixRainSource.includes("maxColumns = mobile ? 52 : 64"));
 assert.ok(matrixRainSource.includes("cancelAnimationFrame") && matrixRainSource.includes("removeEventListener(\"resize\", resize)") &&
   matrixRainSource.includes("canvas.width = 0") && matrixRainSource.includes("canvas.height = 0"),
   "The Canvas animation must cap mobile load and release its frame, listener, and backing store when stopped.");
@@ -207,8 +201,8 @@ const testMatrixLoader = {
   addEventListener(type, callback) { pointerListeners.set(type, callback); },
   removeEventListener(type) { pointerListeners.delete(type); }
 };
-const startCanvasRain = new Function("state", "el", "window", matrixRainSource + "; return startMatrixRain;")(
-  canvasState, { matrixCanvas: testCanvas, matrixLoader: testMatrixLoader }, canvasWindow
+const startCanvasRain = new Function("state", "el", "window", "isMobileIntroDevice", matrixRainSource + "; return startMatrixRain;")(
+  canvasState, { matrixCanvas: testCanvas, matrixLoader: testMatrixLoader }, canvasWindow, () => true
 );
 const stopCanvasRain = startCanvasRain();
 assert.ok(testCanvas.width <= 470 && testCanvas.height <= 1000,
@@ -221,16 +215,16 @@ const firstCanvasFrame = rafCallbacks.entries().next().value;
 rafCallbacks.delete(firstCanvasFrame[0]);
 firstCanvasFrame[1](50);
 const paintedGlyphs = canvasCalls.fillText;
-assert.ok(paintedGlyphs > 0 && paintedGlyphs <= 18, "Mobile ASCII density should be limited to at most 18 columns.");
+assert.ok(paintedGlyphs > 0 && paintedGlyphs <= 28, "Portrait mobile ASCII density should stay below 28 columns.");
 const nextCanvasFrame = [...rafCallbacks.entries()].at(-1);
 rafCallbacks.delete(nextCanvasFrame[0]);
 nextCanvasFrame[1](60);
-assert.equal(canvasCalls.fillText, paintedGlyphs, "The renderer should skip paints above the 24 FPS cap.");
+assert.equal(canvasCalls.fillText, paintedGlyphs, "The mobile renderer should skip paints above the 20 FPS cap.");
 canvasCssWidth = 1920;
 canvasCssHeight = 1080;
 windowListeners.get("resize")();
-assert.ok(testCanvas.width * testCanvas.height <= 1_610_000,
-  "Large displays should stay close to the renderer's 1.6-megapixel backing-store budget.");
+assert.ok(testCanvas.width * testCanvas.height <= 910_000,
+  "Mobile Canvas should stay close to its 0.9-megapixel backing-store budget.");
 stopCanvasRain();
 assert.ok(cancelledFrames.length > 0);
 assert.equal(windowListeners.has("resize"), false);
@@ -253,34 +247,37 @@ assert.match(splashFunction, /matchMedia\("\(prefers-reduced-motion: reduce\)"\)
   "Reduced-motion users should skip the intro immediately.");
 assert.match(splashFunction, /sessionStorage\.getItem\(splashKey\)[\s\S]*sessionStorage\.setItem\(splashKey, "shown"\)/,
   "The intro should run once per tab and stay skipped on refresh.");
-assert.match(splashFunction, /event\.key === "Escape"[\s\S]*event\.key === "Tab"[\s\S]*addEventListener\("click", onSkip\)/,
-  "Skip click, Escape, and keyboard focus handling must be attached while the intro is active.");
-assert.match(splashFunction, /removeEventListener\("click", onSkip\)[\s\S]*removeEventListener\("keydown", onKeydown\)[\s\S]*stopMatrix\?\.\(\)/,
-  "Closing the intro must remove its listeners and stop the canvas loop.");
+assert.match(splashFunction, /event\.key === "Tab"[\s\S]*loader\.focus/);
+assert.doesNotMatch(splashFunction, /event\.key === "Escape"|onSkip/);
+assert.match(splashFunction, /removeEventListener\("keydown", onKeydown\)[\s\S]*stopMatrix\?\.\(\)/);
 assert.match(splashFunction, /loader\.contains\(document\.activeElement\)[\s\S]*mainShell\?\.focus/);
-assert.match(splashFunction, /startMatrixRain\(\)[\s\S]*setTimeout\(hideSplash, 4980\)/);
-assert.match(splashFunction, /\}, 4500\)/);
-assert.match(splashFunction, /setTimeout\(hideSplash, 420\)/);
-assert.match(splashFunction, /setTimeout\(hideSplash, 4980\)/,
-  "The normal exit and failsafe must keep the intro under five seconds.");
+assert.match(splashFunction, /setTimeout\(hideSplash, 1000\)/);
+assert.match(splashFunction, /\}, 7000\)/);
+assert.match(splashFunction, /setTimeout\(hideSplash, 8200\)/);
+const deviceSource = extractFunction(app, "isMobileIntroDevice", "introNavigationType");
+const navigationSource = extractFunction(app, "introNavigationType", "startMatrixRain");
+const classifyIntro = (width, height, touch) => new Function("window", "navigator", deviceSource + ";return isMobileIntroDevice();")(
+  { innerWidth: width, innerHeight: height, matchMedia: () => ({matches:false}) }, {maxTouchPoints:touch ? 5 : 0});
+assert.equal(classifyIntro(390, 844, true), true);
+assert.equal(classifyIntro(844, 390, true), true);
+assert.equal(classifyIntro(390, 844, false), false, "A narrow desktop window is still desktop.");
+assert.equal(classifyIntro(768, 1024, true), false, "Large tablets retain desktop behavior.");
+const legacyNavigation = new Function("window", navigationSource + ";return introNavigationType();")({performance:{navigation:{type:1}}});
+assert.equal(legacyNavigation, "reload");
 
 function createSplashHarness(storage, { reducedMotion = false, failTimers = false, failCanvas = false,
-  navigationType = "navigate", historyState = {}, failHistory = false } = {}) {
+  navigationType = "navigate", historyState = {}, failHistory = false, mobile = false } = {}) {
   const loaderClasses = new Set();
   const bodyClasses = new Set();
   const documentListeners = new Map();
-  const skipListeners = new Map();
+  const lifecycleListeners = new Map();
   let activeElement = null;
   let matrixCleanupCount = 0;
   let matrixStartCount = 0;
-  const skipButton = {
-    focus() { activeElement = this; },
-    addEventListener(type, callback) { skipListeners.set(type, callback); },
-    removeEventListener(type) { skipListeners.delete(type); }
-  };
   const loader = {
     hidden: true,
-    contains: (node) => node === skipButton,
+    contains: (node) => node === loader,
+    focus() { activeElement = this; },
     classList: {
       add(value) { loaderClasses.add(value); },
       remove(value) { loaderClasses.delete(value); }
@@ -306,6 +303,8 @@ function createSplashHarness(storage, { reducedMotion = false, failTimers = fals
       }
     },
     performance: { getEntriesByType: () => [{ type: navigationType }] },
+    addEventListener(type, callback) { lifecycleListeners.set(type, callback); },
+    removeEventListener(type) { lifecycleListeners.delete(type); },
     clearTimeout() {},
     cancelAnimationFrame() {},
     setTimeout(callback, delay) {
@@ -324,19 +323,20 @@ function createSplashHarness(storage, { reducedMotion = false, failTimers = fals
       remove(value) { bodyClasses.delete(value); }
     } }
   };
-  const start = new Function("state", "el", "window", "document", "startMatrixRain", splashFunction + "; return startMatrixSplash;")(
-    state, { matrixLoader: loader, skipIntroButton: skipButton, mainShell }, fakeWindow, fakeDocument,
+  const start = new Function("state", "el", "window", "document", "startMatrixRain", "isMobileIntroDevice", "introNavigationType", splashFunction + "; return startMatrixSplash;")(
+    state, { matrixLoader: loader, mainShell }, fakeWindow, fakeDocument,
     () => {
       matrixStartCount += 1;
       if (failCanvas) throw new Error("Canvas unavailable");
       return () => { matrixCleanupCount += 1; };
-    }
+    }, () => mobile, () => navigationType
   );
   return {
-    start, loader, loaderClasses, bodyClasses, state, timers, skipButton, skipListeners, documentListeners, mainShell,
+    start, loader, loaderClasses, bodyClasses, state, timers, documentListeners, lifecycleListeners, mainShell,
     get matrixCleanupCount() { return matrixCleanupCount; },
     get matrixStartCount() { return matrixStartCount; },
-    get activeElement() { return activeElement; }
+    get activeElement() { return activeElement; },
+    loseFocus() { activeElement = fakeDocument.body; }
   };
 }
 
@@ -349,17 +349,17 @@ const firstVisitSplash = createSplashHarness(splashStorage);
 firstVisitSplash.start();
 assert.equal(firstVisitSplash.loader.hidden, false);
 assert.equal(firstVisitSplash.matrixStartCount, 1);
-assert.deepEqual(firstVisitSplash.timers.map(({ delay }) => delay), [4500, 4980]);
-assert.equal(firstVisitSplash.skipListeners.has("click"), true);
+assert.deepEqual(firstVisitSplash.timers.map(({ delay }) => delay), [7000, 8200]);
+
 assert.equal(firstVisitSplash.documentListeners.has("keydown"), true);
-assert.equal(firstVisitSplash.activeElement, firstVisitSplash.skipButton, "The Skip button should receive initial focus.");
+assert.equal(firstVisitSplash.activeElement, firstVisitSplash.loader, "The decorative dialog should receive initial focus.");
 firstVisitSplash.timers[0].callback();
 assert.equal(firstVisitSplash.loaderClasses.has("is-exiting"), true);
-assert.equal(firstVisitSplash.timers.at(-1).delay, 420);
+assert.equal(firstVisitSplash.timers.at(-1).delay, 1000);
 firstVisitSplash.timers.at(-1).callback();
-assert.equal(firstVisitSplash.loader.hidden, true, "The normal animation should hide after its 420ms exit transition.");
+assert.equal(firstVisitSplash.loader.hidden, true, "The normal animation should hide after its 1000ms exit transition.");
 assert.equal(firstVisitSplash.bodyClasses.has("splash-active"), false);
-assert.equal(firstVisitSplash.skipListeners.size, 0);
+
 assert.equal(firstVisitSplash.documentListeners.size, 0);
 assert.equal(firstVisitSplash.matrixCleanupCount, 1, "Closing the intro should stop the Canvas renderer once.");
 assert.equal(firstVisitSplash.activeElement, firstVisitSplash.mainShell, "Focus should return to the site after the intro closes.");
@@ -369,10 +369,30 @@ refreshedSplash.start();
 assert.equal(refreshedSplash.loader.hidden, true, "A refresh in the same tab should not replay the splash.");
 assert.equal(refreshedSplash.timers.length, 0);
 assert.equal(refreshedSplash.matrixStartCount, 0, "Refreshing in the same tab should not allocate a Canvas context.");
+for (const storage of [splashStorage, {getItem(){throw new Error("blocked")},setItem(){throw new Error("blocked")}}]) {
+  const mobileReload = createSplashHarness(storage, {mobile:true, navigationType:"reload"});
+  mobileReload.start();
+  assert.equal(mobileReload.loader.hidden, false, "Phone reload must replay even after a previous completion or storage denial.");
+  assert.deepEqual(mobileReload.timers.map(timer => timer.delay), [7000,8200]);
+  mobileReload.start();
+  assert.equal(mobileReload.matrixStartCount, 1, "A second initialization must not create another instance.");
+  assert.equal(mobileReload.loader.hidden, false, "Duplicate initialization must not dismiss the current instance.");
+  mobileReload.timers.find(({delay}) => delay === 8200).callback();
+  assert.equal(mobileReload.lifecycleListeners.size, 0);
+  assert.equal(mobileReload.bodyClasses.has("splash-active"), false);
+  const mobileBack = createSplashHarness(storage, {mobile:true,navigationType:"back_forward"});
+  mobileBack.start();
+  assert.equal(mobileBack.loader.hidden, true, "History traversal never replays the intro.");
+}
+const leavingSplash = createSplashHarness({getItem:()=>null,setItem(){}}, {mobile:true});
+leavingSplash.start();
+leavingSplash.lifecycleListeners.get("pagehide")();
+assert.equal(leavingSplash.loader.hidden, true, "A BFCache snapshot must not retain a visible overlay.");
+assert.equal(leavingSplash.matrixCleanupCount, 1);
 const newBrowserSessionSplash = createSplashHarness({ getItem: () => null, setItem() {} });
 newBrowserSessionSplash.start();
 assert.equal(newBrowserSessionSplash.loader.hidden, false, "A new browser session may show the intro again.");
-newBrowserSessionSplash.skipListeners.get("click")();
+newBrowserSessionSplash.timers.find(({delay}) => delay === 8200).callback();
 const reducedMotionSplash = createSplashHarness(splashStorage, { reducedMotion: true });
 reducedMotionSplash.start();
 assert.equal(reducedMotionSplash.loader.hidden, true, "Reduced motion should skip the splash immediately.");
@@ -383,12 +403,12 @@ failedAnimationSplash.start();
 assert.equal(failedAnimationSplash.loader.hidden, true, "A timer error should close the overlay instead of leaving it stuck.");
 const failsafeSplash = createSplashHarness({ getItem: () => null, setItem() {} });
 failsafeSplash.start();
-failsafeSplash.timers.find(({ delay }) => delay === 4980).callback();
+failsafeSplash.timers.find(({ delay }) => delay === 8200).callback();
 assert.equal(failsafeSplash.loader.hidden, true, "The failsafe should close the overlay if the normal exit callback does not run.");
 const unavailableStorageSplash = createSplashHarness({ getItem() { throw new Error("storage unavailable"); }, setItem() {} });
 unavailableStorageSplash.start();
 assert.equal(unavailableStorageSplash.loader.hidden, false, "Storage read errors must not suppress a first visit.");
-unavailableStorageSplash.skipListeners.get("click")();
+unavailableStorageSplash.timers.find(({delay}) => delay === 8200).callback();
 unavailableStorageSplash.start();
 assert.equal(unavailableStorageSplash.loader.hidden, true, "Memory prevents a repeat in the same document.");
 const blockedStorage = { getItem() { throw new Error("SecurityError"); }, setItem() { throw new Error("QuotaExceededError"); } };
@@ -398,7 +418,7 @@ privateSplash.start();
 assert.equal(privateSplash.loader.hidden, false);
 assert.equal(fallbackHistory.existingRouterValue, "preserved");
 assert.equal(fallbackHistory.gnwaaWelcomeIntroSeen, true);
-privateSplash.timers.find(({ delay }) => delay === 4980).callback();
+privateSplash.timers.find(({ delay }) => delay === 8200).callback();
 assert.equal(privateSplash.loader.hidden, true);
 assert.equal(privateSplash.matrixCleanupCount, 1);
 const privateRefresh = createSplashHarness(blockedStorage, { historyState: fallbackHistory });
@@ -413,35 +433,36 @@ const quotaStorage = { getItem: () => null, setItem() { throw new Error("QuotaEx
 const quotaSplash = createSplashHarness(quotaStorage);
 quotaSplash.start();
 assert.equal(quotaSplash.loader.hidden, false, "A write-only failure must still allow the first visit.");
-quotaSplash.skipListeners.get("click")();
+quotaSplash.timers.find(({delay}) => delay === 8200).callback();
 const quotaRefresh = createSplashHarness(quotaStorage, { navigationType: "reload" });
 quotaRefresh.start();
 assert.equal(quotaRefresh.loader.hidden, true, "Write-only failure must also honor reload detection.");
 const fullyBlocked = createSplashHarness(blockedStorage, { failHistory: true });
 fullyBlocked.start();
 assert.equal(fullyBlocked.loader.hidden, false, "Storage/history denial must not prevent the initial animation.");
-fullyBlocked.skipListeners.get("click")();
+fullyBlocked.timers.find(({delay}) => delay === 8200).callback();
 assert.equal(fullyBlocked.loader.hidden, true);
 const privateReduced = createSplashHarness(blockedStorage, { reducedMotion: true });
 privateReduced.start();
 assert.equal(privateReduced.matrixStartCount, 0, "Reduced motion is respected even when storage throws.");
-const skippedSplash = createSplashHarness({ getItem: () => null, setItem() {} });
-skippedSplash.start();
-skippedSplash.skipListeners.get("click")();
-assert.equal(skippedSplash.loader.hidden, true, "The Skip button should close the intro immediately.");
-const escapeSplash = createSplashHarness({ getItem: () => null, setItem() {} });
-escapeSplash.start();
-let escapePrevented = false;
-escapeSplash.documentListeners.get("keydown")({ key: "Tab", preventDefault() { escapePrevented = true; } });
-assert.equal(escapePrevented, true);
-assert.equal(escapeSplash.activeElement, escapeSplash.skipButton, "Tab should stay within the intro's Skip control.");
-escapePrevented = false;
-escapeSplash.documentListeners.get("keydown")({ key: "Escape", preventDefault() { escapePrevented = true; } });
-assert.equal(escapePrevented, true);
-assert.equal(escapeSplash.loader.hidden, true, "Escape should reveal the website.");
+const keyboardSplash = createSplashHarness({ getItem: () => null, setItem() {} });
+keyboardSplash.start();
+let tabPrevented = false;
+keyboardSplash.documentListeners.get("keydown")({key:"Tab",preventDefault(){tabPrevented=true}});
+assert.equal(tabPrevented,true);
+assert.equal(keyboardSplash.activeElement,keyboardSplash.loader);
+keyboardSplash.documentListeners.get("keydown")({key:"Escape",preventDefault(){throw new Error("Escape must not dismiss the intro")}});
+assert.equal(keyboardSplash.loader.hidden,false);
+keyboardSplash.timers.find(({delay})=>delay===8200).callback();
+assert.equal(keyboardSplash.activeElement,keyboardSplash.mainShell);
 const canvasErrorSplash = createSplashHarness({ getItem: () => null, setItem() {} }, { failCanvas: true });
 canvasErrorSplash.start();
 assert.equal(canvasErrorSplash.loader.hidden, true, "A Canvas error must reveal the site instead of leaving an intro overlay.");
+const blurredSplash = createSplashHarness({getItem:()=>null,setItem(){}});
+blurredSplash.start();
+blurredSplash.loseFocus();
+blurredSplash.timers.find(({delay})=>delay===8200).callback();
+assert.equal(blurredSplash.activeElement, blurredSplash.mainShell, "A CSS visibility blur must still restore focus after the fade.");
 const internalRouteSplash = extractFunction(app, "setActivePage", "startMatrixRain");
 assert.doesNotMatch(internalRouteSplash, /startMatrixSplash|startMatrixRain/,
   "SPA navigation must not replay or restart the Welcome Intro.");
