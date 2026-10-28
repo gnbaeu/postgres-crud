@@ -5,6 +5,13 @@ const html = readFileSync(new URL("../index.html", import.meta.url), "utf8");
 const app = readFileSync(new URL("../app.js", import.meta.url), "utf8");
 const api = readFileSync(new URL("../api.js", import.meta.url), "utf8");
 const css = readFileSync(new URL("../style.css", import.meta.url), "utf8");
+// Catch stale element-map references, including properties with no selector at all.
+// ID-selector checks alone missed the removed loaderMessage/loaderSubtext entries.
+const elementMap = app.slice(app.indexOf("const el = {"), app.indexOf("const labState ="));
+const declaredElements = new Set([...elementMap.matchAll(/^\s*(\w+):/gm)].map(match => match[1]));
+const usedElements = [...app.matchAll(/\bel\.(\w+)/g)].map(match => match[1]);
+assert.deepEqual([...new Set(usedElements)].filter(name => !declaredElements.has(name)), [],
+  "Every el property must be declared: stale references can abort startup and leave the app inert.");
 const vercel = JSON.parse(readFileSync(new URL("../vercel.json", import.meta.url), "utf8"));
 const ids = [...html.matchAll(/\bid="([^"]+)"/g)].map((match) => match[1]);
 const dynamicallyCreatedIds = [...app.matchAll(/\bid="([^"]+)"/g)].map((match) => match[1]);
@@ -142,8 +149,11 @@ assert.match(css, /\.loader-screen-bloom \{[\s\S]*animation: loader-screen-bloom
 assert.match(css, /\.loader-light-wave \{[\s\S]*animation: loader-light-wave 2s 1\.5s/);
 assert.match(css, /\.loader-ready \{[\s\S]*animation: loader-ready-reveal \.3s 3\.5s/);
 assert.match(css, /\.matrix-loader \{[\s\S]*transition: opacity 420ms ease, visibility 420ms ease/);
-assert.match(css, /--intro-purple: var\(--accent, #7c3aed\)[\s\S]*--intro-white: #f6f8ff[\s\S]*--intro-sky: #a5d8ff[\s\S]*--intro-cyan: var\(--accent-secondary, #38bdf8\)/,
-  "The intro uses the selected Aurora accents and the requested fallback palette.");
+assert.match(css, /--intro-purple: #7c3aed[\s\S]*--intro-white: #f6f8ff[\s\S]*--intro-sky: #a5d8ff[\s\S]*--intro-cyan: #38bdf8/,
+  "The intro keeps its requested palette independently of the site's saved accent.");
+assert.match(app, /createLinearGradient[\s\S]*addColorStop\(0, "#7c3aed"\)[\s\S]*addColorStop\(1, "#38bdf8"\)/);
+assert.match(app, /removeEventListener\("pointermove", onPointerMove\)/,
+  "Intro cleanup must also remove mouse interaction listeners.");
 assert.match(css, /\.matrix-canvas \{ display: block; z-index: 0; opacity: \.16;/);
 assert.match(css, /\.loader-skip \{[\s\S]*position: absolute[\s\S]*z-index: 4[\s\S]*min-height: 42px/);
 const startupSplash = app.slice(app.indexOf("state.currentPage = pageFromCurrentLocation()"));
@@ -166,6 +176,7 @@ const canvasContext = {
   clearRect() { canvasCalls.clears += 1; },
   setTransform(...values) { canvasCalls.transforms.push(values); },
   fillRect() {},
+  createLinearGradient() { return { addColorStop() {} }; },
   fillText() { canvasCalls.fillText += 1; }
 };
 const testCanvas = {
@@ -192,7 +203,7 @@ const canvasWindow = {
 };
 const canvasState = { matrixFrame: null, matrixCleanup: null };
 const startCanvasRain = new Function("state", "el", "window", matrixRainSource + "; return startMatrixRain;")(
-  canvasState, { matrixCanvas: testCanvas }, canvasWindow
+  canvasState, { matrixCanvas: testCanvas, matrixLoader: { removeEventListener() {} } }, canvasWindow
 );
 const stopCanvasRain = startCanvasRain();
 assert.ok(testCanvas.width <= 470 && testCanvas.height <= 1000,

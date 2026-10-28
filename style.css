@@ -2067,10 +2067,10 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 
 /* Aurora Portal Welcome Intro with a sub-five-second reveal. */
 .matrix-loader {
-  --intro-purple: var(--accent, #7c3aed);
+  --intro-purple: #7c3aed;
   --intro-white: #f6f8ff;
   --intro-sky: #a5d8ff;
-  --intro-cyan: var(--accent-secondary, #38bdf8);
+  --intro-cyan: #38bdf8;
   background-color: #080c18;
   background:
     radial-gradient(ellipse at 50% 48%, color-mix(in srgb, var(--intro-purple) 24%, transparent), transparent 46%),

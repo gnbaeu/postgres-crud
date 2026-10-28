@@ -1370,8 +1370,6 @@ function applyLanguage(language, persist = true) {
   el.languageToggle.setAttribute("aria-label", nextLanguageLabel);
   el.languageToggle.title = nextLanguageLabel;
   el.todayLabel.textContent = new Intl.DateTimeFormat(state.language === "mn" ? "mn-MN" : "en-US", { dateStyle: "medium" }).format(new Date());
-  el.loaderMessage.textContent = t("splash.message");
-  el.loaderSubtext.textContent = t("splash.subtext");
   if (state.connection === null) {
     el.connectionLabel.textContent = t("connection.checking");
     el.connectionDetail.textContent = t("connection.detail");
@@ -1805,6 +1803,9 @@ function startMatrixRain() {
   let columnWidth = 0;
   let drops = [];
   let lastPaintAt = 0;
+  let pointer = null;
+  const onPointerMove = (event) => { pointer = { x: event.clientX, y: event.clientY }; };
+  const onPointerLeave = () => { pointer = null; };
 
   const cleanup = () => {
     if (!active) return;
@@ -1812,6 +1813,8 @@ function startMatrixRain() {
     if (state.matrixFrame !== null) window.cancelAnimationFrame(state.matrixFrame);
     state.matrixFrame = null;
     window.removeEventListener("resize", resize);
+    el.matrixLoader.removeEventListener("pointermove", onPointerMove);
+    el.matrixLoader.removeEventListener("pointerleave", onPointerLeave);
     try {
       context.clearRect(0, 0, width, height);
       canvas.width = 0;
@@ -1854,11 +1857,18 @@ function startMatrixRain() {
       context.fillStyle = "rgba(8, 12, 24, 0.13)";
       context.fillRect(0, 0, width, height);
       context.font = fontSize + "px ui-monospace, Consolas, monospace";
+      const gradient = context.createLinearGradient(0, 0, width, height);
+      gradient.addColorStop(0, "#7c3aed");
+      gradient.addColorStop(0.4, "#f6f8ff");
+      gradient.addColorStop(0.7, "#a5d8ff");
+      gradient.addColorStop(1, "#38bdf8");
       for (let index = 0; index < drops.length; index += 1) {
         const glyph = glyphs[Math.floor(Math.random() * glyphs.length)];
-        const bright = Math.random() > 0.94;
-        context.fillStyle = bright ? "#f6f8ff" : (Math.random() > 0.5 ? "#a5d8ff" : "#38bdf8");
-        context.fillText(glyph, index * columnWidth, drops[index] * fontSize);
+        const x = index * columnWidth;
+        const y = drops[index] * fontSize;
+        const nearPointer = pointer && Math.hypot(x - pointer.x, y - pointer.y) < 120;
+        context.fillStyle = nearPointer ? "#f6f8ff" : gradient;
+        context.fillText(glyph, x, y);
         if (drops[index] * fontSize > height && Math.random() > 0.975) drops[index] = 0;
         drops[index] += 0.3 + Math.random() * 0.35;
       }
@@ -1871,6 +1881,10 @@ function startMatrixRain() {
     state.matrixCleanup?.();
     state.matrixCleanup = cleanup;
     window.addEventListener("resize", resize, { passive: true });
+    if (window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
+      el.matrixLoader.addEventListener("pointermove", onPointerMove, { passive: true });
+      el.matrixLoader.addEventListener("pointerleave", onPointerLeave);
+    }
     resize();
     if (!active) return null;
     state.matrixFrame = window.requestAnimationFrame(draw);
