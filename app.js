@@ -435,6 +435,7 @@ const state = {
   matrixFrame: null,
   matrixCleanup: null,
   splashFrame: null,
+  splashSeen: false,
   splashRun: 0,
   splashHideTimer: null,
   splashFailsafeTimer: null,
@@ -1789,8 +1790,9 @@ function startMatrixRain() {
   let context;
   try {
     context = canvas.getContext("2d", { alpha: true, desynchronized: true });
-  } catch {
-    return null;
+  } catch { /* Some engines reject optional context settings. Try plain 2D below. */ }
+  if (!context) {
+    try { context = canvas.getContext("2d"); } catch { return null; }
   }
   if (!context) return null;
 
@@ -1814,7 +1816,10 @@ function startMatrixRain() {
     state.matrixFrame = null;
     window.removeEventListener("resize", resize);
     el.matrixLoader.removeEventListener("pointermove", onPointerMove);
+    el.matrixLoader.removeEventListener("pointerdown", onPointerMove);
     el.matrixLoader.removeEventListener("pointerleave", onPointerLeave);
+    el.matrixLoader.removeEventListener("pointerup", onPointerLeave);
+    el.matrixLoader.removeEventListener("pointercancel", onPointerLeave);
     try {
       context.clearRect(0, 0, width, height);
       canvas.width = 0;
@@ -1881,10 +1886,12 @@ function startMatrixRain() {
     state.matrixCleanup?.();
     state.matrixCleanup = cleanup;
     window.addEventListener("resize", resize, { passive: true });
-    if (window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
-      el.matrixLoader.addEventListener("pointermove", onPointerMove, { passive: true });
-      el.matrixLoader.addEventListener("pointerleave", onPointerLeave);
-    }
+    // Pointer events include iPhone touch input; no preventDefault on Skip taps.
+    el.matrixLoader.addEventListener("pointermove", onPointerMove, { passive: true });
+    el.matrixLoader.addEventListener("pointerdown", onPointerMove, { passive: true });
+    el.matrixLoader.addEventListener("pointerleave", onPointerLeave);
+    el.matrixLoader.addEventListener("pointerup", onPointerLeave);
+    el.matrixLoader.addEventListener("pointercancel", onPointerLeave);
     resize();
     if (!active) return null;
     state.matrixFrame = window.requestAnimationFrame(draw);
@@ -1918,20 +1925,28 @@ function startMatrixSplash() {
     hideWithoutAnimation();
     return;
   }
-  if (reducedMotion) {
-    try { window.sessionStorage.setItem(splashKey, "shown"); } catch { /* Optional preference. */ }
-    hideWithoutAnimation();
-    return;
-  }
-
+  let seen = state.splashSeen;
+  let storageUnavailable = false;
   try {
-    if (window.sessionStorage.getItem(splashKey) === "shown") {
-      hideWithoutAnimation();
-      return;
-    }
-    window.sessionStorage.setItem(splashKey, "shown");
-  } catch {
-    // If tab storage is unavailable, skip the splash so refreshes never replay it.
+    seen ||= window.sessionStorage.getItem(splashKey) === "shown";
+  } catch { storageUnavailable = true; }
+  try { window.sessionStorage.setItem(splashKey, "shown"); } catch { storageUnavailable = true; }
+  // History survives a reload when sessionStorage is blocked. Navigation timing
+  // also covers reloads of a later SPA route, whose history entry has no marker.
+  try { seen ||= window.history?.state?.gnwaaWelcomeIntroSeen === true; } catch { /* Optional fallback. */ }
+  if (storageUnavailable) {
+    try {
+      const navigationType = window.performance?.getEntriesByType?.("navigation")?.[0]?.type;
+      seen ||= navigationType === "reload" || navigationType === "back_forward";
+    } catch { /* A first visit must still work without navigation timing. */ }
+  }
+  state.splashSeen = true;
+  if (storageUnavailable) {
+    try {
+      window.history.replaceState({ ...window.history.state, gnwaaWelcomeIntroSeen: true }, "");
+    } catch { /* Memory still prevents repeats within this document. */ }
+  }
+  if (reducedMotion || seen) {
     hideWithoutAnimation();
     return;
   }

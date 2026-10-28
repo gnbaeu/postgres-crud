@@ -202,14 +202,21 @@ const canvasWindow = {
   removeEventListener(type) { windowListeners.delete(type); }
 };
 const canvasState = { matrixFrame: null, matrixCleanup: null };
+const pointerListeners = new Map();
+const testMatrixLoader = {
+  addEventListener(type, callback) { pointerListeners.set(type, callback); },
+  removeEventListener(type) { pointerListeners.delete(type); }
+};
 const startCanvasRain = new Function("state", "el", "window", matrixRainSource + "; return startMatrixRain;")(
-  canvasState, { matrixCanvas: testCanvas, matrixLoader: { removeEventListener() {} } }, canvasWindow
+  canvasState, { matrixCanvas: testCanvas, matrixLoader: testMatrixLoader }, canvasWindow
 );
 const stopCanvasRain = startCanvasRain();
 assert.ok(testCanvas.width <= 470 && testCanvas.height <= 1000,
   "Mobile backing resolution should be capped even on a high-DPR device.");
 assert.ok(canvasCalls.transforms[0][0] <= 1.25, "Mobile Canvas DPR should not exceed 1.25.");
 assert.equal(windowListeners.has("resize"), true);
+assert.equal(pointerListeners.has("pointerdown"), true, "Touch must work even without hover/fine pointer support.");
+pointerListeners.get("pointerdown")({ clientX: 20, clientY: 20, pointerType: "touch" });
 const firstCanvasFrame = rafCallbacks.entries().next().value;
 rafCallbacks.delete(firstCanvasFrame[0]);
 firstCanvasFrame[1](50);
@@ -231,6 +238,17 @@ assert.equal(testCanvas.width, 0);
 assert.equal(testCanvas.height, 0);
 assert.equal(canvasState.matrixFrame, null);
 assert.equal(canvasState.matrixCleanup, null);
+assert.equal(pointerListeners.size, 0, "All touch/mouse listeners must be removed on cleanup.");
+let plainContextCalls = 0;
+testCanvas.getContext = (_type, options) => {
+  if (options) throw new TypeError("Optional context settings unsupported");
+  plainContextCalls += 1;
+  return canvasContext;
+};
+const stopFallbackCanvas = startCanvasRain();
+assert.equal(plainContextCalls, 1, "Canvas must retry with plain 2D if optional settings throw.");
+assert.equal(typeof stopFallbackCanvas, "function");
+stopFallbackCanvas();
 assert.match(splashFunction, /matchMedia\("\(prefers-reduced-motion: reduce\)"\)[\s\S]*hideWithoutAnimation\(\)[\s\S]*return/,
   "Reduced-motion users should skip the intro immediately.");
 assert.match(splashFunction, /sessionStorage\.getItem\(splashKey\)[\s\S]*sessionStorage\.setItem\(splashKey, "shown"\)/,
@@ -246,7 +264,8 @@ assert.match(splashFunction, /setTimeout\(hideSplash, 420\)/);
 assert.match(splashFunction, /setTimeout\(hideSplash, 4980\)/,
   "The normal exit and failsafe must keep the intro under five seconds.");
 
-function createSplashHarness(storage, { reducedMotion = false, failTimers = false, failCanvas = false } = {}) {
+function createSplashHarness(storage, { reducedMotion = false, failTimers = false, failCanvas = false,
+  navigationType = "navigate", historyState = {}, failHistory = false } = {}) {
   const loaderClasses = new Set();
   const bodyClasses = new Set();
   const documentListeners = new Map();
@@ -279,6 +298,14 @@ function createSplashHarness(storage, { reducedMotion = false, failTimers = fals
   const fakeWindow = {
     matchMedia: () => ({ matches: reducedMotion }),
     sessionStorage: storage,
+    history: {
+      get state() { return historyState; },
+      replaceState(next) {
+        if (failHistory) throw new Error("history unavailable");
+        Object.assign(historyState, next);
+      }
+    },
+    performance: { getEntriesByType: () => [{ type: navigationType }] },
     clearTimeout() {},
     cancelAnimationFrame() {},
     setTimeout(callback, delay) {
@@ -360,7 +387,44 @@ failsafeSplash.timers.find(({ delay }) => delay === 4980).callback();
 assert.equal(failsafeSplash.loader.hidden, true, "The failsafe should close the overlay if the normal exit callback does not run.");
 const unavailableStorageSplash = createSplashHarness({ getItem() { throw new Error("storage unavailable"); }, setItem() {} });
 unavailableStorageSplash.start();
-assert.equal(unavailableStorageSplash.loader.hidden, true, "Unavailable tab storage should fail open without replaying on refresh.");
+assert.equal(unavailableStorageSplash.loader.hidden, false, "Storage read errors must not suppress a first visit.");
+unavailableStorageSplash.skipListeners.get("click")();
+unavailableStorageSplash.start();
+assert.equal(unavailableStorageSplash.loader.hidden, true, "Memory prevents a repeat in the same document.");
+const blockedStorage = { getItem() { throw new Error("SecurityError"); }, setItem() { throw new Error("QuotaExceededError"); } };
+const fallbackHistory = { existingRouterValue: "preserved" };
+const privateSplash = createSplashHarness(blockedStorage, { historyState: fallbackHistory });
+privateSplash.start();
+assert.equal(privateSplash.loader.hidden, false);
+assert.equal(fallbackHistory.existingRouterValue, "preserved");
+assert.equal(fallbackHistory.gnwaaWelcomeIntroSeen, true);
+privateSplash.timers.find(({ delay }) => delay === 4980).callback();
+assert.equal(privateSplash.loader.hidden, true);
+assert.equal(privateSplash.matrixCleanupCount, 1);
+const privateRefresh = createSplashHarness(blockedStorage, { historyState: fallbackHistory });
+privateRefresh.start();
+assert.equal(privateRefresh.loader.hidden, true, "History marker survives blocked-storage refresh.");
+for (const navigationType of ["reload", "back_forward"]) {
+  const returning = createSplashHarness(blockedStorage, { navigationType });
+  returning.start();
+  assert.equal(returning.loader.hidden, true, "Reload/back after an SPA route should not replay without a history marker.");
+}
+const quotaStorage = { getItem: () => null, setItem() { throw new Error("QuotaExceededError"); } };
+const quotaSplash = createSplashHarness(quotaStorage);
+quotaSplash.start();
+assert.equal(quotaSplash.loader.hidden, false, "A write-only failure must still allow the first visit.");
+quotaSplash.skipListeners.get("click")();
+const quotaRefresh = createSplashHarness(quotaStorage, { navigationType: "reload" });
+quotaRefresh.start();
+assert.equal(quotaRefresh.loader.hidden, true, "Write-only failure must also honor reload detection.");
+const fullyBlocked = createSplashHarness(blockedStorage, { failHistory: true });
+fullyBlocked.start();
+assert.equal(fullyBlocked.loader.hidden, false, "Storage/history denial must not prevent the initial animation.");
+fullyBlocked.skipListeners.get("click")();
+assert.equal(fullyBlocked.loader.hidden, true);
+const privateReduced = createSplashHarness(blockedStorage, { reducedMotion: true });
+privateReduced.start();
+assert.equal(privateReduced.matrixStartCount, 0, "Reduced motion is respected even when storage throws.");
 const skippedSplash = createSplashHarness({ getItem: () => null, setItem() {} });
 skippedSplash.start();
 skippedSplash.skipListeners.get("click")();
