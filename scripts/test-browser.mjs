@@ -65,6 +65,19 @@ const waitFor = async (expression, label, timeout = 10500) => {
   }
   throw new Error(`Timed out: ${label}`);
 };
+const pressKey = async (key, windowsVirtualKeyCode) => {
+  await send('Input.dispatchKeyEvent', {type:'keyDown', key, code:key, windowsVirtualKeyCode});
+  await send('Input.dispatchKeyEvent', {type:'keyUp', key, code:key, windowsVirtualKeyCode});
+};
+const assertIntroDuration = async (label, upperBound = 9500) => {
+  await waitFor(`window.__gnwaaIntroTiming && window.__gnwaaIntroTiming.closedAt !== null`, `${label} timing capture`);
+  const timing = await evaluate(`window.__gnwaaIntroTiming`);
+  assert.ok(Number.isFinite(timing?.startedAt), `${label}: intro start was captured`);
+  assert.ok(Number.isFinite(timing?.closedAt), `${label}: intro completion was captured`);
+  const duration = timing.closedAt - timing.startedAt;
+  assert.ok(duration >= 7700 && duration < upperBound, `${label} duration is about eight seconds (${duration.toFixed(0)} ms)`);
+  return duration;
+};
 // Native input checks hit testing, overlays and inert; element.click() would bypass them.
 const click = async (selector, touch = false) => {
   const point = await evaluate(`(async () => {
@@ -90,6 +103,18 @@ try {
   await send('Runtime.enable');
   await send('Page.enable');
   await send('Network.enable');
+  await send('Page.addScriptToEvaluateOnNewDocument', {source: `(() => {
+    const timing = { startedAt: null, closedAt: null };
+    Object.defineProperty(window, '__gnwaaIntroTiming', { value: timing, configurable: true });
+    new MutationObserver(records => {
+      for (const record of records) {
+        const loader = record.target;
+        if (loader.id !== 'matrix-loader') continue;
+        if (!loader.hidden && timing.startedAt === null) timing.startedAt = performance.now();
+        else if (loader.hidden && timing.startedAt !== null && timing.closedAt === null) timing.closedAt = performance.now();
+      }
+    }).observe(document, { attributes: true, attributeFilter: ['hidden'], subtree: true });
+  })();`});
   await navigate(origin);
   await waitFor(`document.readyState === 'complete'`, 'initial document');
   await evaluate(`sessionStorage.clear(); localStorage.clear()`);
@@ -97,12 +122,11 @@ try {
   await send('Emulation.setEmulatedMedia', { features: [{name:'prefers-reduced-motion',value:'no-preference'}] });
   await reload();
   await waitFor(`!document.querySelector('#matrix-loader').hidden`, 'first-session intro');
-  const desktopStarted = Date.now();
   assert.equal(await evaluate(`document.querySelector('#skip-intro') === null`), true);
   await delay(6400);
   await screenshot('desktop-1440.png');
   await waitFor(`document.querySelector('#matrix-loader').hidden`, 'desktop automatic completion');
-  assert.ok(Date.now()-desktopStarted >= 7700 && Date.now()-desktopStarted < 9500, 'Desktop duration is about eight seconds');
+  await assertIntroDuration('Desktop');
   await waitFor(`document.querySelector('#matrix-loader').hidden && !document.querySelector('.app-layout').inert`, 'completion releases UI');
   await waitFor(`document.querySelector('#matrix-canvas').width === 0`, 'canvas cleanup');
   await click('#language-toggle');
@@ -130,14 +154,57 @@ try {
   assert.equal(await evaluate('document.documentElement.dataset.accentTheme'), 'ocean-night');
   await click('.side-nav [data-page-link="discover"]');
   await waitFor(`location.pathname === '/discover'`, 'Discover navigation');
+  assert.deepEqual(await evaluate(`Array.from(document.querySelectorAll('h1')).filter(node => node.getClientRects().length).map(node => node.textContent.trim())`), ['Discover']);
+  assert.equal(await evaluate(`document.querySelector('#discover-surprise').parentElement.id`), 'page-actions');
+  assert.equal(await evaluate(`document.querySelector('#discover-surprise').hidden`), false);
+  assert.equal(await evaluate(`document.querySelector('#refresh-button').hidden`), true);
+  assert.equal(await evaluate(`document.querySelector('.discover-toolbar').contains(document.querySelector('#discover-search')) && document.querySelector('.discover-toolbar').contains(document.querySelector('#discover-category-nav'))`), true);
+  assert.ok(await evaluate(`document.querySelector('.discover-featured-title')?.textContent.trim().length > 0`));
+  for (const width of [360, 375, 390, 430, 768, 1024, 1440]) {
+    await send('Emulation.setDeviceMetricsOverride', {width, height: 1100, deviceScaleFactor: 1, mobile: width <= 768});
+    await delay(300);
+    const discoverLayout = await evaluate(`({documentWidth:document.documentElement.scrollWidth,documentClient:document.documentElement.clientWidth,toolbarWidth:document.querySelector('.discover-toolbar').scrollWidth,toolbarClient:document.querySelector('.discover-toolbar').clientWidth})`);
+    assert.equal(discoverLayout.documentWidth <= discoverLayout.documentClient + 1 && discoverLayout.toolbarWidth <= discoverLayout.toolbarClient + 1, true, `Discover must not overflow at ${width}px: ${JSON.stringify(discoverLayout)}`);
+  }
+  await send('Emulation.setDeviceMetricsOverride', {width: 1440, height: 1100, deviceScaleFactor: 1, mobile: false});
+  await evaluate(`(() => {const input=document.querySelector('#discover-search');input.value='Suica';input.dispatchEvent(new Event('input',{bubbles:true}));})()`);
+  assert.equal(await evaluate(`document.querySelector('#discover-article-grid').children.length`), 1, 'Discover search should filter the article cards.');
+  await evaluate(`(() => {const input=document.querySelector('#discover-search');input.value='';input.dispatchEvent(new Event('input',{bubbles:true}));})()`);
+  await click('[data-discover-category="japan"]');
+  assert.equal(await evaluate(`document.querySelector('#discover-article-grid').children.length`), 3, 'Discover category filters should keep the selected category.');
+  await click('[data-discover-category="all"]');
+  assert.equal(await evaluate(`document.querySelector('#discover-article-grid').children.length`), 9);
+  await click('#language-toggle');
+  assert.equal(await evaluate(`document.querySelector('#page-title').textContent`), 'Discover');
+  assert.deepEqual(await evaluate(`Array.from(document.querySelectorAll('h1')).filter(node => node.getClientRects().length).map(node => node.textContent.trim())`), ['Discover']);
+  await click('#language-toggle');
+  await evaluate(`document.querySelector('#discover-surprise').focus()`);
+  assert.equal(await evaluate(`document.activeElement.id`), 'discover-surprise');
   await click('#discover-surprise');
   await waitFor(`location.pathname.startsWith('/discover/')`, 'Surprise Me');
+  assert.deepEqual(await evaluate(`Array.from(document.querySelectorAll('h1')).filter(node => node.getClientRects().length).map(node => node.textContent.trim()).length`), 1, 'Article detail should show one visible H1.');
+  assert.equal(await evaluate(`document.querySelector('.page-intro').hidden && document.querySelector('#discover-listing').hidden`), true, 'Article detail should hide the Discover listing hero.');
   const articlePath = await evaluate('location.pathname');
   await evaluate('history.back()');
   await waitFor(`location.pathname === '/discover'`, 'browser Back');
+  assert.equal(await evaluate(`document.querySelector('.page-intro').hidden`), false, 'Back navigation should restore the Discover listing heading.');
   await evaluate('history.forward()');
   await waitFor(`location.pathname === ${JSON.stringify(articlePath)}`, 'browser Forward');
   await click('.side-nav [data-page-link="lab"]');
+  assert.deepEqual(await evaluate(`Array.from(document.querySelectorAll('h1')).filter(node => node.getClientRects().length).map(node => node.textContent.trim())`), ['Сонирхолтой лаборатори']);
+  assert.equal(await evaluate(`document.querySelector('#page-actions').hidden && document.querySelector('#refresh-button').hidden`), true, 'Lab should not show the unrelated customer refresh action.');
+  assert.equal(await evaluate(`document.querySelectorAll('#about-labs-hub [data-lab-open]').length`), 3);
+  for (const width of [360, 375, 390, 430, 768, 1024, 1440]) {
+    await send('Emulation.setDeviceMetricsOverride', {width, height: 1100, deviceScaleFactor: 1, mobile: width <= 768});
+    await delay(300);
+    await evaluate(`new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)))`);
+    assert.equal(await evaluate(`document.documentElement.scrollWidth <= document.documentElement.clientWidth + 1`), true, `Lab must not overflow at ${width}px`);
+  }
+  await send('Emulation.setDeviceMetricsOverride', {width: 1440, height: 1100, deviceScaleFactor: 1, mobile: false});
+  await click('#language-toggle');
+  assert.equal(await evaluate(`document.querySelector('#page-title').textContent`), 'Interactive Lab');
+  assert.deepEqual(await evaluate(`Array.from(document.querySelectorAll('h1')).filter(node => node.getClientRects().length).map(node => node.textContent.trim())`), ['Interactive Lab']);
+  await click('#language-toggle');
   await click('[data-lab-open="universe"]');
   assert.equal(await evaluate(`document.querySelector('#du-form').getClientRects().length > 0`), true);
   await click('[data-lab-back]');
@@ -151,13 +218,35 @@ try {
   assert.equal(await evaluate(`document.querySelector('#matrix-loader').hidden`), true);
   await click('#language-toggle');
   await send('Emulation.setDeviceMetricsOverride', { width: 390, height: 844, deviceScaleFactor: 1, mobile: true });
-  await send('Emulation.setTouchEmulationEnabled', {enabled:true, maxTouchPoints:5});
   await evaluate(`new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)))`);
-  await click('#mobile-nav-toggle');
+  await evaluate(`document.querySelector('#mobile-nav-toggle').focus()`);
+  await evaluate(`document.querySelector('#mobile-nav-toggle').click()`);
   await waitFor(`document.querySelector('#sidebar').classList.contains('is-mobile-open')`, 'mobile drawer');
-  // Allow the drawer slide transition to finish before hit testing.
-  await delay(400);
-  await click('.side-nav [data-page-link="discover"]');
+  await waitFor(`document.activeElement.closest('.side-nav') !== null`, 'focus moves into mobile drawer');
+  await pressKey('Escape', 27);
+  await waitFor(`!document.querySelector('#sidebar').classList.contains('is-mobile-open') && document.querySelector('#mobile-nav-backdrop').hidden`, 'Escape closes mobile drawer');
+  assert.equal(await evaluate(`document.activeElement.id`), 'mobile-nav-toggle', 'Escape returns focus to the drawer trigger');
+  await waitFor(`(() => { const button=document.querySelector('#mobile-nav-toggle'), rect=button.getBoundingClientRect(), hit=document.elementFromPoint(rect.x+rect.width/2,rect.y+rect.height/2); return hit===button || button.contains(hit); })()`, 'drawer closing transition clears the toggle');
+  await evaluate(`document.querySelector('#mobile-nav-toggle').focus()`);
+  assert.equal(await evaluate(`document.activeElement.id`), 'mobile-nav-toggle', 'Backdrop case starts with focus on the drawer trigger');
+  const rapidBackdropClose = await evaluate(`(() => {
+    const trigger=document.querySelector('#mobile-nav-toggle'), backdrop=document.querySelector('#mobile-nav-backdrop');
+    trigger.click();
+    const point={x:innerWidth-12,y:Math.round(innerHeight/2)};
+    const exposed=!backdrop.hidden && document.elementFromPoint(point.x,point.y)===backdrop;
+    backdrop.click();
+    return {exposed,closed:!document.querySelector('#sidebar').classList.contains('is-mobile-open') && backdrop.hidden};
+  })()`);
+  assert.equal(rapidBackdropClose.exposed, true, 'Backdrop is exposed beside the drawer');
+  assert.equal(rapidBackdropClose.closed, true, 'Backdrop click closes the drawer');
+  await evaluate(`new Promise(resolve => requestAnimationFrame(resolve))`);
+  await waitFor(`document.activeElement.id === 'mobile-nav-toggle'`, 'backdrop returns focus to the drawer trigger');
+  await waitFor(`(() => { const button=document.querySelector('#mobile-nav-toggle'), rect=button.getBoundingClientRect(), hit=document.elementFromPoint(rect.x+rect.width/2,rect.y+rect.height/2); return hit===button || button.contains(hit); })()`, 'backdrop closing transition clears the toggle');
+  await evaluate(`document.querySelector('#mobile-nav-toggle').focus()`);
+  await evaluate(`document.querySelector('#mobile-nav-toggle').click()`);
+  await waitFor(`document.querySelector('#sidebar').classList.contains('is-mobile-open')`, 'mobile drawer opens for navigation');
+  await waitFor(`document.activeElement.closest('.side-nav') !== null`, 'mobile navigation receives focus');
+  await evaluate(`document.querySelector('.side-nav [data-page-link="discover"]').click()`);
   await waitFor(`location.pathname === '/discover' && !document.querySelector('#main').inert && document.querySelector('#mobile-nav-backdrop').hidden`, 'mobile navigation closes drawer');
   await evaluate(`sessionStorage.removeItem('gnwaa-welcome-intro-seen-v1')`);
   await reload();
@@ -214,7 +303,6 @@ try {
     await navigate('about:blank');
     await navigate(`${origin}/?intro-test=${mode}`);
     await waitFor(`document.querySelector('#matrix-loader') && !document.querySelector('#matrix-loader').hidden`, `${mode} mobile first visit`);
-    const mobileStarted = Date.now();
     assert.equal(await evaluate(`document.querySelector('#skip-intro') === null`), true);
     assert.equal(await evaluate(`document.documentElement.scrollWidth <= innerWidth`), true, `${mode}: no horizontal overflow`);
     if (mode !== 'canvas-error') await waitFor(`window.__introProbe.paints > 0`, `${mode} ASCII paints`);
@@ -223,7 +311,7 @@ try {
     await send('Input.dispatchTouchEvent', {type:'touchEnd', touchPoints:[]});
     assert.ok(await evaluate('window.__introProbe.touches > 0'), 'Native touch produces pointer input');
     await waitFor(`document.querySelector('#matrix-loader').hidden`, `${mode} automatic completion/failsafe`);
-    assert.ok(Date.now()-mobileStarted >= 7700 && Date.now()-mobileStarted < 9800, 'Mobile duration is about eight seconds');
+    await assertIntroDuration('Mobile', 9800);
     assert.equal(await evaluate('window.__introProbe.listeners.size'), 0, 'Pointer listeners cleaned');
     assert.equal(await evaluate(`document.querySelector('#matrix-canvas').width`), 0);
     const painted = await evaluate('window.__introProbe.paints');
@@ -248,7 +336,7 @@ try {
     await waitFor(`!document.querySelector('#matrix-loader').hidden`, `${mode} mobile refresh replays`);
     await waitFor(`document.querySelector('#matrix-loader').hidden`, 'automatic completion');
     await click('#language-toggle', true);
-    await click('.home-card[data-page-link="about"]', true);
+    await click('.home-bento-card[data-page-link="about"]', true);
     assert.equal(await evaluate(`document.querySelector('#matrix-loader').hidden`), true, 'Internal navigation must not replay');
     await reload();
     await waitFor(`document.readyState === 'complete' && !document.querySelector('.app-layout').inert`, `${mode} SPA-route refresh`);

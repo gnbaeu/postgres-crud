@@ -2,7 +2,7 @@
 <html lang="mn" data-accent-theme="aurora-purple">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#111318">
   <script>
     (() => {
@@ -160,7 +160,7 @@
             <h1 id="page-title">Тойм</h1>
             <p class="page-description" id="page-description">Хэрэглэгчдийн ерөнхий мэдээлэл.</p>
           </div>
-          <div class="page-actions">
+          <div class="page-actions" id="page-actions">
             <button class="button button-secondary" id="refresh-button" type="button">
               <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 7v5h-5M4 17v-5h5"/><path d="M5.7 9A7 7 0 0 1 18 6l2 2M4 16l2 2a7 7 0 0 0 12.3-3"/></svg>
               <span data-i18n="actions.refresh">Шинэчлэх</span>
@@ -168,6 +168,9 @@
             <button class="button button-primary" id="add-button" type="button" data-page-action="customers">
               <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
               <span data-i18n="actions.add">Хэрэглэгч нэмэх</span>
+            </button>
+            <button class="discover-surprise-button" id="discover-surprise" type="button" hidden>
+              <span class="discover-surprise-sparkle" aria-hidden="true">✦</span><span data-i18n="discover.surprise">Surprise Me</span>
             </button>
           </div>
         </section>
@@ -207,8 +210,6 @@
                 <circle class="cat-sensor" cx="120" cy="29" r="6" fill="#66e7ff" stroke="#fff" stroke-width="2"/>
                 <circle class="cat-cheek" cx="77" cy="128" r="5" fill="#ff97d8"/><circle class="cat-cheek" cx="163" cy="128" r="5" fill="#ff97d8"/>
               </svg>
-              <span class="home-visual-label">GNWAA / PIXEL</span>
-              <span class="home-visual-status"><svg viewBox="0 0 44 44" aria-hidden="true"><path d="M22 3.5 36.5 8v11.3c0 8.1-5.8 15.1-14.5 20.2C13.3 34.4 7.5 27.4 7.5 19.3V8L22 3.5Z"/><path d="m15.5 21.5 4 4 9-10"/></svg><span data-i18n="home.companionLabel">Curious by design</span></span>
               <span class="home-star star-a" aria-hidden="true">✦</span><span class="home-star star-b" aria-hidden="true">✧</span>
             </div>
           </header>
@@ -337,19 +338,8 @@
           </section>
         </section>
 
-        <section class="discover-view" data-page-view="discover" aria-labelledby="discover-view-title" hidden>
-          <header class="discover-page-heading">
-            <div class="discover-heading-copy">
-              <span class="discover-kicker"><i aria-hidden="true"></i><span data-i18n="discover.eyebrow">FOLLOW YOUR CURIOSITY</span></span>
-              <h2 id="discover-view-title">Discover</h2>
-              <p data-i18n="discover.intro">Explore quick knowledge, safer digital habits, and Japan’s culture and technology in plain language.</p>
-              <p id="discover-surprise-status" class="discover-surprise-status" role="status" aria-live="polite" hidden></p>
-            </div>
-            <button class="discover-surprise-button" id="discover-surprise" type="button">
-              <span class="discover-surprise-sparkle" aria-hidden="true">✦</span><span data-i18n="discover.surprise">✨ Surprise Me</span>
-            </button>
-          </header>
-
+        <section class="discover-view" data-page-view="discover" aria-labelledby="page-title" hidden>
+          <p id="discover-surprise-status" class="discover-surprise-status" role="status" aria-live="polite" hidden></p>
           <div id="discover-listing" class="discover-listing">
             <a id="discover-featured" class="discover-featured" href="/discover/how-submarine-cables-carry-the-internet" data-discover-article="how-submarine-cables-carry-the-internet">
               <span class="discover-featured-art" aria-hidden="true"><span>GNWAA</span><i></i><b></b><em></em></span>
@@ -357,27 +347,31 @@
             </a>
 
             <div class="discover-browser">
-              <div class="discover-browse-heading">
-                <div><span class="discover-section-kicker" data-i18n="discover.categories">Browse categories</span><h3 id="discover-listing-heading" tabindex="-1" data-i18n="discover.latest">Latest articles</h3></div>
+              <div class="discover-toolbar">
                 <label class="discover-search">
                   <span class="sr-only" data-i18n="discover.searchLabel">Search articles</span>
                   <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="7.2"/><path d="m16.1 16.1 4.4 4.4"/></svg>
                   <input id="discover-search" type="search" maxlength="100" autocomplete="off" data-i18n-placeholder="discover.searchPlaceholder" placeholder="Search by title…">
                 </label>
+                <nav class="discover-category-nav" id="discover-category-nav" aria-label="Ангиллаар үзэх" data-i18n-aria="discover.categories">
+                  <button type="button" class="discover-category-button is-active" data-discover-category="all" aria-pressed="true" data-i18n="discover.all">All articles</button>
+                  <button type="button" class="discover-category-button" data-discover-category="minute" aria-pressed="false" data-i18n="discover.minuteLabel">One Minute Knowledge</button>
+                  <button type="button" class="discover-category-button" data-discover-category="digital" aria-pressed="false" data-i18n="discover.digitalLabel">Digital Survival Guide</button>
+                  <button type="button" class="discover-category-button" data-discover-category="japan" aria-pressed="false" data-i18n="discover.japanLabel">Japan Explained</button>
+                </nav>
               </div>
-              <nav class="discover-category-nav" id="discover-category-nav" aria-label="Ангиллаар үзэх" data-i18n-aria="discover.categories">
-                <button type="button" class="discover-category-button is-active" data-discover-category="all" aria-pressed="true" data-i18n="discover.all">All articles</button>
-                <button type="button" class="discover-category-button" data-discover-category="minute" aria-pressed="false" data-i18n="discover.minuteLabel">One Minute Knowledge</button>
-                <button type="button" class="discover-category-button" data-discover-category="digital" aria-pressed="false" data-i18n="discover.digitalLabel">Digital Survival Guide</button>
-                <button type="button" class="discover-category-button" data-discover-category="japan" aria-pressed="false" data-i18n="discover.japanLabel">Japan Explained</button>
-              </nav>
-              <p class="discover-result-count" id="discover-result-count" aria-live="polite"></p>
-              <div class="discover-article-grid" id="discover-article-grid"></div>
-              <div class="discover-empty glass-panel" id="discover-empty" hidden>
-                <span class="discover-empty-mark" aria-hidden="true">⌕</span>
-                <h3 data-i18n="discover.noResultsTitle">No articles found</h3>
-                <p data-i18n="discover.noResultsDescription">Try a different search term or category.</p>
-              </div>
+              <section class="discover-results" aria-labelledby="discover-listing-heading">
+                <div class="discover-results-heading">
+                  <h2 id="discover-listing-heading" tabindex="-1" data-i18n="discover.latest">Latest articles</h2>
+                  <p class="discover-result-count" id="discover-result-count" aria-live="polite"></p>
+                </div>
+                <div class="discover-article-grid" id="discover-article-grid"></div>
+                <div class="discover-empty glass-panel" id="discover-empty" hidden>
+                  <span class="discover-empty-mark" aria-hidden="true">⌕</span>
+                  <h3 data-i18n="discover.noResultsTitle">No articles found</h3>
+                  <p data-i18n="discover.noResultsDescription">Try a different search term or category.</p>
+                </div>
+              </section>
             </div>
           </div>
 
@@ -420,12 +414,7 @@
 
         </section>
 
-        <section class="about-labs lab-view" id="gnwaa-labs" data-page-view="lab" aria-labelledby="about-labs-title">
-            <div class="about-labs-heading">
-              <div><span class="about-labs-kicker">GNWAA / INTERACTIVE</span><h3 id="about-labs-title" data-lab-mn="Сонирхолтой лаборатори" data-lab-en="Interactive Lab">Сонирхолтой лаборатори</h3></div>
-              <p data-lab-mn="Тоглож, туршиж, өөрийгөө болон интернэтийг шинээр тань." data-lab-en="Play, explore, and learn about yourself and the internet.">Тоглож, туршиж, өөрийгөө болон интернэтийг шинээр тань.</p>
-            </div>
-
+        <section class="about-labs lab-view" id="gnwaa-labs" data-page-view="lab" aria-labelledby="page-title">
             <div class="about-labs-grid" id="about-labs-hub">
               <button class="about-lab-launch du-launch" type="button" data-lab-open="universe">
                 <span class="about-lab-index">01 / CREATE</span><span class="about-lab-icon" aria-hidden="true">✦</span>

@@ -98,7 +98,7 @@ Object.assign(UI_TEXT.mn, {
   "page.homeTitle": "GNWAA-ийн булан", "page.homeDescription": "Төсөл, өгөгдөл, сонирхлын жижиг ертөнц.", "page.homeEyebrow": "WELCOME / GNWAA",
   "page.aboutTitle": "GNWAA тухай", "page.aboutDescription": "Энэ орон зайны санаа, одоогийн төсөлтэй танилцаарай.", "page.aboutEyebrow": "A LITTLE INTRO",
   "home.kicker": "GNWAA / FOR THE CURIOUS", "home.heroTitle": "Сониуч зангаа дага. Шинэ өнцөг нээ.", "home.heroText": "Мэдлэгийн түүх, интерактив туршилтаар GNWAA-ийн дижитал ертөнцийг судлаарай.",
-  "home.openDiscover": "Discover-ийг нээх", "home.openLab": "Интерактив лаборатори", "home.localTag": "STORIES · EXPERIMENTS · IDEAS", "home.brandNote": "Сониуч зангаар бүтээгдэв", "home.catAria": "GNWAA-ийн Pixel сахиус, гэрэлт хамгаалалтын тэмдэг", "home.companionLabel": "Curious by design",
+  "home.openDiscover": "Discover-ийг нээх", "home.openLab": "Интерактив лаборатори", "home.localTag": "STORIES · EXPERIMENTS · IDEAS", "home.brandNote": "Сониуч зангаар бүтээгдэв", "home.catAria": "GNWAA-ийн Pixel сахиус, гэрэлт хамгаалалтын тэмдэг",
   "home.sectionsEyebrow": "GNWAA / EXPLORE", "home.sectionsTitle": "Сониуч зангаа дага", "home.sectionsHint": "Түүх, туршилт, санаанаас сонгоорой.",
   "home.discoverKind": "МЭДЛЭГИЙН САН", "home.discoverTitle": "Discover Knowledge Hub", "home.discoverDescription": "Шинжлэх ухаан, дижитал амьдрал, соёлын тухай ойлгомжтой түүхүүд.", "home.discoverAction": "Нийтлэлүүдийг үзэх",
   "home.universeKind": "БҮТЭЭХ", "home.universeTitle": "Digital Universe", "home.universeDescription": "Сонирхлоо гариг болгож, өөрийн ертөнцийг байгуул.", "home.universeAction": "Ертөнцөө байгуулах",
@@ -127,7 +127,7 @@ Object.assign(UI_TEXT.en, {
   "page.homeTitle": "The GNWAA corner", "page.homeDescription": "A small world of projects, data, and things I enjoy.", "page.homeEyebrow": "WELCOME / GNWAA",
   "page.aboutTitle": "About GNWAA", "page.aboutDescription": "A quick introduction to this space and the project inside it.", "page.aboutEyebrow": "A LITTLE INTRO",
   "home.kicker": "GNWAA / FOR THE CURIOUS", "home.heroTitle": "Follow curiosity. Find a new angle.", "home.heroText": "Explore GNWAA through knowledge stories and playful interactive experiments.",
-  "home.openDiscover": "Explore Discover", "home.openLab": "Open Interactive Lab", "home.localTag": "STORIES · EXPERIMENTS · IDEAS", "home.brandNote": "Curious by design", "home.catAria": "GNWAA's Pixel companion and luminous shield emblem", "home.companionLabel": "Curious by design",
+  "home.openDiscover": "Explore Discover", "home.openLab": "Open Interactive Lab", "home.localTag": "STORIES · EXPERIMENTS · IDEAS", "home.brandNote": "Curious by design", "home.catAria": "GNWAA's Pixel companion and luminous shield emblem",
   "home.sectionsEyebrow": "GNWAA / EXPLORE", "home.sectionsTitle": "Choose a direction", "home.sectionsHint": "Explore stories, experiments, and ideas.",
   "home.discoverKind": "KNOWLEDGE HUB", "home.discoverTitle": "Discover Knowledge Hub", "home.discoverDescription": "Clear, approachable stories about science, digital life, and culture.", "home.discoverAction": "Browse stories",
   "home.universeKind": "CREATE", "home.universeTitle": "Digital Universe", "home.universeDescription": "Turn your interests into planets in a universe of your own.", "home.universeAction": "Build your universe",
@@ -230,8 +230,6 @@ Object.assign(UI_TEXT.mn, {
   "page.labTitle": "Сонирхолтой лаборатори",
   "page.labDescription": "Дижитал ертөнц, цахим аюулгүй байдал, өөрийгөө таних интерактив туршилтууд.",
   "page.labEyebrow": "GNWAA / INTERACTIVE LAB",
-  "discover.eyebrow": "СОНИРХЛОО ДАГА",
-  "discover.intro": "Нэг минутын мэдлэг, цахим орчны хамгаалалт, Японы соёл ба технологийг энгийнээр танин мэд.",
   "discover.featured": "ОНЦЛОХ НИЙТЛЭЛ",
   "discover.categories": "Ангиллаар үзэх",
   "discover.all": "Бүгд",
@@ -253,7 +251,7 @@ Object.assign(UI_TEXT.mn, {
   "discover.availableLanguage": "Одоогоор зөвхөн {language} эх хувилбар байна.",
   "discover.original": "Эх хувилбар",
   "discover.progress": "Нийтлэлийн уншсан явц",
-  "discover.surprise": "✨ Надад нийтлэл сонго",
+  "discover.surprise": "Надад нийтлэл сонго",
   "discover.anotherSurprise": "Өөр нэг нийтлэл санал болго",
   "discover.surpriseEmpty": "Одоогоор энэ хэл дээр унших нийтлэл алга байна.",
   "discover.dateLocale": "mn-MN",
@@ -270,8 +268,6 @@ Object.assign(UI_TEXT.en, {
   "page.labTitle": "Interactive Lab",
   "page.labDescription": "Interactive experiments in digital worlds, online safety, and self-discovery.",
   "page.labEyebrow": "GNWAA / INTERACTIVE LAB",
-  "discover.eyebrow": "FOLLOW YOUR CURIOSITY",
-  "discover.intro": "Explore quick knowledge, safer digital habits, and Japan’s culture and technology in plain language.",
   "discover.featured": "FEATURED ARTICLE",
   "discover.categories": "Browse categories",
   "discover.all": "All articles",
@@ -293,7 +289,7 @@ Object.assign(UI_TEXT.en, {
   "discover.availableLanguage": "Only the original {language} version is available for now.",
   "discover.original": "Original",
   "discover.progress": "Article reading progress",
-  "discover.surprise": "✨ Surprise Me",
+  "discover.surprise": "Surprise Me",
   "discover.anotherSurprise": "Another Surprise",
   "discover.surpriseEmpty": "There are no articles available in this language right now.",
   "discover.dateLocale": "en-US",
@@ -483,6 +479,8 @@ const el = {
   previousPage: document.querySelector("#previous-page"),
   nextPage: document.querySelector("#next-page"),
   refreshButton: document.querySelector("#refresh-button"),
+  pageActions: document.querySelector("#page-actions"),
+  discoverSurpriseButton: document.querySelector("#discover-surprise"),
   addButton: document.querySelector("#add-button"),
   pageTitle: document.querySelector("#page-title"),
   pageDescription: document.querySelector("#page-description"),
@@ -1414,7 +1412,12 @@ function updatePageCopy() {
   el.pageDescription.textContent = t(copy.description);
   el.pageEyebrow.textContent = t(copy.eyebrow);
   el.breadcrumbCurrent.textContent = t(copy.breadcrumb);
-  el.pageIntro.hidden = state.currentPage === "home" || state.currentPage === "about";
+  const isDiscoverListing = state.currentPage === "discover" && !state.discoverSlug;
+  const isDiscoverArticle = state.currentPage === "discover" && Boolean(state.discoverSlug);
+  el.pageIntro.hidden = state.currentPage === "home" || state.currentPage === "about" || isDiscoverArticle;
+  el.pageActions.hidden = state.currentPage === "lab";
+  el.refreshButton.hidden = !["customers", "analytics", "content"].includes(state.currentPage);
+  el.discoverSurpriseButton.hidden = !isDiscoverListing;
   const isOwner = state.user?.role === "owner";
   document.querySelectorAll("[data-login-only]").forEach((node) => { node.hidden = isOwner; });
   el.addButton.hidden = state.currentPage !== "customers" || !isOwner;
@@ -2716,6 +2719,7 @@ function setMobileNavOpen(open, { restoreFocus = false } = {}) {
   el.mainShell.inert = open;
   document.body.classList.toggle("mobile-nav-open", open);
   if (open) window.requestAnimationFrame(() => {
+    if (!el.sidebar.classList.contains("is-mobile-open")) return;
     const focusable = mobileDrawerFocusables();
     (focusable.find((node) => node.closest(".side-nav")) || focusable[0])?.focus();
   });
@@ -2907,8 +2911,9 @@ document.querySelector("#discover-category-nav").addEventListener("click", (even
   state.discoverCategory = button.dataset.discoverCategory;
   renderDiscoverListing();
 });
+el.discoverSurpriseButton.addEventListener("click", surpriseMe);
 document.querySelector(".discover-view").addEventListener("click", (event) => {
-  if (event.target.closest("#discover-surprise, #discover-another-surprise")) {
+  if (event.target.closest("#discover-another-surprise")) {
     surpriseMe();
     return;
   }

@@ -81,6 +81,24 @@ assert.equal(selectSurpriseArticle([], "mn"), null, "An empty public catalog sho
 assert.match(html, /href="\/discover"[^>]*data-page-link="discover"/u, "Discover must be in the public navigation.");
 assert.match(html, /id="discover-search" type="search"/u, "Discover needs an accessible title-search control.");
 assert.match(html, /id="discover-surprise" type="button"/u, "The Discover hero needs a keyboard-accessible Surprise Me button.");
+const discoverMarkup = html.slice(html.indexOf('<section class="discover-view"'), html.indexOf('<section class="about-view"'));
+assert.match(discoverMarkup, /aria-labelledby="page-title"/u, "Discover should use the shared page-level H1.");
+assert.doesNotMatch(discoverMarkup, /<h1\b/u, "Discover listing markup should not add another page-level H1.");
+assert.doesNotMatch(discoverMarkup, /discover-page-heading|id="discover-surprise"/u,
+  "Discover must not render a second hero heading or duplicate its header action.");
+assert.match(html, /<div class="page-actions" id="page-actions">[\s\S]*id="discover-surprise"/u,
+  "Surprise Me should sit in the shared page header actions.");
+assert.match(discoverMarkup, /<div class="discover-toolbar">[\s\S]*id="discover-search"[\s\S]*id="discover-category-nav"/u,
+  "Search and category filters should share one toolbar.");
+assert.match(discoverMarkup, /<section class="discover-results"[\s\S]*id="discover-listing-heading"[\s\S]*id="discover-result-count"/u,
+  "Latest Articles and the result count should follow the toolbar.");
+const labMarkup = html.slice(html.indexOf('<section class="about-labs lab-view"'), html.indexOf('<section class="du-panel"'));
+assert.match(labMarkup, /aria-labelledby="page-title"/u, "Lab should use the shared page-level H1.");
+assert.doesNotMatch(labMarkup, /<h1\b/u, "Lab hub markup should not add another page-level H1.");
+assert.doesNotMatch(labMarkup, /about-labs-heading|Сонирхолтой лаборатори/u,
+  "Lab must not repeat its page title or subtitle in a second section header.");
+assert.equal((labMarkup.match(/data-lab-open="(?:universe|detective|personality)"/gu) || []).length, 3,
+  "The Lab hub must keep all three activity cards.");
 assert.match(html, /id="discover-another-surprise" type="button"/u, "Article details need Another Surprise.");
 assert.match(html, /id="discover-surprise-status"[^>]*role="status"[^>]*aria-live="polite"/u,
   "An empty random selection needs an accessible status message.");
@@ -91,6 +109,15 @@ assert.match(html, /id="discover-reading-progress"[^>]*role="progressbar"/u, "Ar
 assert.match(html, /id="discover-related-grid"/u, "Article details need related articles.");
 assert.match(app, /function pageFromCurrentLocation\(\)[\s\S]*resolveDiscoverRoute\(normalizedPath\(\)\)/u,
   "The SPA must resolve /discover and /discover/:slug routes.");
+const pageCopyRenderer = app.slice(app.indexOf("function updatePageCopy()"), app.indexOf("function discoverCategory("));
+assert.match(pageCopyRenderer, /const isDiscoverArticle = state\.currentPage === "discover" && Boolean\(state\.discoverSlug\)/u,
+  "Article detail should switch to its content heading without the listing page intro.");
+assert.match(pageCopyRenderer, /el\.pageIntro\.hidden =[^;]*isDiscoverArticle/u,
+  "Discover detail must hide the listing H1 and description.");
+assert.match(pageCopyRenderer, /el\.refreshButton\.hidden = !\["customers", "analytics", "content"\]\.includes\(state\.currentPage\)/u,
+  "The customer refresh action must not appear on public pages.");
+assert.match(app, /el\.discoverSurpriseButton\.addEventListener\("click", surpriseMe\)/u,
+  "The relocated Surprise Me action must retain its navigation behavior.");
 assert.match(app, /function rememberDiscoverArticle\(slug\)[\s\S]*slice\(0, 3\)[\s\S]*sessionStorage/u,
   "The last three viewed published articles should be remembered for this browser tab session.");
 assert.match(app, /function surpriseMe\(\)[\s\S]*selectSurpriseArticle\([\s\S]*state\.language[\s\S]*state\.discoverRecentSlugs[\s\S]*state\.discoverSlug/u,

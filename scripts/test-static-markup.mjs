@@ -886,6 +886,18 @@ assert.match(css, /\.home-bento-card:active\s*\{[^}]*box-shadow/,
   "Bento touch feedback should remain visible when motion is reduced.");
 assert.match(css, /@media \(prefers-reduced-motion: reduce\)[\s\S]*\.home-bento-card/,
   "Bento interactions should respect reduced motion.");
+assert.match(css, /--editorial-bg: #101114;[\s\S]*--editorial-surface: #1b1d22;[\s\S]*--editorial-elevated: #24262c;/,
+  "Public pages should use the shared minimalist editorial surface tokens.");
+assert.match(css, /\.discover-article-section p, \.discover-article-section li \{ color: var\(--editorial-muted\); font-size: 17px;/,
+  "Article body copy should use a comfortable desktop reading size.");
+assert.match(css, /@media \(max-width: 640px\)[\s\S]*\.discover-article-section p, \.discover-article-section li \{ font-size: 16px;/,
+  "Article body copy should remain at least 16px on mobile.");
+assert.match(css, /\.discover-category-button \{ min-height: 44px;/,
+  "Discover filters should provide mobile-size touch targets.");
+assert.match(css, /@supports \(padding: env\(safe-area-inset-top\)\)/,
+  "Mobile public pages should respect device safe areas.");
+assert.match(html, /name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/,
+  "The viewport should expose device safe-area insets.");
 assert.match(css, /\.home-card \{[^}]*height: 100%/);
 assert.match(css, /\.footer-main \{ display: grid/);
 assert.match(html, /data-page-link="discover" data-i18n="nav\.discover"[\s\S]*data-i18n="footer\.projects"[\s\S]*data-i18n="nav\.about"/);
