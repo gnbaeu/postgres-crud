@@ -97,9 +97,15 @@ Object.assign(UI_TEXT.mn, {
   "nav.home": "Нүүр", "nav.about": "GNWAA тухай", "nav.customers": "Customer CRM", "nav.login": "Нэвтрэх",
   "page.homeTitle": "GNWAA-ийн булан", "page.homeDescription": "Төсөл, өгөгдөл, сонирхлын жижиг ертөнц.", "page.homeEyebrow": "WELCOME / GNWAA",
   "page.aboutTitle": "GNWAA тухай", "page.aboutDescription": "Энэ орон зайны санаа, одоогийн төсөлтэй танилцаарай.", "page.aboutEyebrow": "A LITTLE INTRO",
-  "home.kicker": "GNWAA / DIGITAL PLAYGROUND", "home.heroTitle": "Өгөгдөл, бүтээл, шинэ санааны жижиг ертөнц.", "home.heroText": "Customer dashboard-аа удирдаж, GNWAA-ийн бусад булангаар аял. Энэ орон зай шинэ санаа, бүтээл нэмэгдэх тусам тэлнэ.",
-  "home.openCrm": "Customer CRM нээх", "home.discover": "GNWAA-тай танилцах", "home.localTag": "YOUR SPACE ON THE WEB", "home.version": "GNWAA / v1.0", "home.catAria": "GNWAA-ийн кибер бамбай дүрслэл",
-  "home.sectionsEyebrow": "PICK A CORNER", "home.sectionsTitle": "Юу үзмээр байна?", "home.sectionsHint": "Хэсгээ сонгоод үргэлжлүүлээрэй",
+  "home.kicker": "GNWAA / FOR THE CURIOUS", "home.heroTitle": "Сониуч зангаа дага. Шинэ өнцөг нээ.", "home.heroText": "Мэдлэгийн түүх, интерактив туршилтаар GNWAA-ийн дижитал ертөнцийг судлаарай.",
+  "home.openDiscover": "Discover-ийг нээх", "home.openLab": "Интерактив лаборатори", "home.localTag": "STORIES · EXPERIMENTS · IDEAS", "home.brandNote": "Сониуч зангаар бүтээгдэв", "home.catAria": "GNWAA-ийн Pixel сахиус, гэрэлт хамгаалалтын тэмдэг", "home.companionLabel": "Curious by design",
+  "home.sectionsEyebrow": "GNWAA / EXPLORE", "home.sectionsTitle": "Сониуч зангаа дага", "home.sectionsHint": "Түүх, туршилт, санаанаас сонгоорой.",
+  "home.discoverKind": "МЭДЛЭГИЙН САН", "home.discoverTitle": "Discover Knowledge Hub", "home.discoverDescription": "Шинжлэх ухаан, дижитал амьдрал, соёлын тухай ойлгомжтой түүхүүд.", "home.discoverAction": "Нийтлэлүүдийг үзэх",
+  "home.universeKind": "БҮТЭЭХ", "home.universeTitle": "Digital Universe", "home.universeDescription": "Сонирхлоо гариг болгож, өөрийн ертөнцийг байгуул.", "home.universeAction": "Ертөнцөө байгуулах",
+  "home.detectiveKind": "ШИНЖЛЭХ", "home.detectiveTitle": "Internet Detective", "home.detectiveDescription": "Зохиомол жишээнээс сэжигтэй дохиог олж, оноогоо шалга.", "home.detectiveAction": "Сорил эхлүүлэх",
+  "home.japanKind": "СОЁЛ · ТЕХНОЛОГИ", "home.japanTitle": "Japan Explained", "home.japanDescription": "Японы өдөр тутмын систем, технологийг энгийнээр тайлбарласан түүхүүд.", "home.japanAction": "Suica-г тайлбарлах",
+  "home.personalityKind": "ӨӨРИЙГӨӨ ТАНИХ", "home.personalityTitle": "Personality Lab", "home.personalityDescription": "Сониуч зангийн хэв маягаа богино асуултаар судал.", "home.personalityAction": "Тест эхлүүлэх",
+  "home.aboutKind": "GNWAA / ТАНИЛЦАХ", "home.publicAboutTitle": "GNWAA ба төслүүд", "home.aboutDescription": "GNWAA-ийн санаа, туршилт, одоогийн төслүүдтэй танилц.", "home.aboutAction": "Төслүүдийг харах", "home.adminTitle": "Эзэмшигчийн ажлын хэсэг",
   "home.crmTitle": "Customer CRM", "home.crmText": "Харилцагчдын мэдээллийг нэг дороос удирд.", "home.aboutTitle": "Энэ булангийн тухай", "home.aboutText": "GNWAA-ийн санаа, одоогийн төслүүдтэй танилц.", "home.analyticsTitle": "Өгөгдлийн тойм", "home.analyticsText": "Хуваарилалт, хэрэглэгчийн төлөвийг хар.", "home.explore": "Дэлгэрэнгүй",
   "home.note": "Энэ бол эхлэл — шинэ санаа, булангууд нэмэгдэх тусам GNWAA тэлнэ.",
   "about.kicker": "WELCOME TO GNWAA", "about.title": "Сониуч зангаас эхэлсэн жижигхэн дижитал ертөнц.", "about.description": "Энэ бол миний бүтээж, туршиж, сурч байгаа зүйлсээ нэг дор цуглуулах орон зай. Customer management dashboard маань эхний булан нь.", "about.cta": "Эхний төслийг үзэх",
@@ -120,9 +126,15 @@ Object.assign(UI_TEXT.en, {
   "nav.home": "Home", "nav.about": "About GNWAA", "nav.customers": "Customer CRM", "nav.login": "Login",
   "page.homeTitle": "The GNWAA corner", "page.homeDescription": "A small world of projects, data, and things I enjoy.", "page.homeEyebrow": "WELCOME / GNWAA",
   "page.aboutTitle": "About GNWAA", "page.aboutDescription": "A quick introduction to this space and the project inside it.", "page.aboutEyebrow": "A LITTLE INTRO",
-  "home.kicker": "GNWAA / DIGITAL PLAYGROUND", "home.heroTitle": "A little world for data, projects, and new ideas.", "home.heroText": "Explore the customer dashboard and the other corners of GNWAA. This space can grow as new ideas and projects arrive.",
-  "home.openCrm": "Open Customer CRM", "home.discover": "Get to know GNWAA", "home.localTag": "YOUR SPACE ON THE WEB", "home.version": "GNWAA / v1.0", "home.catAria": "A cyber shield illustration for GNWAA",
-  "home.sectionsEyebrow": "PICK A CORNER", "home.sectionsTitle": "What would you like to explore?", "home.sectionsHint": "Choose a section to continue",
+  "home.kicker": "GNWAA / FOR THE CURIOUS", "home.heroTitle": "Follow curiosity. Find a new angle.", "home.heroText": "Explore GNWAA through knowledge stories and playful interactive experiments.",
+  "home.openDiscover": "Explore Discover", "home.openLab": "Open Interactive Lab", "home.localTag": "STORIES · EXPERIMENTS · IDEAS", "home.brandNote": "Curious by design", "home.catAria": "GNWAA's Pixel companion and luminous shield emblem", "home.companionLabel": "Curious by design",
+  "home.sectionsEyebrow": "GNWAA / EXPLORE", "home.sectionsTitle": "Choose a direction", "home.sectionsHint": "Explore stories, experiments, and ideas.",
+  "home.discoverKind": "KNOWLEDGE HUB", "home.discoverTitle": "Discover Knowledge Hub", "home.discoverDescription": "Clear, approachable stories about science, digital life, and culture.", "home.discoverAction": "Browse stories",
+  "home.universeKind": "CREATE", "home.universeTitle": "Digital Universe", "home.universeDescription": "Turn your interests into planets in a universe of your own.", "home.universeAction": "Build your universe",
+  "home.detectiveKind": "INVESTIGATE", "home.detectiveTitle": "Internet Detective", "home.detectiveDescription": "Spot clues in fictional messages and practice safer online choices.", "home.detectiveAction": "Start the challenge",
+  "home.japanKind": "CULTURE · TECHNOLOGY", "home.japanTitle": "Japan Explained", "home.japanDescription": "Everyday Japanese systems and technology, explained clearly.", "home.japanAction": "How Suica works",
+  "home.personalityKind": "REFLECT", "home.personalityTitle": "Personality Lab", "home.personalityDescription": "Explore your curiosity style through a short reflective quiz.", "home.personalityAction": "Take the quiz",
+  "home.aboutKind": "MEET GNWAA", "home.publicAboutTitle": "About / Projects", "home.aboutDescription": "Meet GNWAA, its ideas, experiments, and current projects.", "home.aboutAction": "Explore projects", "home.adminTitle": "Owner workspace",
   "home.crmTitle": "Customer CRM", "home.crmText": "Manage customer records in one place.", "home.aboutTitle": "About this space", "home.aboutText": "Get to know GNWAA and the project behind it.", "home.analyticsTitle": "Data insights", "home.analyticsText": "Explore customer distribution and account status.", "home.explore": "Explore",
   "home.note": "This is just the beginning. GNWAA will grow with new ideas and sections.",
   "about.kicker": "WELCOME TO GNWAA", "about.title": "A small digital world that started with curiosity.", "about.description": "A place to bring together the things I build, try, and learn. The customer management dashboard is its first corner.", "about.cta": "Explore the first project",
@@ -2872,7 +2884,14 @@ document.querySelector("#pl-options").addEventListener("change", (event) => {
 document.querySelectorAll("[data-page-link]").forEach((link) => {
   link.addEventListener("click", (event) => {
     event.preventDefault();
-    setActivePage(link.dataset.pageLink);
+    if (link.dataset.discoverArticle) {
+      openDiscoverArticle(link.dataset.discoverArticle);
+    } else if (["universe", "detective", "personality"].includes(link.dataset.labOpen)) {
+      setActivePage("lab");
+      showLabTool(link.dataset.labOpen);
+    } else {
+      setActivePage(link.dataset.pageLink);
+    }
     if (link.closest(".side-nav") && el.sidebar.classList.contains("is-mobile-open")) {
       setMobileNavOpen(false, { restoreFocus: true });
     }

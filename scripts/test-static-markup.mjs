@@ -489,7 +489,9 @@ assert.match(html, /class="about-signoff"[\s\S]*?<\/section>\s*<section class="a
   "The About view should close before the original Lab section begins as a standalone page.");
 assert.equal((html.match(/data-page-view="lab"/g) || []).length, 1,
   "The Laboratory content should exist as one independent page view.");
-assert.equal((html.match(/data-lab-open="(?:universe|detective|personality)"/g) || []).length, 3,
+const labHubMarkup = html.match(/<div class="about-labs-grid" id="about-labs-hub">([\s\S]*?)<\/div>/);
+assert.ok(labHubMarkup, "The standalone Laboratory hub should remain in the markup.");
+assert.equal((labHubMarkup[1].match(/data-lab-open="(?:universe|detective|personality)"/g) || []).length, 3,
   "All three existing interactive launch controls must remain on the Laboratory page.");
 assert.match(html, /data-lab-mn="Сонирхолтой лаборатори" data-lab-en="Interactive Lab"/,
   "The Laboratory heading should use the requested Mongolian and English labels.");
@@ -854,14 +856,36 @@ assert.match(app, /if \(window\.matchMedia\("\(max-width: 780px\)"\)\.matches &&
   "The mobile sidebar control closes the drawer and returns focus.");
 
 assert.match(html, /class="home-hero"[\s\S]*class="home-visual"[\s\S]*class="home-cat"/,
-  "Hero copy and its existing illustration must be preserved.");
-assert.equal((html.match(/class="home-card(?: [^"]*)?"/g) || []).length, 3,
-  "All three homepage information cards must remain.");
-assert.equal((html.match(/class="home-card-icon"/g) || []).length, 3,
-  "Each existing homepage card retains its icon.");
+  "The editorial hero should retain the GNWAA mascot illustration.");
+assert.equal((html.match(/class="home-bento-card home-bento-card--[a-z]+"/g) || []).length, 6,
+  "The public homepage should show six topic cards.");
+assert.equal((html.match(/class="home-card(?: [^"]*)?"/g) || []).length, 2,
+  "Owner-only CRM and analytics shortcuts should remain available.");
+assert.match(html, /data-page-link="discover"[\s\S]*home-bento-card--universe[\s\S]*data-lab-open="universe"/);
+assert.match(html, /home-bento-card--detective[\s\S]*data-lab-open="detective"/);
+assert.match(html, /home-bento-card--personality[\s\S]*data-lab-open="personality"/);
+assert.match(html, /data-discover-article="how-suica-works"/,
+  "Japan Explained should open an existing bilingual Discover article.");
+assert.match(html, /home-bento-card--about[\s\S]*href="\/about"/);
+assert.match(app, /if \(link\.dataset\.discoverArticle\)[\s\S]*openDiscoverArticle\(link\.dataset\.discoverArticle\)[\s\S]*showLabTool\(link\.dataset\.labOpen\)/,
+  "Homepage cards should use the existing deep-link and Lab entry points.");
 assert.match(css, /\.home-hero \{ min-height: 286px/);
 assert.match(css, /@media \(max-width: 600px\)[\s\S]*\.home-hero \{ grid-template-columns: minmax\(0, 1fr\)/,
   "The hero illustration should stack below the copy on mobile.");
+assert.match(css, /\.home-bento-grid \{[^}]*grid-template-areas/,
+  "The landing page should use an asymmetric editorial grid.");
+assert.match(css, /@media \(max-width: 1020px\)[\s\S]*\.home-bento-grid/,
+  "The bento grid should reflow to two columns at tablet widths.");
+assert.match(css, /@media \(max-width: 640px\)[\s\S]*\.home-bento-grid/,
+  "The bento grid should stack in one column on mobile.");
+assert.match(css, /\.home-bento-card:focus-visible[\s\S]*outline/,
+  "Bento navigation should have a visible keyboard focus state.");
+assert.match(css, /\.home-bento-card:active/,
+  "Bento cards should have touch feedback.");
+assert.match(css, /\.home-bento-card:active\s*\{[^}]*box-shadow/,
+  "Bento touch feedback should remain visible when motion is reduced.");
+assert.match(css, /@media \(prefers-reduced-motion: reduce\)[\s\S]*\.home-bento-card/,
+  "Bento interactions should respect reduced motion.");
 assert.match(css, /\.home-card \{[^}]*height: 100%/);
 assert.match(css, /\.footer-main \{ display: grid/);
 assert.match(html, /data-page-link="discover" data-i18n="nav\.discover"[\s\S]*data-i18n="footer\.projects"[\s\S]*data-i18n="nav\.about"/);

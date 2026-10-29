@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#080c18">
+  <meta name="theme-color" content="#111318">
   <script>
     (() => {
       try {
@@ -172,55 +172,169 @@
           </div>
         </section>
 
-        <section class="home-view" data-page-view="home" aria-label="GNWAA нүүр хуудас">
-          <div class="home-hero">
+        <section class="home-view" data-page-view="home" aria-labelledby="home-hero-title">
+          <header class="home-hero">
             <div class="home-hero-copy">
-              <div class="home-kicker"><span class="home-live-dot"></span><span data-i18n="home.kicker">GNWAA / DIGITAL PLAYGROUND</span><span class="home-kicker-tag">01—04</span></div>
-              <h2 data-i18n="home.heroTitle">Өгөгдөл, тоглоом, шинэ санааны жижиг ертөнц.</h2>
-              <p data-i18n="home.heroText">GNWAA-ийн хэсгүүдээр аялж, customer dashboard-аа удирдаад, завсарлагаараа од цуглуулаарай.</p>
+              <div class="home-kicker"><span class="home-live-dot"></span><span data-i18n="home.kicker">GNWAA / FOR THE CURIOUS</span></div>
+              <h1 id="home-hero-title" data-i18n="home.heroTitle">Сониуч зангаа дага. Шинэ өнцөг нээ.</h1>
+              <p data-i18n="home.heroText">Мэдлэгийн түүх, интерактив туршилтаар GNWAA-ийн дижитал ертөнцийг судлаарай.</p>
               <div class="home-hero-actions">
-                <a class="button button-primary" href="#customers" data-page-link="customers"><span data-i18n="home.openCrm">Customer CRM нээх</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></a>
-                <a class="home-discover-link" href="#about" data-page-link="about"><span class="discover-link-icon">✦</span><span data-i18n="home.discover">GNWAA-тай танилцах</span></a>
+                <a class="button button-primary" href="/discover" data-page-link="discover"><span data-i18n="home.openDiscover">Discover-ийг нээх</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></a>
+                <a class="home-discover-link" href="/lab" data-page-link="lab"><span class="discover-link-icon" aria-hidden="true">✦</span><span data-i18n="home.openLab">Интерактив лаборатори</span></a>
               </div>
-              <div class="home-hero-foot"><span><i></i><span data-i18n="home.localTag">YOUR SPACE ON THE WEB</span></span><span data-i18n="home.version">GNWAA / v1.0</span></div>
+              <div class="home-hero-foot"><span><i></i><span data-i18n="home.localTag">STORIES · EXPERIMENTS · IDEAS</span></span><span data-i18n="home.brandNote">Сониуч зангаар бүтээгдэв</span></div>
             </div>
-            <div class="home-visual" role="img" aria-label="GNWAA-ийн өхөөрдөм кибер муур" data-i18n-aria="home.catAria">
-              <div class="home-orbit orbit-one"></div><div class="home-orbit orbit-two"></div><div class="home-orb"></div>
-              <svg class="home-cat" viewBox="0 0 240 220" aria-hidden="true">
-                <path class="cat-shadow" d="M38 177c10-19 32-30 82-30s72 11 82 30c-19 20-48 30-82 30s-63-10-82-30Z"/>
-                <path class="cat-ear" d="m59 72 4-44 42 33m72 11-4-44-42 33"/>
-                <path class="cat-ear-inner" d="m71 58 1-17 20 15m76 2-1-17-20 15"/>
-                <path class="cat-face" d="M46 92c0-38 33-66 74-66s74 28 74 66v38c0 36-31 61-74 61s-74-25-74-61V92Z"/>
-                <path class="cat-face-panel" d="M64 98c0-26 23-47 56-47s56 21 56 47v28c0 27-23 46-56 46s-56-19-56-46V98Z"/>
-                <path class="cat-eye" d="M82 111c6-9 16-9 22 0m32 0c6-9 16-9 22 0"/>
-                <path class="cat-smile" d="M109 130c4 5 8 7 11 7s7-2 11-7m-11 7v7"/>
-                <path class="cat-whisker" d="m74 128-22-5m23 13-21 3m112-11 22-5m-23 13 21 3"/>
-                <path class="cat-circuit" d="M120 51V37m0 0h18m-18 0h-18"/>
-                <circle class="cat-sensor" cx="120" cy="29" r="5"/>
-                <circle class="cat-cheek" cx="77" cy="128" r="5"/><circle class="cat-cheek" cx="163" cy="128" r="5"/>
+            <div class="home-visual" role="img" aria-label="GNWAA-ийн Pixel сахиус, гэрэлт хамгаалалтын тэмдэг" data-i18n-aria="home.catAria">
+              <div class="home-visual-aura" aria-hidden="true"></div>
+              <div class="home-orbit orbit-one" aria-hidden="true"></div><div class="home-orbit orbit-two" aria-hidden="true"></div><div class="home-orb" aria-hidden="true"></div>
+              <svg class="home-cat" viewBox="0 0 240 220" aria-hidden="true" focusable="false">
+                <defs>
+                  <linearGradient id="pixel-shell" x1=".1" y1="0" x2=".9" y2="1"><stop stop-color="#d8d2ff"/><stop offset=".48" stop-color="#8f7dff"/><stop offset="1" stop-color="#4b56c7"/></linearGradient>
+                  <linearGradient id="pixel-panel" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#25305a"/><stop offset="1" stop-color="#111b37"/></linearGradient>
+                  <radialGradient id="pixel-light" cx=".3" cy=".16" r=".9"><stop stop-color="#fff" stop-opacity=".5"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
+                  <filter id="pixel-shadow" x="-.3" y="-.3" width="1.6" height="1.8"><feGaussianBlur stdDeviation="8"/></filter>
+                </defs>
+                <ellipse class="cat-shadow" cx="120" cy="184" rx="75" ry="17" fill="#03040d" opacity=".7" filter="url(#pixel-shadow)"/>
+                <path class="cat-ear" d="m59 72 4-44 42 33m72 11-4-44-42 33" fill="url(#pixel-shell)" stroke="#d8d2ff" stroke-width="2"/>
+                <path class="cat-ear-inner" d="m71 58 1-17 20 15m76 2-1-17-20 15" fill="#ea8dff" opacity=".9"/>
+                <path class="cat-face" d="M46 92c0-38 33-66 74-66s74 28 74 66v38c0 36-31 61-74 61s-74-25-74-61V92Z" fill="url(#pixel-shell)" stroke="#c6bdff" stroke-width="2"/>
+                <path d="M49 91c0-36 31-62 71-62s71 26 71 62v35c0 33-28 57-71 57s-71-24-71-57V91Z" fill="url(#pixel-light)"/>
+                <path class="cat-face-panel" d="M64 98c0-26 23-47 56-47s56 21 56 47v28c0 27-23 46-56 46s-56-19-56-46V98Z" fill="url(#pixel-panel)" stroke="#9c9cff" stroke-opacity=".65" stroke-width="1.5"/>
+                <path class="cat-eye" d="M82 111c6-9 16-9 22 0m32 0c6-9 16-9 22 0" fill="none" stroke="#c5f9ff" stroke-width="4" stroke-linecap="round"/>
+                <path class="cat-smile" d="M109 130c4 5 8 7 11 7s7-2 11-7m-11 7v7" fill="none" stroke="#d8d2ff" stroke-width="3" stroke-linecap="round"/>
+                <path class="cat-whisker" d="m74 128-22-5m23 13-21 3m112-11 22-5m-23 13 21 3" fill="none" stroke="#a8d8ff" stroke-width="2" stroke-linecap="round"/>
+                <path class="cat-circuit" d="M120 51V37m0 0h18m-18 0h-18" fill="none" stroke="#d8d2ff" stroke-width="3" stroke-linecap="round"/>
+                <circle class="cat-sensor" cx="120" cy="29" r="6" fill="#66e7ff" stroke="#fff" stroke-width="2"/>
+                <circle class="cat-cheek" cx="77" cy="128" r="5" fill="#ff97d8"/><circle class="cat-cheek" cx="163" cy="128" r="5" fill="#ff97d8"/>
               </svg>
-              <span class="home-visual-label">PIXEL / COMPANION-01</span>
-              <span class="home-visual-status"><i></i>ONLINE</span>
-              <span class="home-star star-a">✦</span><span class="home-star star-b">✧</span>
+              <span class="home-visual-label">GNWAA / PIXEL</span>
+              <span class="home-visual-status"><svg viewBox="0 0 44 44" aria-hidden="true"><path d="M22 3.5 36.5 8v11.3c0 8.1-5.8 15.1-14.5 20.2C13.3 34.4 7.5 27.4 7.5 19.3V8L22 3.5Z"/><path d="m15.5 21.5 4 4 9-10"/></svg><span data-i18n="home.companionLabel">Curious by design</span></span>
+              <span class="home-star star-a" aria-hidden="true">✦</span><span class="home-star star-b" aria-hidden="true">✧</span>
             </div>
-          </div>
+          </header>
 
-          <div class="home-section-heading"><div><span data-i18n="home.sectionsEyebrow">PICK A CORNER</span><h2 data-i18n="home.sectionsTitle">Юу хиймээр байна?</h2></div><p data-i18n="home.sectionsHint">Хэсгээ сонгоод үргэлжлүүлээрэй</p></div>
-          <div class="home-cards">
-            <a class="home-card crm-home-card" href="/admin#customers" data-page-link="customers" data-admin-only hidden>
-              <span class="home-card-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 20.5v-1.8a4.2 4.2 0 0 0-4.2-4.2H7.7a4.2 4.2 0 0 0-4.2 4.2v1.8"/><circle cx="9.8" cy="7.4" r="3.9"/><path d="M16.2 3.7a4 4 0 0 1 0 7.6M20.5 20.5v-1.8a4.2 4.2 0 0 0-3.1-4.1"/></svg></span>
-              <span class="home-card-index">01 / DATA</span><strong data-i18n="home.crmTitle">Customer CRM</strong><span class="home-card-copy" data-i18n="home.crmText">Харилцагчдын мэдээллээ нэг дороос удирд.</span><span class="home-card-link" data-i18n="home.explore">Нээх <b>↗</b></span>
+          <header class="home-section-heading">
+            <div><span data-i18n="home.sectionsEyebrow">GNWAA / EXPLORE</span><h2 id="home-bento-title" data-i18n="home.sectionsTitle">Сониуч зангаа дага</h2></div>
+            <p data-i18n="home.sectionsHint">Түүх, туршилт, санаанаас сонгоорой.</p>
+          </header>
+
+          <nav class="home-bento-grid" aria-labelledby="home-bento-title">
+            <a class="home-bento-card home-bento-card--discover" href="/discover" data-page-link="discover">
+              <span class="home-bento-kind" data-i18n="home.discoverKind">МЭДЛЭГИЙН САН</span>
+              <span class="home-bento-copy"><strong class="home-bento-title" data-i18n="home.discoverTitle">Discover Knowledge Hub</strong><span class="home-bento-description" data-i18n="home.discoverDescription">Шинжлэх ухаан, дижитал амьдрал, соёлын тухай ойлгомжтой түүхүүд.</span><span class="home-bento-action" data-i18n="home.discoverAction">Нийтлэлүүдийг үзэх <b aria-hidden="true">↗</b></span></span>
+              <span class="home-bento-art home-art-discover" aria-hidden="true">
+                <svg viewBox="0 0 320 260" focusable="false">
+                  <defs>
+                    <linearGradient id="discover-book" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#b5a6ff"/><stop offset=".5" stop-color="#7868dc"/><stop offset="1" stop-color="#353c8a"/></linearGradient>
+                    <linearGradient id="discover-page" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#f5f2ff"/><stop offset="1" stop-color="#a8c6f9"/></linearGradient>
+                    <radialGradient id="discover-glow"><stop stop-color="#56d8ff" stop-opacity=".7"/><stop offset="1" stop-color="#56d8ff" stop-opacity="0"/></radialGradient>
+                    <filter id="discover-shadow" x="-.3" y="-.3" width="1.7" height="1.8"><feGaussianBlur stdDeviation="9"/></filter>
+                  </defs>
+                  <ellipse cx="164" cy="215" rx="100" ry="20" fill="#050610" opacity=".7" filter="url(#discover-shadow)"/>
+                  <ellipse cx="165" cy="133" rx="128" ry="45" fill="none" stroke="#9d8dff" stroke-opacity=".45" stroke-width="1.5" transform="rotate(-20 165 133)"/>
+                  <ellipse cx="165" cy="133" rx="94" ry="132" fill="none" stroke="#59d8ff" stroke-opacity=".22" stroke-width="1.2" transform="rotate(32 165 133)"/>
+                  <circle cx="265" cy="86" r="48" fill="url(#discover-glow)"/>
+                  <g transform="rotate(-8 163 128)">
+                    <rect x="83" y="69" width="150" height="136" rx="19" fill="url(#discover-book)" stroke="#d6ceff" stroke-opacity=".7" stroke-width="2"/>
+                    <path d="M158 84v106" stroke="#d6ceff" stroke-opacity=".48" stroke-width="2"/>
+                    <path d="M101 103h42m-42 13h38m-38 13h33M176 103h37m-37 13h42m-42 13h29" stroke="url(#discover-page)" stroke-linecap="round" stroke-width="4" opacity=".8"/>
+                    <path d="M101 160h46m29 0h35" stroke="#73d9ff" stroke-linecap="round" stroke-width="3" opacity=".75"/>
+                    <circle cx="208" cy="83" r="4" fill="#fff"/>
+                  </g>
+                  <circle cx="59" cy="92" r="5" fill="#8ce9ff"/><circle cx="260" cy="181" r="7" fill="#a991ff"/>
+                </svg>
+              </span>
             </a>
-            <a class="home-card about-home-card" href="#about" data-page-link="about">
-              <span class="home-card-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 19 6v6c0 4.1-2.6 7.4-7 9-4.4-1.6-7-4.9-7-9V6l7-3Z"/><path d="m9 12 2 2 4-4"/></svg></span>
-              <span class="home-card-index">02 / GNWAA</span><strong data-i18n="home.aboutTitle">Энэ булангийн тухай</strong><span class="home-card-copy" data-i18n="home.aboutText">GNWAA-ийн санаа, бүтээлүүдтэй танилц.</span><span class="home-card-link" data-i18n="home.explore">Үзэх <b>↗</b></span>
+
+            <a class="home-bento-card home-bento-card--universe" href="/lab" data-page-link="lab" data-lab-open="universe">
+              <span class="home-bento-kind" data-i18n="home.universeKind">БҮТЭЭХ</span>
+              <span class="home-bento-copy"><strong class="home-bento-title" data-i18n="home.universeTitle">Digital Universe</strong><span class="home-bento-description" data-i18n="home.universeDescription">Сонирхлоо гариг болгож, өөрийн ертөнцийг байгуул.</span><span class="home-bento-action" data-i18n="home.universeAction">Ертөнцөө байгуулах <b aria-hidden="true">↗</b></span></span>
+              <span class="home-bento-art home-art-universe" aria-hidden="true">
+                <svg viewBox="0 0 210 180" focusable="false">
+                  <defs><radialGradient id="universe-planet" cx=".32" cy=".25" r=".8"><stop stop-color="#e0d3ff"/><stop offset=".34" stop-color="#9a7cff"/><stop offset=".76" stop-color="#5253bd"/><stop offset="1" stop-color="#222b66"/></radialGradient><radialGradient id="universe-halo"><stop stop-color="#866fff" stop-opacity=".55"/><stop offset="1" stop-color="#866fff" stop-opacity="0"/></radialGradient><filter id="universe-blur"><feGaussianBlur stdDeviation="8"/></filter></defs>
+                  <circle cx="109" cy="89" r="78" fill="url(#universe-halo)" filter="url(#universe-blur)"/>
+                  <ellipse cx="106" cy="93" rx="92" ry="34" fill="none" stroke="#8f8bff" stroke-width="5" stroke-opacity=".52" transform="rotate(-23 106 93)"/>
+                  <circle cx="106" cy="83" r="49" fill="url(#universe-planet)" stroke="#d4caff" stroke-opacity=".55" stroke-width="1.5"/>
+                  <path d="M68 66c10-18 33-29 52-26 13 2 23 8 29 17-13 2-23 8-29 18-12 17-30 24-51 19-8-2-14-6-19-11 8-2 14-8 18-17Z" fill="#c9baff" opacity=".27"/>
+                  <ellipse cx="106" cy="93" rx="92" ry="34" fill="none" stroke="#77e4ff" stroke-width="2" transform="rotate(-23 106 93)"/>
+                  <circle cx="25" cy="126" r="6" fill="#76e8ff"/><circle cx="177" cy="55" r="8" fill="#ffbded"/><circle cx="161" cy="147" r="4" fill="#fff"/>
+                </svg>
+              </span>
             </a>
-            <a class="home-card analytics-home-card" href="/admin#analytics" data-page-link="analytics" data-admin-only hidden>
-              <span class="home-card-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19V9m8 10V5m8 14v-7"/><path d="M2 21h20"/></svg></span>
-              <span class="home-card-index">03 / INSIGHT</span><strong data-i18n="home.analyticsTitle">Өгөгдлийн тойм</strong><span class="home-card-copy" data-i18n="home.analyticsText">Хуваарилалт, төлөвийн мэдээллийг хар.</span><span class="home-card-link" data-i18n="home.explore">Үзэх <b>↗</b></span>
+
+            <a class="home-bento-card home-bento-card--detective" href="/lab" data-page-link="lab" data-lab-open="detective">
+              <span class="home-bento-kind" data-i18n="home.detectiveKind">ШИНЖЛЭХ</span>
+              <span class="home-bento-copy"><strong class="home-bento-title" data-i18n="home.detectiveTitle">Internet Detective</strong><span class="home-bento-description" data-i18n="home.detectiveDescription">Зохиомол жишээнээс сэжигтэй дохиог олж, оноогоо шалга.</span><span class="home-bento-action" data-i18n="home.detectiveAction">Сорил эхлүүлэх <b aria-hidden="true">↗</b></span></span>
+              <span class="home-bento-art home-art-detective" aria-hidden="true">
+                <svg viewBox="0 0 210 180" focusable="false">
+                  <defs><radialGradient id="lens-glass" cx=".32" cy=".2" r=".85"><stop stop-color="#bbf3ff" stop-opacity=".7"/><stop offset=".48" stop-color="#638bdb" stop-opacity=".25"/><stop offset="1" stop-color="#272d71" stop-opacity=".68"/></radialGradient><linearGradient id="lens-rim" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#e1d8ff"/><stop offset=".46" stop-color="#8e82ff"/><stop offset="1" stop-color="#49c7f3"/></linearGradient><filter id="lens-shadow"><feGaussianBlur stdDeviation="7"/></filter></defs>
+                  <ellipse cx="115" cy="152" rx="57" ry="10" fill="#050711" opacity=".75" filter="url(#lens-shadow)"/>
+                  <path d="m142 119 39 40c7 7-4 18-11 11l-39-40" fill="url(#lens-rim)" stroke="#d9d3ff" stroke-opacity=".62" stroke-width="2"/>
+                  <circle cx="95" cy="77" r="55" fill="url(#lens-glass)" stroke="url(#lens-rim)" stroke-width="9"/>
+                  <circle cx="95" cy="77" r="42" fill="none" stroke="#c6f2ff" stroke-opacity=".28" stroke-width="1.5"/>
+                  <path d="m76 79 13 13 27-30" fill="none" stroke="#e9fbff" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+                  <circle cx="56" cy="43" r="4" fill="#fff" opacity=".9"/><circle cx="156" cy="51" r="5" fill="#8be9ff"/>
+                </svg>
+              </span>
             </a>
-          </div>
-          <div class="home-note"><span class="home-note-icon">✦</span><p data-i18n="home.note">Өөрийн орон зайгаа бүтээж байгаа — удахгүй шинэ хэсгүүд нэмэгдэнэ.</p><span class="home-note-code">GNWAA / NEXT</span></div>
+
+            <a class="home-bento-card home-bento-card--japan" href="/discover/how-suica-works" data-page-link="discover" data-discover-article="how-suica-works">
+              <span class="home-bento-kind" data-i18n="home.japanKind">СОЁЛ · ТЕХНОЛОГИ</span>
+              <span class="home-bento-copy"><strong class="home-bento-title" data-i18n="home.japanTitle">Japan Explained</strong><span class="home-bento-description" data-i18n="home.japanDescription">Японы өдөр тутмын систем, технологийг энгийнээр тайлбарласан түүхүүд.</span><span class="home-bento-action" data-i18n="home.japanAction">Suica-г тайлбарлах <b aria-hidden="true">↗</b></span></span>
+              <span class="home-bento-art home-art-japan" aria-hidden="true">
+                <svg viewBox="0 0 210 180" focusable="false">
+                  <defs><linearGradient id="japan-sun" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#ffc5df"/><stop offset="1" stop-color="#ff6b9c"/></linearGradient><linearGradient id="japan-gate" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#ffb5df"/><stop offset="1" stop-color="#b34c95"/></linearGradient><filter id="japan-shadow"><feGaussianBlur stdDeviation="8"/></filter></defs>
+                  <ellipse cx="110" cy="154" rx="70" ry="11" fill="#090711" opacity=".7" filter="url(#japan-shadow)"/>
+                  <circle cx="108" cy="72" r="51" fill="url(#japan-sun)" opacity=".9"/>
+                  <path d="M53 129h112v13H53zM64 66h92v13H64zM51 52q0-9 9-9h100q9 0 9 9v8H51zM78 79h13v51H78zm52 0h13v51h-13z" fill="url(#japan-gate)" stroke="#ffd8ef" stroke-opacity=".58" stroke-width="1.5"/>
+                  <path d="M53 142h112" stroke="#c8b6ff" stroke-opacity=".65" stroke-width="3" stroke-linecap="round"/><circle cx="159" cy="41" r="3" fill="#fff"/>
+                </svg>
+              </span>
+            </a>
+
+            <a class="home-bento-card home-bento-card--personality" href="/lab" data-page-link="lab" data-lab-open="personality">
+              <span class="home-bento-kind" data-i18n="home.personalityKind">ӨӨРИЙГӨӨ ТАНИХ</span>
+              <span class="home-bento-copy"><strong class="home-bento-title" data-i18n="home.personalityTitle">Personality Lab</strong><span class="home-bento-description" data-i18n="home.personalityDescription">Сониуч зангийн хэв маягаа богино асуултаар судал.</span><span class="home-bento-action" data-i18n="home.personalityAction">Тест эхлүүлэх <b aria-hidden="true">↗</b></span></span>
+              <span class="home-bento-art home-art-personality" aria-hidden="true">
+                <svg viewBox="0 0 210 180" focusable="false">
+                  <defs><linearGradient id="personality-prism" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#e0d1ff"/><stop offset=".45" stop-color="#9a83ff"/><stop offset="1" stop-color="#43c9ef"/></linearGradient><radialGradient id="personality-aura"><stop stop-color="#8c7aff" stop-opacity=".52"/><stop offset="1" stop-color="#8c7aff" stop-opacity="0"/></radialGradient><filter id="personality-shadow"><feGaussianBlur stdDeviation="9"/></filter></defs>
+                  <circle cx="108" cy="86" r="74" fill="url(#personality-aura)" filter="url(#personality-shadow)"/>
+                  <path d="m105 25 54 31-5 65-49 34-50-34-5-65 55-31Z" fill="url(#personality-prism)" fill-opacity=".84" stroke="#e2dcff" stroke-opacity=".76" stroke-width="2"/>
+                  <path d="m105 25 3 62-58-31m58 31 51-31m-51 31-50 34m50-34 49 34m-49-34v68" fill="none" stroke="#f0efff" stroke-opacity=".48" stroke-width="1.5"/>
+                  <circle cx="43" cy="52" r="5" fill="#75e5ff"/><circle cx="165" cy="56" r="5" fill="#ffaee9"/><circle cx="164" cy="128" r="4" fill="#fff"/>
+                </svg>
+              </span>
+            </a>
+
+            <a class="home-bento-card home-bento-card--about" href="/about" data-page-link="about">
+              <span class="home-bento-kind" data-i18n="home.aboutKind">GNWAA / ТАНИЛЦАХ</span>
+              <span class="home-bento-copy"><strong class="home-bento-title" data-i18n="home.publicAboutTitle">About / Projects</strong><span class="home-bento-description" data-i18n="home.aboutDescription">GNWAA-ийн санаа, туршилт, одоогийн төслүүдтэй танилц.</span><span class="home-bento-action" data-i18n="home.aboutAction">Төслүүдийг харах <b aria-hidden="true">↗</b></span></span>
+              <span class="home-bento-art home-art-about" aria-hidden="true">
+                <svg viewBox="0 0 210 180" focusable="false">
+                  <defs><linearGradient id="about-shield" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#d1cbff"/><stop offset=".52" stop-color="#8678f4"/><stop offset="1" stop-color="#3c69b7"/></linearGradient><filter id="about-shadow"><feGaussianBlur stdDeviation="8"/></filter></defs>
+                  <ellipse cx="106" cy="151" rx="44" ry="10" fill="#070811" opacity=".65" filter="url(#about-shadow)"/>
+                  <ellipse cx="105" cy="88" rx="79" ry="32" fill="none" stroke="#70def6" stroke-opacity=".36" stroke-width="2" transform="rotate(-20 105 88)"/>
+                  <path d="M105 27 151 42v34c0 27-18 49-46 64-28-15-46-37-46-64V42l46-15Z" fill="url(#about-shield)" stroke="#e0dbff" stroke-opacity=".78" stroke-width="2"/>
+                  <path d="m84 78 15 15 29-33" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+                  <circle cx="28" cy="62" r="5" fill="#70e4ff"/><circle cx="178" cy="108" r="6" fill="#e1c0ff"/>
+                </svg>
+              </span>
+            </a>
+          </nav>
+
+          <section class="home-admin-shortcuts" data-admin-only hidden aria-labelledby="home-admin-title">
+            <h2 id="home-admin-title" data-i18n="home.adminTitle">Эзэмшигчийн ажлын хэсэг</h2>
+            <div class="home-admin-grid">
+              <a class="home-card crm-home-card" href="/admin#customers" data-page-link="customers" data-admin-only hidden>
+                <span class="home-card-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 20.5v-1.8a4.2 4.2 0 0 0-4.2-4.2H7.7a4.2 4.2 0 0 0-4.2 4.2v1.8"/><circle cx="9.8" cy="7.4" r="3.9"/><path d="M16.2 3.7a4 4 0 0 1 0 7.6M20.5 20.5v-1.8a4.2 4.2 0 0 0-3.1-4.1"/></svg></span>
+                <span class="home-card-index">DATA</span><strong data-i18n="home.crmTitle">Customer CRM</strong><span class="home-card-copy" data-i18n="home.crmText">Харилцагчдын мэдээллийг нэг дороос удирд.</span><span class="home-card-link" data-i18n="home.explore">Нээх <b>↗</b></span>
+              </a>
+              <a class="home-card analytics-home-card" href="/admin#analytics" data-page-link="analytics" data-admin-only hidden>
+                <span class="home-card-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19V9m8 10V5m8 14v-7"/><path d="M2 21h20"/></svg></span>
+                <span class="home-card-index">INSIGHT</span><strong data-i18n="home.analyticsTitle">Өгөгдлийн тойм</strong><span class="home-card-copy" data-i18n="home.analyticsText">Хуваарилалт, хэрэглэгчийн төлөвийг хар.</span><span class="home-card-link" data-i18n="home.explore">Үзэх <b>↗</b></span>
+              </a>
+            </div>
+          </section>
         </section>
 
         <section class="discover-view" data-page-view="discover" aria-labelledby="discover-view-title" hidden>
