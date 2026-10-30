@@ -108,10 +108,18 @@ Object.assign(UI_TEXT.mn, {
   "home.aboutKind": "GNWAA / ТАНИЛЦАХ", "home.publicAboutTitle": "GNWAA ба төслүүд", "home.aboutDescription": "GNWAA-ийн санаа, туршилт, одоогийн төслүүдтэй танилц.", "home.aboutAction": "Төслүүдийг харах", "home.adminTitle": "Эзэмшигчийн ажлын хэсэг",
   "home.crmTitle": "Customer CRM", "home.crmText": "Харилцагчдын мэдээллийг нэг дороос удирд.", "home.aboutTitle": "Энэ булангийн тухай", "home.aboutText": "GNWAA-ийн санаа, одоогийн төслүүдтэй танилц.", "home.analyticsTitle": "Өгөгдлийн тойм", "home.analyticsText": "Хуваарилалт, хэрэглэгчийн төлөвийг хар.", "home.explore": "Дэлгэрэнгүй",
   "home.note": "Энэ бол эхлэл — шинэ санаа, булангууд нэмэгдэх тусам GNWAA тэлнэ.",
-  "about.kicker": "WELCOME TO GNWAA", "about.title": "Сониуч зангаас эхэлсэн жижигхэн дижитал ертөнц.", "about.description": "Энэ бол миний бүтээж, туршиж, сурч байгаа зүйлсээ нэг дор цуглуулах орон зай. Customer management dashboard маань эхний булан нь.", "about.cta": "Эхний төслийг үзэх",
+  "about.kicker": "WELCOME TO GNWAA", "about.title": "Сониуч зангаас эхэлсэн жижигхэн дижитал ертөнц.", "about.description": "GNWAA нь сонирхолтой сэдвүүдийг ойлгомжтой түүх, интерактив туршилт, хэрэгтэй төслөөр нээх public орон зай.", "about.cta": "Эхний төслийг үзэх",
   "about.cardOneTitle": "Юу олж үзэх вэ?", "about.cardOneText": "Бодит өгөгдөлтэй customer dashboard, хайлт, бүртгэл болон төлөвийн аналитик.", "about.cardLink": "Customer CRM рүү →",
   "about.cardTwoTitle": "Яаж бүтээгдсэн бэ?", "about.cardTwoText": "Vanilla HTML, CSS, JavaScript дээр PostgreSQL 16 болон PostgREST-тэй холбосон сургалтын төсөл.", "about.cardLinkTwo": "Өгөгдлийн тойм →",
-  "about.cardThreeTitle": "Дараагийн хуудсууд", "about.cardThreeText": "Энэ сайт бол эхлэл. Шинэ санаа, жижиг бүтээлүүд нэмэгдэх тусам энд өөр өөр булан нээгдэнэ.", "about.coming": "IN PROGRESS", "about.signoff": "Сониуч бай. Турш. Өөрийнхөөрөө бүтээ."
+  "about.signoff": "Сониуч бай. Турш. Өөрийнхөөрөө бүтээ.",
+  "about.creatorEyebrow": "THE PERSON BEHIND GNWAA", "about.creatorTitle": "Meet the Creator", "about.creatorName": "GANWAA", "about.creatorRole": "Creator of GNWAA", "about.creatorAlt": "Ганваагийн аниме хөрөг.",
+  "about.creatorGreeting": "Сайн уу! Би Ганваа.", "about.creatorIntroOne": "Би шинэ санаа, технологи, бүтээлч туршилтад дуртай. Аливаа зүйл хэрхэн ажилладгийг ойлгож, сонирхолтой санааг бодит бүтээл болгох нь надад хамгийн их урам өгдөг.",
+  "about.creatorIntroTwo": "GNWAA бол миний сониуч зан, бүтээлч сэтгэлгээ, туршилтуудыг нэг дор цуглуулсан хувийн дижитал орон зай. Энд би бусадтай мэдлэг, санаа болон сонирхолтой туршлагуудыг хуваалцахыг хүсдэг.",
+  "about.creatorQuote": "Curious by nature. Creative by choice.", "about.creatorGithub": "GitHub профайл", "about.opensNewTab": "Шинэ табд нээгдэнэ",
+  "about.buildingTitle": "Одоо бүтээж буй зүйлс", "about.buildingDescription": "Мэдлэгийн нийтлэл, интерактив Lab туршлага, GNWAA-ийн төслүүдийг нэг дор холбож байна.",
+  "about.buildPlatformTitle": "GNWAA Platform", "about.buildPlatformDescription": "Мэдлэг, бүтээлч туршилт, төслүүдийг нэг дор нэгтгэсэн платформ.", "about.buildPlatformAction": "Нүүр хуудас руу",
+  "about.buildKnowledgeTitle": "Knowledge Hub", "about.buildKnowledgeDescription": "Технологи, дижитал амьдрал болон сонирхолтой сэдвүүдийг энгийнээр тайлбарласан нийтлэлүүд.", "about.buildKnowledgeAction": "Нийтлэл үзэх",
+  "about.buildInteractiveTitle": "Interactive Experiences", "about.buildInteractiveDescription": "Уншаад өнгөрөх биш, өөрөө туршиж ойлгох жижиг интерактив туршилтууд.", "about.buildInteractiveAction": "Лаборатори нээх"
 });
 Object.assign(UI_TEXT.en, {
   "language.mn": "Mongolian",
@@ -137,10 +145,18 @@ Object.assign(UI_TEXT.en, {
   "home.aboutKind": "MEET GNWAA", "home.publicAboutTitle": "About / Projects", "home.aboutDescription": "Meet GNWAA, its ideas, experiments, and current projects.", "home.aboutAction": "Explore projects", "home.adminTitle": "Owner workspace",
   "home.crmTitle": "Customer CRM", "home.crmText": "Manage customer records in one place.", "home.aboutTitle": "About this space", "home.aboutText": "Get to know GNWAA and the project behind it.", "home.analyticsTitle": "Data insights", "home.analyticsText": "Explore customer distribution and account status.", "home.explore": "Explore",
   "home.note": "This is just the beginning. GNWAA will grow with new ideas and sections.",
-  "about.kicker": "WELCOME TO GNWAA", "about.title": "A small digital world that started with curiosity.", "about.description": "A place to bring together the things I build, try, and learn. The customer management dashboard is its first corner.", "about.cta": "Explore the first project",
+  "about.kicker": "WELCOME TO GNWAA", "about.title": "A small digital world that started with curiosity.", "about.description": "GNWAA explores interesting ideas through approachable stories, interactive experiments, and useful projects.", "about.cta": "Explore the first project",
   "about.cardOneTitle": "What can you explore?", "about.cardOneText": "A customer dashboard with live records, search, CRUD actions, and status analytics.", "about.cardLink": "Open Customer CRM →",
   "about.cardTwoTitle": "How is it built?", "about.cardTwoText": "A learning project using vanilla HTML, CSS, and JavaScript with PostgreSQL 16 and PostgREST.", "about.cardLinkTwo": "View data insights →",
-  "about.cardThreeTitle": "More pages ahead", "about.cardThreeText": "This site is a starting point. More sections can take shape as new ideas and small projects are added.", "about.coming": "IN PROGRESS", "about.signoff": "Stay curious. Keep trying. Make it your own."
+  "about.signoff": "Stay curious. Keep trying. Make it your own.",
+  "about.creatorEyebrow": "THE PERSON BEHIND GNWAA", "about.creatorTitle": "Meet the Creator", "about.creatorName": "GANWAA", "about.creatorRole": "Creator of GNWAA", "about.creatorAlt": "Anime portrait of Ganwaa.",
+  "about.creatorGreeting": "Hey! I'm Ganwaa.", "about.creatorIntroOne": "I'm curious about new ideas, technology, and creative experiments. I enjoy understanding how things work and turning interesting ideas into something real.",
+  "about.creatorIntroTwo": "GNWAA is my personal digital space where curiosity, creativity, and experimentation come together. It's a place to share knowledge, ideas, and experiences worth exploring.",
+  "about.creatorQuote": "Curious by nature. Creative by choice.", "about.creatorGithub": "GitHub profile", "about.opensNewTab": "Opens in a new tab",
+  "about.buildingTitle": "Now Building", "about.buildingDescription": "Connecting knowledge articles, interactive Lab experiences, and GNWAA projects in one place.",
+  "about.buildPlatformTitle": "GNWAA Platform", "about.buildPlatformDescription": "A platform bringing together knowledge, creative experiments, and projects.", "about.buildPlatformAction": "Explore the platform",
+  "about.buildKnowledgeTitle": "Knowledge Hub", "about.buildKnowledgeDescription": "Accessible articles exploring technology, digital life, and interesting ideas.", "about.buildKnowledgeAction": "Read articles",
+  "about.buildInteractiveTitle": "Interactive Experiences", "about.buildInteractiveDescription": "Small interactive experiences that turn curiosity into hands-on exploration.", "about.buildInteractiveAction": "Open the lab"
 });
 
 UI_TEXT.mn["page.title"] = "GNWAA · Дижитал булан";
@@ -1362,6 +1378,9 @@ function applyLanguage(language, persist = true) {
   });
   document.querySelectorAll("[data-i18n-placeholder]").forEach((node) => {
     node.setAttribute("placeholder", t(node.dataset.i18nPlaceholder));
+  });
+  document.querySelectorAll("[data-i18n-alt]").forEach((node) => {
+    node.setAttribute("alt", t(node.dataset.i18nAlt));
   });
   document.querySelectorAll("[data-i18n-aria]").forEach((node) => {
     node.setAttribute("aria-label", t(node.dataset.i18nAria));

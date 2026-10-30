@@ -5,6 +5,16 @@ const html = readFileSync(new URL("../index.html", import.meta.url), "utf8");
 const app = readFileSync(new URL("../app.js", import.meta.url), "utf8");
 const api = readFileSync(new URL("../api.js", import.meta.url), "utf8");
 const css = readFileSync(new URL("../style.css", import.meta.url), "utf8");
+const creatorAvatar = readFileSync(new URL("../public/images/ganwaa-anime-avatar.png", import.meta.url));
+const creatorAvatarWebp = readFileSync(new URL("../public/images/ganwaa-anime-avatar.webp", import.meta.url));
+assert.deepEqual([...creatorAvatar.subarray(0, 8)], [137, 80, 78, 71, 13, 10, 26, 10],
+  "The creator portrait should be a valid PNG asset.");
+assert.equal(creatorAvatarWebp.toString("ascii", 0, 4), "RIFF", "The WebP fallback asset should have a valid RIFF container.");
+assert.equal(creatorAvatarWebp.toString("ascii", 8, 12), "WEBP", "The optimized creator portrait should be a WebP asset.");
+assert.ok(creatorAvatarWebp.length < creatorAvatar.length, "The WebP derivative should be smaller than the PNG fallback.");
+const creatorAvatarWidth = creatorAvatar.readUInt32BE(16);
+const creatorAvatarHeight = creatorAvatar.readUInt32BE(20);
+assert.ok(creatorAvatarWidth > 0 && creatorAvatarHeight > 0, "The creator portrait should preserve a valid intrinsic aspect ratio.");
 // Catch stale element-map references, including properties with no selector at all.
 // ID-selector checks alone missed the removed loaderMessage/loaderSubtext entries.
 const elementMap = app.slice(app.indexOf("const el = {"), app.indexOf("const labState ="));
@@ -485,6 +495,28 @@ assert.equal(navRoutes.indexOf("lab"), navRoutes.indexOf("about") + 1,
 assert.equal(navRoutes.indexOf("analytics"), navRoutes.indexOf("lab") + 1,
   "The Laboratory link should precede Analytics in the sidebar.");
 assert.match(html, /href="\/lab" data-page-link="lab"[^>]*data-i18n-aria="nav\.lab"/);
+assert.match(html, /<h1[^>]*id="page-title"/,
+  "Public page views should share the page-level H1 so only the active route is visible.");
+assert.match(html, /<section class="about-view"[^>]*aria-labelledby="about-heading">[\s\S]*?<h1 id="about-heading" data-i18n="about\.title">/,
+  "The About view should expose its project hero as the page-level H1.");
+assert.match(html, /class="about-creator" aria-labelledby="about-creator-title"[\s\S]*?<h2 id="about-creator-title" data-i18n="about\.creatorTitle">Meet the Creator<\/h2>/,
+  "The About view should include one accessible Meet the Creator section.");
+assert.match(html, new RegExp(`<picture class="about-creator-picture">\\s*<source srcset="/images/ganwaa-anime-avatar\\.webp" type="image/webp">\\s*<img src="/images/ganwaa-anime-avatar\\.png" width="${creatorAvatarWidth}" height="${creatorAvatarHeight}"[^>]*data-i18n-alt="about\\.creatorAlt" loading="lazy" decoding="async">\\s*</picture>`),
+  "The creator portrait should prefer WebP and keep a dimensioned, translated PNG fallback.");
+assert.match(html, /href="https:\/\/github\.com\/gnbaeu" target="_blank" rel="noopener noreferrer"/,
+  "The creator GitHub link must use the supplied public profile and safe external-link attributes.");
+assert.match(html, /class="about-building" aria-labelledby="about-building-title"[\s\S]*?<h2 id="about-building-title" data-i18n="about\.buildingTitle">Одоо бүтээж буй зүйлс<\/h2>/,
+  "Now Building should follow the creator section with an accessible heading.");
+assert.equal((html.match(/class="about-building-card"/g) || []).length, 3,
+  "Now Building should contain exactly its three real public-project cards.");
+for (const [route, page] of [["#home", "home"], ["/discover", "discover"], ["/lab", "lab"]]) {
+  assert.ok(html.includes(`href="${route}" data-page-link="${page}"`),
+    `The ${page} card should use its existing public route.`);
+}
+assert.doesNotMatch(html, /about\.coming|about-next-card/,
+  "The replaced future-project tile should not leave an unverified In Progress status.");
+assert.match(app, /document\.querySelectorAll\("\[data-i18n-alt\]"\)/,
+  "Image alternative text should follow the selected MN/EN language.");
 assert.match(html, /class="about-signoff"[\s\S]*?<\/section>\s*<section class="about-labs lab-view" id="gnwaa-labs" data-page-view="lab"/,
   "The About view should close before the original Lab section begins as a standalone page.");
 assert.equal((html.match(/data-page-view="lab"/g) || []).length, 1,
@@ -906,4 +938,4 @@ assert.doesNotMatch(html, /footer-navigation[\s\S]*Contact|mailto:/i,
 assert.match(app, /footerYear\.textContent = String\(new Date\(\)\.getFullYear\(\)\)/,
   "Footer copyright must use the current year.");
 
-process.stdout.write(`Static markup, Welcome Intro, CMS, Aurora Theme Studio, header, navigation, and profile-menu checks passed (${idSet.size} unique IDs).\n`);
+process.stdout.write(`Static markup, Welcome Intro, CMS, Aurora Theme Studio, header, navigation, and profile-menu checks passed (${idSet.size} unique IDs; creator avatar ${creatorAvatarWidth}x${creatorAvatarHeight}).\n`);

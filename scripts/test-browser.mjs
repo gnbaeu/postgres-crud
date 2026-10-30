@@ -115,12 +115,11 @@ try {
       }
     }).observe(document, { attributes: true, attributeFilter: ['hidden'], subtree: true });
   })();`});
-  await navigate(origin);
-  await waitFor(`document.readyState === 'complete'`, 'initial document');
-  await evaluate(`sessionStorage.clear(); localStorage.clear()`);
   await send('Emulation.setDeviceMetricsOverride', { width: 1440, height: 1000, deviceScaleFactor: 1, mobile: false });
   await send('Emulation.setEmulatedMedia', { features: [{name:'prefers-reduced-motion',value:'no-preference'}] });
-  await reload();
+  await send('Storage.clearDataForOrigin', { origin, storageTypes: 'all' });
+  await navigate(origin);
+  await waitFor(`document.readyState === 'complete'`, 'initial document');
   await waitFor(`!document.querySelector('#matrix-loader').hidden`, 'first-session intro');
   assert.equal(await evaluate(`document.querySelector('#skip-intro') === null`), true);
   await delay(6400);
@@ -129,6 +128,43 @@ try {
   await assertIntroDuration('Desktop');
   await waitFor(`document.querySelector('#matrix-loader').hidden && !document.querySelector('.app-layout').inert`, 'completion releases UI');
   await waitFor(`document.querySelector('#matrix-canvas').width === 0`, 'canvas cleanup');
+  await click('.side-nav [data-page-link="about"]');
+  await waitFor(`location.pathname === '/about' && !document.querySelector('.about-view').hidden`, 'About navigation');
+  assert.equal(await evaluate(`Array.from(document.querySelectorAll('h1')).filter(node=>node.getClientRects().length>0).length`), 1, 'About retains one visible page-level H1');
+  await evaluate(`document.querySelector('.about-creator').scrollIntoView({block:'start',behavior:'instant'})`);
+  await waitFor(`(() => { const img=document.querySelector('.about-creator-image img'); return img.complete && img.naturalWidth === Number(img.getAttribute('width')) && img.naturalHeight === Number(img.getAttribute('height')) && new URL(img.currentSrc).pathname === '/images/ganwaa-anime-avatar.webp'; })()`, 'creator WebP avatar loads at its source dimensions');
+  await evaluate(`document.querySelector('.about-creator-image img').decode()`);
+  const avatarSources = await evaluate(`(async()=>{const image=document.querySelector('.about-creator-image img');const fallback=new Image();fallback.src=image.src;await fallback.decode();return{webp:new URL(image.currentSrc).pathname,png:new URL(fallback.src).pathname,width:fallback.naturalWidth,height:fallback.naturalHeight}})()`);
+  assert.deepEqual(avatarSources, {webp:'/images/ganwaa-anime-avatar.webp',png:'/images/ganwaa-anime-avatar.png',width:1254,height:1254}, 'WebP primary and PNG fallback both decode at the preserved dimensions');
+  assert.equal(await evaluate(`document.querySelector('.about-creator-github').href`), 'https://github.com/gnbaeu');
+  assert.equal(await evaluate(`document.querySelector('.about-creator-github').target`), '_blank');
+  assert.equal(await evaluate(`document.querySelector('.about-creator-github').rel`), 'noopener noreferrer');
+  assert.equal(await evaluate(`document.querySelector('[data-i18n="about.creatorGithub"]').textContent`), 'GitHub профайл');
+  assert.equal(await evaluate(`document.querySelectorAll('.about-building-card').length`), 3);
+  assert.equal(await evaluate(`document.documentElement.scrollWidth <= innerWidth`), true, '1440px About has no horizontal overflow');
+  await screenshot('about-desktop-1440.png');
+  await evaluate(`document.querySelector('.about-building').scrollIntoView({block:'start',behavior:'instant'})`);
+  await screenshot('about-building-desktop-1440.png');
+  await click('#language-toggle');
+  assert.equal(await evaluate('document.documentElement.lang'), 'en');
+  assert.equal(await evaluate(`document.querySelector('.about-creator-greeting').textContent`), "Hey! I'm Ganwaa.");
+  assert.equal(await evaluate(`document.querySelector('.about-creator-image img').alt`), 'Anime portrait of Ganwaa.');
+  assert.equal(await evaluate(`document.querySelector('[data-i18n="about.creatorGithub"]').textContent`), 'GitHub profile');
+  assert.equal(await evaluate(`document.querySelector('[data-i18n="about.opensNewTab"]').textContent`), 'Opens in a new tab');
+  assert.equal(await evaluate(`document.querySelector('#about-building-title').textContent`), 'Now Building');
+  assert.equal(await evaluate(`document.querySelector('[data-i18n="about.buildingDescription"]').textContent`), 'Connecting knowledge articles, interactive Lab experiences, and GNWAA projects in one place.');
+  assert.equal(await evaluate(`document.querySelector('.about-building-card:nth-child(2) p').textContent`), 'Accessible articles exploring technology, digital life, and interesting ideas.');
+  await click('#language-toggle');
+  assert.equal(await evaluate('document.documentElement.lang'), 'mn');
+  assert.equal(await evaluate(`document.querySelector('.about-creator-image img').alt`), 'Ганваагийн аниме хөрөг.');
+  assert.equal(await evaluate(`document.querySelector('[data-i18n="about.creatorGithub"]').textContent`), 'GitHub профайл');
+  assert.equal(await evaluate(`document.querySelector('[data-i18n="about.buildingDescription"]').textContent`), 'Мэдлэгийн нийтлэл, интерактив Lab туршлага, GNWAA-ийн төслүүдийг нэг дор холбож байна.');
+  for (const [page, path] of [['home','/'],['discover','/discover'],['lab','/lab']]) {
+    await click(`.about-building-card[data-page-link="${page}"]`);
+    await waitFor(`location.pathname === ${JSON.stringify(path)}`, `Now Building ${page} route`);
+    await click('.side-nav [data-page-link="about"]');
+    await waitFor(`location.pathname === '/about' && !document.querySelector('.about-view').hidden`, `Return from ${page} to About`);
+  }
   await click('#language-toggle');
   assert.equal(await evaluate('document.documentElement.lang'), 'en');
   await click('#language-toggle');
@@ -139,19 +175,24 @@ try {
   assert.equal(await evaluate(`document.querySelector('#sidebar').classList.contains('is-collapsed')`), false);
   await click('#theme-toggle');
   assert.equal(await evaluate('document.documentElement.dataset.theme'), 'light');
+  await click('#theme-toggle');
+  assert.equal(await evaluate('document.documentElement.dataset.theme'), 'dark');
   await click('#top-avatar');
   assert.equal(await evaluate(`document.querySelector('#profile-dropdown').hidden`), false);
   await click('#top-avatar');
   assert.equal(await evaluate(`document.querySelector('#profile-dropdown').hidden`), true);
   await click('#theme-studio-toggle');
   assert.equal(await evaluate(`document.querySelector('#theme-studio-dialog').open`), true);
-  await click('[data-theme-preset="ocean-night"]');
+  for (const preset of ['aurora-purple','ocean-night','emerald-matrix','sunset-neon','moonlight']) {
+    await click(`[data-theme-preset="${preset}"]`);
+    assert.equal(await evaluate('document.documentElement.dataset.accentTheme'), preset, `About theme preview: ${preset}`);
+  }
   await click('#theme-studio-apply');
-  assert.equal(await evaluate('document.documentElement.dataset.accentTheme'), 'ocean-night');
+  assert.equal(await evaluate('document.documentElement.dataset.accentTheme'), 'moonlight');
   await click('#theme-studio-toggle');
-  await click('[data-theme-preset="moonlight"]');
+  await click('[data-theme-preset="ocean-night"]');
   await click('#theme-studio-cancel');
-  assert.equal(await evaluate('document.documentElement.dataset.accentTheme'), 'ocean-night');
+  assert.equal(await evaluate('document.documentElement.dataset.accentTheme'), 'moonlight');
   await click('.side-nav [data-page-link="discover"]');
   await waitFor(`location.pathname === '/discover'`, 'Discover navigation');
   assert.deepEqual(await evaluate(`Array.from(document.querySelectorAll('h1')).filter(node => node.getClientRects().length).map(node => node.textContent.trim())`), ['Discover']);
@@ -351,6 +392,8 @@ try {
     await send('Page.removeScriptToEvaluateOnNewDocument', {identifier:injection.identifier});
   }
   // Responsive visual QA on a fresh public document for each viewport.
+  await navigate(`${origin}/about?responsive-qa=1`);
+  await waitFor(`location.pathname === '/about' && !document.querySelector('.about-view').hidden`, 'responsive About route');
   for (const [width,height] of [[360,800],[375,812],[390,844],[430,932],[844,390]]) {
     await send('Emulation.setDeviceMetricsOverride', {width,height,deviceScaleFactor:1,mobile:true});
     await reload();
@@ -370,6 +413,21 @@ try {
     assert.equal(await evaluate(`document.body.classList.contains('splash-active')`), false);
     assert.equal(await evaluate(`document.activeElement.id`), 'main', 'Focus returns to the public UI');
     await click('#language-toggle', true);
+    if(width===390) {
+      await waitFor(`location.pathname === '/about' && !document.querySelector('.about-view').hidden`, '390px About view after mobile refresh');
+      await evaluate(`document.querySelector('.about-creator').scrollIntoView({block:'start',behavior:'instant'})`);
+      await waitFor(`(() => { const img=document.querySelector('.about-creator-image img'); return img.complete && img.naturalWidth === Number(img.getAttribute('width')) && img.naturalHeight === Number(img.getAttribute('height')); })()`, '390px creator avatar loads');
+      await evaluate(`document.querySelector('.about-creator-image img').decode()`);
+      assert.equal(await evaluate(`document.documentElement.scrollWidth <= innerWidth`), true, '390px About has no horizontal overflow');
+      await screenshot('about-mobile-390.png');
+      await evaluate(`document.querySelector('.about-building').scrollIntoView({block:'start',behavior:'instant'})`);
+      assert.equal(await evaluate(`document.documentElement.scrollWidth <= innerWidth`), true, '390px Now Building has no horizontal overflow');
+      await screenshot('about-building-mobile-390.png');
+    }
+  }
+  for (const width of [360,375,390,430,768,1024,1440]) {
+    await send('Emulation.setDeviceMetricsOverride', {width,height:1100,deviceScaleFactor:1,mobile:width<=768});
+    assert.equal(await evaluate(`document.documentElement.scrollWidth <= innerWidth`), true, `${width}px About has no horizontal overflow`);
   }
   await send('Emulation.setDeviceMetricsOverride', {width:768,height:1024,deviceScaleFactor:1,mobile:true});
   await reload();
