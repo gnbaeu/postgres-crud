@@ -1,0 +1,71 @@
+/* Rising Horizon: original geometry, shared vermilion seal and quiet ink strokes. */
+.gnwaa-public-symbol {display:none}
+html:root[data-theme][data-accent-theme] body.jm-public .sidebar .brand-mark,
+html:root[data-theme][data-accent-theme] body.jm-public .footer-brand .brand-mark {display:none!important}
+html:root[data-theme][data-accent-theme] body.jm-public .gnwaa-public-symbol {display:inline-flex;width:36px;height:36px;flex:0 0 36px;color:var(--color-text);background:none;filter:none}
+.gnwaa-public-symbol svg {display:block;width:100%;height:100%;overflow:visible}
+html:root[data-theme][data-accent-theme] body.jm-public .jm-wordmark .gnwaa-brand-row {display:flex;flex-direction:row;align-items:center;gap:10px;margin:0;line-height:1;color:var(--color-text)}
+.gnwaa-brand-row svg {width:27px;height:27px;flex:0 0 27px;color:var(--color-text)}
+.gnwaa-brand-row strong {font:600 17px/1.1 Inter,'Segoe UI',sans-serif;letter-spacing:.085em}
+/* One quiet ink reveal; the persistent header is not recreated by public routing. */
+.gnwaa-brand-row {position:relative}
+body.jm-public .gnwaa-brush-mountain {animation:gnwaa-ink-reveal 650ms ease-out both}
+body.jm-public .gnwaa-brush-stroke {animation:gnwaa-stroke-reveal 650ms ease-out both}
+body.jm-public .gnwaa-brush-sun,body.jm-public .gnwaa-brand-row strong {animation:gnwaa-wordmark-enter 650ms ease-out both}
+body.jm-public.splash-active .jm-wordmark :is(path,circle,strong) {animation-play-state:paused}
+html:root[data-theme][data-accent-theme] body.jm-public .jm-wordmark .gnwaa-brush-underline {position:absolute;left:0;bottom:-6px;width:100%;height:8px;pointer-events:none;overflow:visible}
+.gnwaa-brush-underline path {stroke-dasharray:1;stroke-dashoffset:1;opacity:0;transition:stroke-dashoffset 550ms ease,opacity 200ms ease}
+.jm-wordmark:is(:hover,:focus-visible) .gnwaa-brush-underline path {stroke-dashoffset:0;opacity:.85}
+@keyframes gnwaa-stroke-reveal {from{stroke-dasharray:1;stroke-dashoffset:1;opacity:0}to{stroke-dasharray:1;stroke-dashoffset:0;opacity:1}}
+@keyframes gnwaa-ink-reveal {from{stroke-dasharray:1;stroke-dashoffset:1;fill-opacity:0}to{stroke-dasharray:1;stroke-dashoffset:0;fill-opacity:1}}
+@keyframes gnwaa-wordmark-enter {from{opacity:0;transform:translateY(2px)}to{opacity:1;transform:translateY(0)}}
+html[data-motion='off'] .jm-wordmark *,html[data-motion='reduced'] .jm-wordmark * {animation:none!important;transition:none!important}
+@media(prefers-reduced-motion:reduce) {.jm-wordmark * {animation:none!important;transition:none!important}}
+html:root[data-theme][data-accent-theme] body.jm-public .jm-wordmark>span:not(.gnwaa-brand-row) {margin-left:44px;font-size:8px}
+html:root[data-theme][data-accent-theme] body.jm-public .home-hero h1 {font-weight:650;line-height:1.12;letter-spacing:-.045em;text-wrap:balance;overflow-wrap:normal}
+html:root[data-theme][data-accent-theme] body.jm-public .home-hero-copy>.gnwaa-hero-tagline {margin:14px 0 0;font:400 13px/1.8 'Noto Sans JP','Yu Gothic',sans-serif;letter-spacing:.15em;color:var(--color-muted)}
+.gnwaa-intro-symbol {width:48px;height:48px;margin:0 auto;color:#f5f1ea;animation:intro-welcome .8s 3s both}
+.gnwaa-intro-symbol svg {display:block;width:100%;height:100%}
+html:root[data-theme][data-accent-theme] body.jm-public .home-bento-art {opacity:1;filter:none;color:var(--color-text)}
+html:root[data-theme][data-accent-theme] body.jm-public .home-bento-card .home-bento-art {width:min(160px,30%);height:auto;aspect-ratio:5/4;max-width:none;top:24px;right:24px;bottom:auto;transform:none}
+html:root[data-theme][data-accent-theme] body.jm-public .home-bento-art .gnwaa-card-art {display:block;width:100%;height:100%;max-width:100%;filter:none;animation:none;overflow:visible}
+.gnwaa-card-art .card-anim {transition:transform .8s ease,opacity .8s ease;transform-box:view-box;transform-origin:80px 70px}
+.home-art-universe .card-anim {transform-origin:99px 35px;transition-duration:1.4s}
+.home-art-personality .card-anim,.home-art-about .card-anim {opacity:.55}
+.home-art-japan .card-anim {opacity:.65}
+.home-bento-card:is(:hover,:focus-visible) .home-art-discover .card-anim {transform:rotate(-3deg)}
+.home-bento-card:is(:hover,:focus-visible) .home-art-universe .card-anim {transform:rotate(8deg)}
+.home-bento-card:is(:hover,:focus-visible) .home-art-detective .card-anim {transform:translate(2px,-2px)}
+.home-bento-card:is(:hover,:focus-visible) .home-art-personality .card-anim,
+.home-bento-card:is(:hover,:focus-visible) .home-art-about .card-anim {opacity:1}
+.home-bento-card:is(:hover,:focus-visible) .home-art-japan .card-anim {opacity:.95;transform:translateY(-2px)}
+html[data-motion='off'] .gnwaa-card-art .card-anim,html[data-motion='reduced'] .gnwaa-card-art .card-anim {transition:none!important;transform:none!important}
+@media(max-width:780px) {
+  .gnwaa-brand-row svg {width:25px;height:25px;flex-basis:25px}
+  .gnwaa-brand-row strong {font-size:16px;letter-spacing:.05em}
+  html:root[data-theme][data-accent-theme] body.jm-public .jm-wordmark .gnwaa-brand-row {gap:6px}
+  html:root[data-theme][data-accent-theme] body.jm-public .home-hero h1 {font-size:clamp(40px,10.5vw,60px)}
+}
+@media(max-height:550px) {.gnwaa-intro-symbol{width:28px;height:28px}}
+@media(prefers-reduced-motion:reduce) {.gnwaa-card-art .card-anim{transition:none!important;transform:none!important}.gnwaa-intro-symbol{animation:none!important}}
+
+/* Compact mobile rhythm; desktop composition and intro remain unchanged. */
+@media(max-width:780px) {
+ html:root[data-theme][data-accent-theme] body.jm-public {--hero-gap:16px;--hero-small-gap:8px}
+ html:root[data-theme][data-accent-theme] body.jm-public .topbar {min-height:58px;padding:6px 10px;margin-top:12px;top:max(10px,env(safe-area-inset-top));max-width:calc(100% - 24px)}
+ html:root[data-theme][data-accent-theme] body.jm-public .page-content {padding:20px 16px 0}
+ html:root[data-theme][data-accent-theme] body.jm-public .home-hero {gap:0}
+ html:root[data-theme][data-accent-theme] body.jm-public .home-hero-copy {padding:8px 0 0;width:100%}
+ html:root[data-theme][data-accent-theme] body.jm-public .home-kicker {margin:0 0 14px;font-size:9px}
+ html:root[data-theme][data-accent-theme] body.jm-public .home-hero h1 {font-size:clamp(30px,9vw,40px);line-height:1.18;letter-spacing:-.04em;max-width:100%;margin:0;text-wrap:balance;overflow-wrap:normal}
+ html:root[data-theme][data-accent-theme] body.jm-public .home-hero-copy>.gnwaa-hero-tagline {margin:var(--hero-small-gap) 0 0;font-size:11px;line-height:1.7;letter-spacing:.1em}
+ html:root[data-theme][data-accent-theme] body.jm-public .home-hero-copy>p:not(.gnwaa-hero-tagline) {margin:var(--hero-gap) 0 0;font-size:15px;line-height:1.65;max-width:36ch}
+ html:root[data-theme][data-accent-theme] body.jm-public .home-hero-actions {display:grid;grid-template-columns:minmax(0,1fr);gap:var(--hero-small-gap);width:100%;max-width:340px;margin-top:18px;align-items:stretch}
+ html:root[data-theme][data-accent-theme] body.jm-public .home-hero-actions>a {width:100%;min-height:48px;display:flex;justify-content:center;align-items:center;margin:0;padding:10px 16px;box-sizing:border-box;font-size:14px}
+ html:root[data-theme][data-accent-theme] body.jm-public .home-hero-actions .japan-omikuji-entry {justify-self:start;min-height:44px;max-width:100%;padding:6px 0;border:0;background:transparent;box-shadow:none;border-radius:3px;color:var(--color-muted);font-size:12px;line-height:1.5;text-align:left;white-space:normal}
+ html:root[data-theme][data-accent-theme] body.jm-public .home-hero-actions .japan-omikuji-entry:is(:hover,:focus-visible) {color:var(--color-text);text-decoration:underline;text-underline-offset:4px}
+ html:root[data-theme][data-accent-theme] body.jm-public .home-hero-foot {margin-top:12px;padding-top:12px;gap:8px;font-size:8px;line-height:1.5}
+ html:root[data-theme][data-accent-theme] body.jm-public .home-visual {position:relative;width:100%;height:auto;min-height:0;max-height:none;margin:8px 0 0;flex-shrink:0}
+ html:root[data-theme][data-accent-theme] body.jm-public .jm-landscape {display:block;width:100%;height:clamp(210px,65vw,280px);max-height:none;margin:0 auto}
+ html:root[data-theme][data-accent-theme] body.jm-public .home-visual>.jm-landscape-caption {display:block;position:absolute;right:8px;bottom:6px;font:400 10px/1.5 'Noto Sans JP','Yu Gothic',sans-serif;letter-spacing:.16em;color:var(--color-muted);pointer-events:none}
+}

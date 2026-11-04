@@ -503,8 +503,8 @@ assert.match(html, /class="about-creator" aria-labelledby="about-creator-title"[
   "The About view should include one accessible Meet the Creator section.");
 assert.match(html, new RegExp(`<picture class="about-creator-picture">\\s*<source srcset="/images/ganwaa-anime-avatar\\.webp" type="image/webp">\\s*<img src="/images/ganwaa-anime-avatar\\.png" width="${creatorAvatarWidth}" height="${creatorAvatarHeight}"[^>]*data-i18n-alt="about\\.creatorAlt" loading="lazy" decoding="async">\\s*</picture>`),
   "The creator portrait should prefer WebP and keep a dimensioned, translated PNG fallback.");
-assert.match(html, /href="https:\/\/github\.com\/gnbaeu" target="_blank" rel="noopener noreferrer"/,
-  "The creator GitHub link must use the supplied public profile and safe external-link attributes.");
+assert.doesNotMatch(html, /class="about-creator-github"/,
+  "The Japanese Modern creator profile must not contain a GitHub profile link.");
 assert.match(html, /class="about-building" aria-labelledby="about-building-title"[\s\S]*?<h2 id="about-building-title" data-i18n="about\.buildingTitle">Одоо бүтээж буй зүйлс<\/h2>/,
   "Now Building should follow the creator section with an accessible heading.");
 assert.equal((html.match(/class="about-building-card"/g) || []).length, 3,
@@ -884,7 +884,7 @@ assert.match(app, /function mobileDrawerFocusables\([\s\S]*getClientRects\(\)\.l
 assert.match(app, /el\.sidebar\.classList\.contains\("is-mobile-open"\) && event\.key === "Tab"[\s\S]*last\.focus\(\)[\s\S]*first\.focus\(\)/,
   "Tab and Shift+Tab should stay within the open mobile drawer.");
 assert.match(app, /mobileNavReturnFocus = document\.activeElement[\s\S]*restoreFocus && returnFocus\?\.isConnected/);
-assert.match(app, /if \(window\.matchMedia\("\(max-width: 780px\)"\)\.matches && el\.sidebar\.classList\.contains\("is-mobile-open"\)\)[\s\S]*setMobileNavOpen\(false, \{ restoreFocus: true \}\)/,
+assert.match(app, /if \(usesCompactNavigation\(\) && el\.sidebar\.classList\.contains\("is-mobile-open"\)\)[\s\S]*setMobileNavOpen\(false, \{ restoreFocus: true \}\)/,
   "The mobile sidebar control closes the drawer and returns focus.");
 
 assert.match(html, /class="home-hero"[\s\S]*class="home-visual"[\s\S]*class="home-cat"/,

@@ -128,7 +128,7 @@ try {
   await assertIntroDuration('Desktop');
   await waitFor(`document.querySelector('#matrix-loader').hidden && !document.querySelector('.app-layout').inert`, 'completion releases UI');
   await waitFor(`document.querySelector('#matrix-canvas').width === 0`, 'canvas cleanup');
-  await click('.side-nav [data-page-link="about"]');
+  await click('.jm-navigation [data-page-link="about"]');
   await waitFor(`location.pathname === '/about' && !document.querySelector('.about-view').hidden`, 'About navigation');
   assert.equal(await evaluate(`Array.from(document.querySelectorAll('h1')).filter(node=>node.getClientRects().length>0).length`), 1, 'About retains one visible page-level H1');
   await evaluate(`document.querySelector('.about-creator').scrollIntoView({block:'start',behavior:'instant'})`);
@@ -136,10 +136,6 @@ try {
   await evaluate(`document.querySelector('.about-creator-image img').decode()`);
   const avatarSources = await evaluate(`(async()=>{const image=document.querySelector('.about-creator-image img');const fallback=new Image();fallback.src=image.src;await fallback.decode();return{webp:new URL(image.currentSrc).pathname,png:new URL(fallback.src).pathname,width:fallback.naturalWidth,height:fallback.naturalHeight}})()`);
   assert.deepEqual(avatarSources, {webp:'/images/ganwaa-anime-avatar.webp',png:'/images/ganwaa-anime-avatar.png',width:1254,height:1254}, 'WebP primary and PNG fallback both decode at the preserved dimensions');
-  assert.equal(await evaluate(`document.querySelector('.about-creator-github').href`), 'https://github.com/gnbaeu');
-  assert.equal(await evaluate(`document.querySelector('.about-creator-github').target`), '_blank');
-  assert.equal(await evaluate(`document.querySelector('.about-creator-github').rel`), 'noopener noreferrer');
-  assert.equal(await evaluate(`document.querySelector('[data-i18n="about.creatorGithub"]').textContent`), 'GitHub профайл');
   assert.equal(await evaluate(`document.querySelectorAll('.about-building-card').length`), 3);
   assert.equal(await evaluate(`document.documentElement.scrollWidth <= innerWidth`), true, '1440px About has no horizontal overflow');
   await screenshot('about-desktop-1440.png');
@@ -149,51 +145,41 @@ try {
   assert.equal(await evaluate('document.documentElement.lang'), 'en');
   assert.equal(await evaluate(`document.querySelector('.about-creator-greeting').textContent`), "Hey! I'm Ganwaa.");
   assert.equal(await evaluate(`document.querySelector('.about-creator-image img').alt`), 'Anime portrait of Ganwaa.');
-  assert.equal(await evaluate(`document.querySelector('[data-i18n="about.creatorGithub"]').textContent`), 'GitHub profile');
-  assert.equal(await evaluate(`document.querySelector('[data-i18n="about.opensNewTab"]').textContent`), 'Opens in a new tab');
   assert.equal(await evaluate(`document.querySelector('#about-building-title').textContent`), 'Now Building');
   assert.equal(await evaluate(`document.querySelector('[data-i18n="about.buildingDescription"]').textContent`), 'Connecting knowledge articles, interactive Lab experiences, and GNWAA projects in one place.');
   assert.equal(await evaluate(`document.querySelector('.about-building-card:nth-child(2) p').textContent`), 'Accessible articles exploring technology, digital life, and interesting ideas.');
   await click('#language-toggle');
   assert.equal(await evaluate('document.documentElement.lang'), 'mn');
   assert.equal(await evaluate(`document.querySelector('.about-creator-image img').alt`), 'Ганваагийн аниме хөрөг.');
-  assert.equal(await evaluate(`document.querySelector('[data-i18n="about.creatorGithub"]').textContent`), 'GitHub профайл');
   assert.equal(await evaluate(`document.querySelector('[data-i18n="about.buildingDescription"]').textContent`), 'Мэдлэгийн нийтлэл, интерактив Lab туршлага, GNWAA-ийн төслүүдийг нэг дор холбож байна.');
   for (const [page, path] of [['home','/'],['discover','/discover'],['lab','/lab']]) {
     await click(`.about-building-card[data-page-link="${page}"]`);
     await waitFor(`location.pathname === ${JSON.stringify(path)}`, `Now Building ${page} route`);
-    await click('.side-nav [data-page-link="about"]');
+    await click('.jm-navigation [data-page-link="about"]');
     await waitFor(`location.pathname === '/about' && !document.querySelector('.about-view').hidden`, `Return from ${page} to About`);
   }
   await click('#language-toggle');
   assert.equal(await evaluate('document.documentElement.lang'), 'en');
   await click('#language-toggle');
   assert.equal(await evaluate('document.documentElement.lang'), 'mn');
-  await click('#sidebar-toggle');
-  assert.equal(await evaluate(`document.querySelector('#sidebar').classList.contains('is-collapsed')`), true);
-  await click('#sidebar-toggle');
-  assert.equal(await evaluate(`document.querySelector('#sidebar').classList.contains('is-collapsed')`), false);
-  await click('#theme-toggle');
-  assert.equal(await evaluate('document.documentElement.dataset.theme'), 'light');
-  await click('#theme-toggle');
-  assert.equal(await evaluate('document.documentElement.dataset.theme'), 'dark');
+  assert.equal(await evaluate(`getComputedStyle(document.querySelector('#sidebar')).display`), 'none', 'Public desktop has no sidebar');
+  assert.equal(await evaluate(`document.querySelector('.main-shell').getBoundingClientRect().left`), 0, 'No sidebar gutter');
+  await click('#theme-studio-toggle');
+  await evaluate(`document.querySelector('#japan-appearance').value='light';document.querySelector('#japan-appearance').dispatchEvent(new Event('change',{bubbles:true}))`);
+  assert.equal(await evaluate('document.documentElement.dataset.theme'),'light');
+  await evaluate(`document.querySelector('#japan-appearance').value='dark';document.querySelector('#japan-appearance').dispatchEvent(new Event('change',{bubbles:true}))`);
+  await click('#japan-settings [data-close]');
   await click('#top-avatar');
   assert.equal(await evaluate(`document.querySelector('#profile-dropdown').hidden`), false);
   await click('#top-avatar');
   assert.equal(await evaluate(`document.querySelector('#profile-dropdown').hidden`), true);
   await click('#theme-studio-toggle');
-  assert.equal(await evaluate(`document.querySelector('#theme-studio-dialog').open`), true);
-  for (const preset of ['aurora-purple','ocean-night','emerald-matrix','sunset-neon','moonlight']) {
-    await click(`[data-theme-preset="${preset}"]`);
-    assert.equal(await evaluate('document.documentElement.dataset.accentTheme'), preset, `About theme preview: ${preset}`);
+  for(const season of ['spring','summer','autumn','winter']) {
+    await evaluate(`document.querySelector('#japan-season').value='${season}';document.querySelector('#japan-season').dispatchEvent(new Event('change',{bubbles:true}))`);
+    assert.equal(await evaluate('document.documentElement.dataset.season'),season);
   }
-  await click('#theme-studio-apply');
-  assert.equal(await evaluate('document.documentElement.dataset.accentTheme'), 'moonlight');
-  await click('#theme-studio-toggle');
-  await click('[data-theme-preset="ocean-night"]');
-  await click('#theme-studio-cancel');
-  assert.equal(await evaluate('document.documentElement.dataset.accentTheme'), 'moonlight');
-  await click('.side-nav [data-page-link="discover"]');
+  await click('#japan-settings [data-close]');
+  await click('.jm-navigation [data-page-link="discover"]');
   await waitFor(`location.pathname === '/discover'`, 'Discover navigation');
   assert.deepEqual(await evaluate(`Array.from(document.querySelectorAll('h1')).filter(node => node.getClientRects().length).map(node => node.textContent.trim())`), ['Discover']);
   assert.equal(await evaluate(`document.querySelector('#discover-surprise').parentElement.id`), 'page-actions');
@@ -231,7 +217,7 @@ try {
   assert.equal(await evaluate(`document.querySelector('.page-intro').hidden`), false, 'Back navigation should restore the Discover listing heading.');
   await evaluate('history.forward()');
   await waitFor(`location.pathname === ${JSON.stringify(articlePath)}`, 'browser Forward');
-  await click('.side-nav [data-page-link="lab"]');
+  await click('.jm-navigation [data-page-link="lab"]');
   assert.deepEqual(await evaluate(`Array.from(document.querySelectorAll('h1')).filter(node => node.getClientRects().length).map(node => node.textContent.trim())`), ['Сонирхолтой лаборатори']);
   assert.equal(await evaluate(`document.querySelector('#page-actions').hidden && document.querySelector('#refresh-button').hidden`), true, 'Lab should not show the unrelated customer refresh action.');
   assert.equal(await evaluate(`document.querySelectorAll('#about-labs-hub [data-lab-open]').length`), 3);
@@ -346,8 +332,8 @@ try {
     await waitFor(`document.querySelector('#matrix-loader') && !document.querySelector('#matrix-loader').hidden`, `${mode} mobile first visit`);
     assert.equal(await evaluate(`document.querySelector('#skip-intro') === null`), true);
     assert.equal(await evaluate(`document.documentElement.scrollWidth <= innerWidth`), true, `${mode}: no horizontal overflow`);
-    if (mode !== 'canvas-error') await waitFor(`window.__introProbe.paints > 0`, `${mode} ASCII paints`);
-    if (mode === 'canvas-options') assert.ok(await evaluate('window.__introProbe.plainContexts > 0'));
+    assert.equal(await evaluate('window.__introProbe.paints'),0,'Japanese intro uses SVG/CSS without Canvas painting');
+
     await send('Input.dispatchTouchEvent', {type:'touchStart', touchPoints:[{x:180,y:420,id:1}]});
     await send('Input.dispatchTouchEvent', {type:'touchEnd', touchPoints:[]});
     assert.ok(await evaluate('window.__introProbe.touches > 0'), 'Native touch produces pointer input');
@@ -360,9 +346,9 @@ try {
     assert.equal(await evaluate('window.__introProbe.paints'), painted, 'No painting after cleanup');
     await click('#language-toggle', true);
     if(mode==='denied') {
-      await click('#theme-toggle', true);
+
       await click('#theme-studio-toggle', true);
-      await click('#theme-studio-cancel', true);
+      await click('#japan-settings [data-close]', true);
       await click('#mobile-nav-toggle', true);
       await delay(400);
       await click('#sidebar-toggle', true);
@@ -444,13 +430,13 @@ try {
   await waitFor(`document.querySelector('#matrix-loader').hidden`, 'tablet automatic completion');
   console.log('Mobile intro regression passed: first visit, every reload, storage denial/quota, Canvas fallback/failure, touch input, cleanup, Back/Forward and SPA behavior; layouts 360/375/390/430 and 844x390; larger tablet desktop behavior. Chromium emulation is not iPhone Safari.');
   console.log('Intro screenshots:', screenshotDir);
-  await send('Page.navigate', {url: `${origin}/admin`});
+  await navigate(`${origin}/admin`);
   await waitFor(`location.pathname === '/admin' && !document.querySelector('#auth-gate').hidden`, 'admin authentication gate');
   assert.equal(await evaluate(`document.querySelector('.app-layout').inert`), true, 'Admin remains gated while API is unavailable');
   assert.equal(await evaluate(`document.querySelector('#matrix-loader').hidden`), true);
   await navigate(`${origin}/login`);
   assert.equal(await evaluate(`document.querySelector('#matrix-loader').hidden`), true, 'Login has no intro');
-  await send('Page.navigate', {url: origin});
+  await navigate(origin);
   await waitFor(`location.pathname === '/' && document.readyState === 'complete' && !document.querySelector('.app-layout').inert`, 'return to public UI');
   await click('#language-toggle');
   const exceptions = events.filter(e => e.method === 'Runtime.exceptionThrown').map(e => e.params.exceptionDetails.exception?.description);
@@ -462,6 +448,7 @@ try {
   console.log('Browser regression passed: startup, real clicks, sidebar, MN/EN, themes, Discover, Surprise Me, Lab, Back/Forward, refresh, mobile drawer, intro completion/cleanup, reduced motion, API-offline public UI.');
   console.log('Expected unavailable-backend responses:', JSON.stringify([...new Map(failures.map(e => [e.path,e])).values()]));
 } catch(error) {
+  console.error('Navigation state:', await evaluate(`({focus:document.activeElement?.outerHTML.slice(0,300),sidebar:document.querySelector('#sidebar').className,visibility:getComputedStyle(document.querySelector('#sidebar')).visibility,sidebarRect:document.querySelector('#sidebar').getBoundingClientRect().toJSON(),inert:document.querySelector('#main').inert})`));
   console.error('Uncaught browser exceptions:', events.filter(event=>event.method==='Runtime.exceptionThrown').map(event=>event.params.exceptionDetails.exception?.description));
   throw error;
 } finally {

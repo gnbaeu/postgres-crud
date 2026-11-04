@@ -18,11 +18,15 @@
   </script>
   <title>Customer Management · GNWAA</title>
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="japanese-modern.css">
+  <link rel="stylesheet" href="japan-experience.css">
+  <link rel="stylesheet" href="brand-identity.css">
+  <link rel="icon" type="image/svg+xml" href="/images/brand/gnwaa-symbol.svg">
   <script type="module" src="/app.js"></script>
 </head>
 <body>
   <section class="matrix-loader" id="matrix-loader" role="dialog" aria-modal="true" aria-label="GNWAA Welcome Intro" tabindex="-1" hidden>
-    <canvas class="matrix-canvas" id="matrix-canvas" aria-hidden="true"></canvas>
+    <div class="japan-intro-brush" aria-hidden="true"></div><svg class="japan-intro-art" viewBox="0 0 600 540" aria-hidden="true"><use href="/images/jm-fuji.svg#landscape"/></svg><canvas data-japanese-intro="true" class="matrix-canvas" id="matrix-canvas" aria-hidden="true"></canvas>
     <div class="matrix-vignette" aria-hidden="true"></div>
     <div class="loader-portal" aria-hidden="true">
       <span class="loader-aurora loader-aurora-violet"></span>
@@ -34,8 +38,8 @@
       <span class="loader-screen-bloom"></span>
     </div>
     <div class="matrix-loader-content" aria-hidden="true">
-      <h1 class="loader-gnwaa" id="welcome-intro-title">GNWAA</h1>
-      <div class="loader-status">
+      <div class="gnwaa-intro-symbol" aria-hidden="true"><svg viewBox="0 0 64 64" aria-hidden="true" focusable="false"><use href="/images/brand/gnwaa-symbol.svg#horizon"/></svg></div><h1 class="loader-gnwaa" id="welcome-intro-title">GNWAA</h1>
+      <p class="japan-intro-subtitle" lang="ja">&#12300;&#22909;&#22855;&#24515;&#12363;&#12425;&#12289;&#30330;&#35211;&#12408;&#12290;&#12301;</p><div class="loader-status">
         <p class="loader-init">INITIALIZING EXPERIENCE...</p>
         <p class="loader-ready">WELCOME TO GNWAA</p>
       </div>
@@ -56,7 +60,7 @@
             <path class="brand-electric-arc brand-electric-arc-three" d="m8.2 29.5-2.1 1.7 3-.1-.5 2.6"/>
             <circle class="brand-electric-spark brand-electric-spark-one" cx="37.2" cy="28.5" r="1.2"/>
             <circle class="brand-electric-spark brand-electric-spark-two" cx="11.2" cy="7.2" r=".8"/>
-          </svg></span>
+          </svg></span><span class="gnwaa-public-symbol" aria-hidden="true"><svg viewBox="0 0 64 64" aria-hidden="true" focusable="false"><use href="/images/brand/gnwaa-symbol.svg#horizon"/></svg></span>
           <span class="brand-name">GNWAA</span>
         </a>
         <button class="sidebar-toggle" id="sidebar-toggle" type="button" aria-expanded="true" aria-controls="side-nav" aria-label="Цэс хумих" title="Цэс хумих" data-i18n-aria="sidebar.collapse" data-i18n-title="sidebar.collapse">
@@ -116,6 +120,9 @@
 
     <main class="main-shell" id="main" tabindex="-1">
       <header class="topbar">
+<a class="jm-wordmark" href="/" data-page-link="home" aria-label="GNWAA Home"><span class="gnwaa-brand-row"><svg class="gnwaa-brush-symbol" viewBox="0 0 64 64" aria-hidden="true" focusable="false"><circle class="gnwaa-brush-sun" cx="43" cy="17" r="8" fill="#D9364F"/><path class="gnwaa-brush-mountain" pathLength="1" d="M8 44 28 20 48 44H38L28 32 18 44Z" fill="currentColor" stroke="currentColor" stroke-width=".5"/><path class="gnwaa-brush-stroke" pathLength="1" d="M53 28v20H20q-10 0-10-10M10 55h44" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="square"/></svg><strong>GNWAA</strong><svg class="gnwaa-brush-underline" viewBox="0 0 120 8" aria-hidden="true" focusable="false" preserveAspectRatio="none"><path pathLength="1" d="M2 5Q48 2 118 4" fill="none" stroke="#D9364F" stroke-width="1.5" stroke-linecap="round"/></svg></span><span>好奇心 / CURIOSITY</span></a>
+<nav class="jm-navigation" aria-label="Public navigation"><a href="/" data-page-link="home" data-i18n="nav.home">Home</a><a href="/discover" data-page-link="discover" data-i18n="nav.discover">Discover</a><a href="/lab" data-page-link="lab" data-i18n="nav.lab">Lab</a><a href="/about" data-page-link="about" data-i18n="nav.about">About</a></nav>
+<a class="jm-search" href="/discover" data-page-link="discover" aria-label="Search Discover"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10" cy="10" r="6"/><path d="m15 15 5 5"/></svg></a>
         <button class="utility-button mobile-nav-toggle" id="mobile-nav-toggle" type="button" aria-label="Open navigation" title="Open navigation" aria-expanded="false" aria-controls="sidebar" data-i18n-aria="nav.openMenu" data-i18n-title="nav.openMenu">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
         </button>
@@ -177,9 +184,11 @@
 
         <section class="home-view" data-page-view="home" aria-labelledby="home-hero-title">
           <header class="home-hero">
+            <div class="jm-petals" aria-hidden="true"><i style="--petal-x:4%;--petal-duration:8s;--petal-delay:-0s;--petal-size:4px"></i><i style="--petal-x:13%;--petal-duration:11s;--petal-delay:-7s;--petal-size:5px"></i><i style="--petal-x:22%;--petal-duration:14s;--petal-delay:-14s;--petal-size:6px"></i><i style="--petal-x:31%;--petal-duration:9s;--petal-delay:-6s;--petal-size:7px"></i><i style="--petal-x:40%;--petal-duration:12s;--petal-delay:-13s;--petal-size:4px"></i><i style="--petal-x:49%;--petal-duration:15s;--petal-delay:-5s;--petal-size:5px"></i><i style="--petal-x:58%;--petal-duration:10s;--petal-delay:-12s;--petal-size:6px"></i><i style="--petal-x:67%;--petal-duration:13s;--petal-delay:-4s;--petal-size:7px"></i><i style="--petal-x:76%;--petal-duration:8s;--petal-delay:-11s;--petal-size:4px"></i><i style="--petal-x:85%;--petal-duration:11s;--petal-delay:-3s;--petal-size:5px"></i></div>
             <div class="home-hero-copy">
               <div class="home-kicker"><span class="home-live-dot"></span><span data-i18n="home.kicker">GNWAA / FOR THE CURIOUS</span></div>
-              <h1 id="home-hero-title" data-i18n="home.heroTitle">Сониуч зангаа дага. Шинэ өнцөг нээ.</h1>
+              <h1 id="home-hero-title" data-i18n="home.heroTitle">Үл мэдэхийн зүг.</h1>
+              <p class="gnwaa-hero-tagline" lang="ja" aria-hidden="true">好奇心の、その先へ。</p>
               <p data-i18n="home.heroText">Мэдлэгийн түүх, интерактив туршилтаар GNWAA-ийн дижитал ертөнцийг судлаарай.</p>
               <div class="home-hero-actions">
                 <a class="button button-primary" href="/discover" data-page-link="discover"><span data-i18n="home.openDiscover">Discover-ийг нээх</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></a>
@@ -188,7 +197,7 @@
               <div class="home-hero-foot"><span><i></i><span data-i18n="home.localTag">STORIES · EXPERIMENTS · IDEAS</span></span><span data-i18n="home.brandNote">Сониуч зангаар бүтээгдэв</span></div>
             </div>
             <div class="home-visual" role="img" aria-label="GNWAA-ийн Pixel сахиус, гэрэлт хамгаалалтын тэмдэг" data-i18n-aria="home.catAria">
-              <div class="home-visual-aura" aria-hidden="true"></div>
+              <svg class="jm-landscape" viewBox="0 0 600 540" aria-hidden="true"><use href="/images/jm-fuji.svg#landscape"/></svg><span class="jm-landscape-caption" lang="ja" aria-hidden="true">未知の世界へ。</span><div class="home-visual-aura" aria-hidden="true"></div>
               <div class="home-orbit orbit-one" aria-hidden="true"></div><div class="home-orbit orbit-two" aria-hidden="true"></div><div class="home-orb" aria-hidden="true"></div>
               <svg class="home-cat" viewBox="0 0 240 220" aria-hidden="true" focusable="false">
                 <defs>
@@ -214,7 +223,7 @@
             </div>
           </header>
 
-          <header class="home-section-heading">
+          <section class="jm-featured" aria-labelledby="jm-featured-title"><div class="jm-section-title"><span>01 / DISCOVER</span><h2 id="jm-featured-title" data-i18n="jm.featured">Featured discoveries</h2></div><div class="jm-articles" id="jm-articles"></div></section><header class="home-section-heading">
             <div><span data-i18n="home.sectionsEyebrow">GNWAA / EXPLORE</span><h2 id="home-bento-title" data-i18n="home.sectionsTitle">Сониуч зангаа дага</h2></div>
             <p data-i18n="home.sectionsHint">Түүх, туршилт, санаанаас сонгоорой.</p>
           </header>
@@ -223,107 +232,41 @@
             <a class="home-bento-card home-bento-card--discover" href="/discover" data-page-link="discover">
               <span class="home-bento-kind" data-i18n="home.discoverKind">МЭДЛЭГИЙН САН</span>
               <span class="home-bento-copy"><strong class="home-bento-title" data-i18n="home.discoverTitle">Discover Knowledge Hub</strong><span class="home-bento-description" data-i18n="home.discoverDescription">Шинжлэх ухаан, дижитал амьдрал, соёлын тухай ойлгомжтой түүхүүд.</span><span class="home-bento-action" data-i18n="home.discoverAction">Нийтлэлүүдийг үзэх <b aria-hidden="true">↗</b></span></span>
-              <span class="home-bento-art home-art-discover" aria-hidden="true">
-                <svg viewBox="0 0 320 260" focusable="false">
-                  <defs>
-                    <linearGradient id="discover-book" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#b5a6ff"/><stop offset=".5" stop-color="#7868dc"/><stop offset="1" stop-color="#353c8a"/></linearGradient>
-                    <linearGradient id="discover-page" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#f5f2ff"/><stop offset="1" stop-color="#a8c6f9"/></linearGradient>
-                    <radialGradient id="discover-glow"><stop stop-color="#56d8ff" stop-opacity=".7"/><stop offset="1" stop-color="#56d8ff" stop-opacity="0"/></radialGradient>
-                    <filter id="discover-shadow" x="-.3" y="-.3" width="1.7" height="1.8"><feGaussianBlur stdDeviation="9"/></filter>
-                  </defs>
-                  <ellipse cx="164" cy="215" rx="100" ry="20" fill="#050610" opacity=".7" filter="url(#discover-shadow)"/>
-                  <ellipse cx="165" cy="133" rx="128" ry="45" fill="none" stroke="#9d8dff" stroke-opacity=".45" stroke-width="1.5" transform="rotate(-20 165 133)"/>
-                  <ellipse cx="165" cy="133" rx="94" ry="132" fill="none" stroke="#59d8ff" stroke-opacity=".22" stroke-width="1.2" transform="rotate(32 165 133)"/>
-                  <circle cx="265" cy="86" r="48" fill="url(#discover-glow)"/>
-                  <g transform="rotate(-8 163 128)">
-                    <rect x="83" y="69" width="150" height="136" rx="19" fill="url(#discover-book)" stroke="#d6ceff" stroke-opacity=".7" stroke-width="2"/>
-                    <path d="M158 84v106" stroke="#d6ceff" stroke-opacity=".48" stroke-width="2"/>
-                    <path d="M101 103h42m-42 13h38m-38 13h33M176 103h37m-37 13h42m-42 13h29" stroke="url(#discover-page)" stroke-linecap="round" stroke-width="4" opacity=".8"/>
-                    <path d="M101 160h46m29 0h35" stroke="#73d9ff" stroke-linecap="round" stroke-width="3" opacity=".75"/>
-                    <circle cx="208" cy="83" r="4" fill="#fff"/>
-                  </g>
-                  <circle cx="59" cy="92" r="5" fill="#8ce9ff"/><circle cx="260" cy="181" r="7" fill="#a991ff"/>
-                </svg>
-              </span>
+              <span class="home-bento-art home-art-discover" aria-hidden="true"><svg class="gnwaa-card-art" viewBox="0 0 160 128" focusable="false"><g fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M26 34Q52 24 80 38Q108 24 134 34V94Q108 84 80 98Q52 84 26 94Z"/><path d="M80 38v60M42 49l21 3M42 62l21 3M98 52l20-3M98 65l20-3"/><g class="card-anim"><path d="M34 29Q58 22 80 38V90Q58 77 34 84Z" opacity=".35"/></g><path d="M29 105q48 8 102-1" stroke="#D9364F"/></g></svg></span>
             </a>
 
-            <a class="home-bento-card home-bento-card--universe" href="/lab" data-page-link="lab" data-lab-open="universe">
+            <h2 class="jm-grid-heading" data-i18n="jm.lab">Interactive Lab preview</h2><a class="home-bento-card home-bento-card--universe" href="/lab" data-page-link="lab" data-lab-open="universe">
               <span class="home-bento-kind" data-i18n="home.universeKind">БҮТЭЭХ</span>
               <span class="home-bento-copy"><strong class="home-bento-title" data-i18n="home.universeTitle">Digital Universe</strong><span class="home-bento-description" data-i18n="home.universeDescription">Сонирхлоо гариг болгож, өөрийн ертөнцийг байгуул.</span><span class="home-bento-action" data-i18n="home.universeAction">Ертөнцөө байгуулах <b aria-hidden="true">↗</b></span></span>
-              <span class="home-bento-art home-art-universe" aria-hidden="true">
-                <svg viewBox="0 0 210 180" focusable="false">
-                  <defs><radialGradient id="universe-planet" cx=".32" cy=".25" r=".8"><stop stop-color="#e0d3ff"/><stop offset=".34" stop-color="#9a7cff"/><stop offset=".76" stop-color="#5253bd"/><stop offset="1" stop-color="#222b66"/></radialGradient><radialGradient id="universe-halo"><stop stop-color="#866fff" stop-opacity=".55"/><stop offset="1" stop-color="#866fff" stop-opacity="0"/></radialGradient><filter id="universe-blur"><feGaussianBlur stdDeviation="8"/></filter></defs>
-                  <circle cx="109" cy="89" r="78" fill="url(#universe-halo)" filter="url(#universe-blur)"/>
-                  <ellipse cx="106" cy="93" rx="92" ry="34" fill="none" stroke="#8f8bff" stroke-width="5" stroke-opacity=".52" transform="rotate(-23 106 93)"/>
-                  <circle cx="106" cy="83" r="49" fill="url(#universe-planet)" stroke="#d4caff" stroke-opacity=".55" stroke-width="1.5"/>
-                  <path d="M68 66c10-18 33-29 52-26 13 2 23 8 29 17-13 2-23 8-29 18-12 17-30 24-51 19-8-2-14-6-19-11 8-2 14-8 18-17Z" fill="#c9baff" opacity=".27"/>
-                  <ellipse cx="106" cy="93" rx="92" ry="34" fill="none" stroke="#77e4ff" stroke-width="2" transform="rotate(-23 106 93)"/>
-                  <circle cx="25" cy="126" r="6" fill="#76e8ff"/><circle cx="177" cy="55" r="8" fill="#ffbded"/><circle cx="161" cy="147" r="4" fill="#fff"/>
-                </svg>
-              </span>
+              <span class="home-bento-art home-art-universe" aria-hidden="true"><svg class="gnwaa-card-art" viewBox="0 0 160 128" focusable="false"><g fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 100a20 20 0 0 1 40 0 20 20 0 0 1 40 0 20 20 0 0 1 40 0M30 100a10 10 0 0 1 20 0m20 0a10 10 0 0 1 20 0m20 0a10 10 0 0 1 20 0M40 80a20 20 0 0 1 40 0 20 20 0 0 1 40 0M50 80a10 10 0 0 1 20 0m20 0a10 10 0 0 1 20 0"/><g class="card-anim"><circle cx="99" cy="35" r="12" stroke="#D9364F"/><ellipse cx="99" cy="35" rx="27" ry="7" transform="rotate(-20 99 35)"/></g><path d="M40 23v10m-5-5h10" opacity=".5"/></g></svg></span>
             </a>
 
             <a class="home-bento-card home-bento-card--detective" href="/lab" data-page-link="lab" data-lab-open="detective">
               <span class="home-bento-kind" data-i18n="home.detectiveKind">ШИНЖЛЭХ</span>
               <span class="home-bento-copy"><strong class="home-bento-title" data-i18n="home.detectiveTitle">Internet Detective</strong><span class="home-bento-description" data-i18n="home.detectiveDescription">Зохиомол жишээнээс сэжигтэй дохиог олж, оноогоо шалга.</span><span class="home-bento-action" data-i18n="home.detectiveAction">Сорил эхлүүлэх <b aria-hidden="true">↗</b></span></span>
-              <span class="home-bento-art home-art-detective" aria-hidden="true">
-                <svg viewBox="0 0 210 180" focusable="false">
-                  <defs><radialGradient id="lens-glass" cx=".32" cy=".2" r=".85"><stop stop-color="#bbf3ff" stop-opacity=".7"/><stop offset=".48" stop-color="#638bdb" stop-opacity=".25"/><stop offset="1" stop-color="#272d71" stop-opacity=".68"/></radialGradient><linearGradient id="lens-rim" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#e1d8ff"/><stop offset=".46" stop-color="#8e82ff"/><stop offset="1" stop-color="#49c7f3"/></linearGradient><filter id="lens-shadow"><feGaussianBlur stdDeviation="7"/></filter></defs>
-                  <ellipse cx="115" cy="152" rx="57" ry="10" fill="#050711" opacity=".75" filter="url(#lens-shadow)"/>
-                  <path d="m142 119 39 40c7 7-4 18-11 11l-39-40" fill="url(#lens-rim)" stroke="#d9d3ff" stroke-opacity=".62" stroke-width="2"/>
-                  <circle cx="95" cy="77" r="55" fill="url(#lens-glass)" stroke="url(#lens-rim)" stroke-width="9"/>
-                  <circle cx="95" cy="77" r="42" fill="none" stroke="#c6f2ff" stroke-opacity=".28" stroke-width="1.5"/>
-                  <path d="m76 79 13 13 27-30" fill="none" stroke="#e9fbff" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
-                  <circle cx="56" cy="43" r="4" fill="#fff" opacity=".9"/><circle cx="156" cy="51" r="5" fill="#8be9ff"/>
-                </svg>
-              </span>
+              <span class="home-bento-art home-art-detective" aria-hidden="true"><svg class="gnwaa-card-art" viewBox="0 0 160 128" focusable="false"><g fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><g class="card-anim"><circle cx="66" cy="55" r="29"/><circle cx="66" cy="55" r="21" opacity=".3"/><path d="m87 77 29 29" stroke-width="7"/></g><rect x="111" y="24" width="20" height="22" stroke="#D9364F"/><path d="m116 29 10 12m-10 0 10-12" stroke="#D9364F"/></g></svg></span>
             </a>
 
-            <a class="home-bento-card home-bento-card--japan" href="/discover/how-suica-works" data-page-link="discover" data-discover-article="how-suica-works">
-              <span class="home-bento-kind" data-i18n="home.japanKind">СОЁЛ · ТЕХНОЛОГИ</span>
-              <span class="home-bento-copy"><strong class="home-bento-title" data-i18n="home.japanTitle">Japan Explained</strong><span class="home-bento-description" data-i18n="home.japanDescription">Японы өдөр тутмын систем, технологийг энгийнээр тайлбарласан түүхүүд.</span><span class="home-bento-action" data-i18n="home.japanAction">Suica-г тайлбарлах <b aria-hidden="true">↗</b></span></span>
-              <span class="home-bento-art home-art-japan" aria-hidden="true">
-                <svg viewBox="0 0 210 180" focusable="false">
-                  <defs><linearGradient id="japan-sun" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#ffc5df"/><stop offset="1" stop-color="#ff6b9c"/></linearGradient><linearGradient id="japan-gate" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#ffb5df"/><stop offset="1" stop-color="#b34c95"/></linearGradient><filter id="japan-shadow"><feGaussianBlur stdDeviation="8"/></filter></defs>
-                  <ellipse cx="110" cy="154" rx="70" ry="11" fill="#090711" opacity=".7" filter="url(#japan-shadow)"/>
-                  <circle cx="108" cy="72" r="51" fill="url(#japan-sun)" opacity=".9"/>
-                  <path d="M53 129h112v13H53zM64 66h92v13H64zM51 52q0-9 9-9h100q9 0 9 9v8H51zM78 79h13v51H78zm52 0h13v51h-13z" fill="url(#japan-gate)" stroke="#ffd8ef" stroke-opacity=".58" stroke-width="1.5"/>
-                  <path d="M53 142h112" stroke="#c8b6ff" stroke-opacity=".65" stroke-width="3" stroke-linecap="round"/><circle cx="159" cy="41" r="3" fill="#fff"/>
-                </svg>
-              </span>
-            </a>
+
 
             <a class="home-bento-card home-bento-card--personality" href="/lab" data-page-link="lab" data-lab-open="personality">
               <span class="home-bento-kind" data-i18n="home.personalityKind">ӨӨРИЙГӨӨ ТАНИХ</span>
               <span class="home-bento-copy"><strong class="home-bento-title" data-i18n="home.personalityTitle">Personality Lab</strong><span class="home-bento-description" data-i18n="home.personalityDescription">Сониуч зангийн хэв маягаа богино асуултаар судал.</span><span class="home-bento-action" data-i18n="home.personalityAction">Тест эхлүүлэх <b aria-hidden="true">↗</b></span></span>
-              <span class="home-bento-art home-art-personality" aria-hidden="true">
-                <svg viewBox="0 0 210 180" focusable="false">
-                  <defs><linearGradient id="personality-prism" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#e0d1ff"/><stop offset=".45" stop-color="#9a83ff"/><stop offset="1" stop-color="#43c9ef"/></linearGradient><radialGradient id="personality-aura"><stop stop-color="#8c7aff" stop-opacity=".52"/><stop offset="1" stop-color="#8c7aff" stop-opacity="0"/></radialGradient><filter id="personality-shadow"><feGaussianBlur stdDeviation="9"/></filter></defs>
-                  <circle cx="108" cy="86" r="74" fill="url(#personality-aura)" filter="url(#personality-shadow)"/>
-                  <path d="m105 25 54 31-5 65-49 34-50-34-5-65 55-31Z" fill="url(#personality-prism)" fill-opacity=".84" stroke="#e2dcff" stroke-opacity=".76" stroke-width="2"/>
-                  <path d="m105 25 3 62-58-31m58 31 51-31m-51 31-50 34m50-34 49 34m-49-34v68" fill="none" stroke="#f0efff" stroke-opacity=".48" stroke-width="1.5"/>
-                  <circle cx="43" cy="52" r="5" fill="#75e5ff"/><circle cx="165" cy="56" r="5" fill="#ffaee9"/><circle cx="164" cy="128" r="4" fill="#fff"/>
-                </svg>
-              </span>
+              <span class="home-bento-art home-art-personality" aria-hidden="true"><svg class="gnwaa-card-art" viewBox="0 0 160 128" focusable="false"><g fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M46 31Q80 16 114 31l-6 43q-7 25-28 35-21-10-28-35Z"/><path d="M80 26v17m0 57V78M57 54q8-6 15 0m16 0q8-6 15 0"/><g class="card-anim" stroke="#D9364F"><path d="m80 67 12 12-12 12-12-12Z"/><path d="M37 44h-8m102 0h-8"/></g></g></svg></span>
             </a>
 
-            <a class="home-bento-card home-bento-card--about" href="/about" data-page-link="about">
+            <h2 class="jm-grid-heading" data-i18n="jm.collections">Knowledge &amp; collections</h2><a class="home-bento-card home-bento-card--japan" href="/discover/how-suica-works" data-page-link="discover" data-discover-article="how-suica-works">
+              <span class="home-bento-kind" data-i18n="home.japanKind">СОЁЛ · ТЕХНОЛОГИ</span>
+              <span class="home-bento-copy"><strong class="home-bento-title" data-i18n="home.japanTitle">Japan Explained</strong><span class="home-bento-description" data-i18n="home.japanDescription">Японы өдөр тутмын систем, технологийг энгийнээр тайлбарласан түүхүүд.</span><span class="home-bento-action" data-i18n="home.japanAction">Suica-г тайлбарлах <b aria-hidden="true">↗</b></span></span>
+              <span class="home-bento-art home-art-japan" aria-hidden="true"><svg class="gnwaa-card-art" viewBox="0 0 160 128" focusable="false"><g fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><g class="card-anim"><circle cx="80" cy="35" r="18" fill="#D9364F" stroke="none"/></g><path d="M29 48q51 13 102 0M40 64h80M52 54v49m56-49v49M40 107h80"/><path d="M34 44v8m92-8v8"/></g></svg></span>
+            </a><a class="home-bento-card home-bento-card--about" href="/about" data-page-link="about">
               <span class="home-bento-kind" data-i18n="home.aboutKind">GNWAA / ТАНИЛЦАХ</span>
               <span class="home-bento-copy"><strong class="home-bento-title" data-i18n="home.publicAboutTitle">About / Projects</strong><span class="home-bento-description" data-i18n="home.aboutDescription">GNWAA-ийн санаа, туршилт, одоогийн төслүүдтэй танилц.</span><span class="home-bento-action" data-i18n="home.aboutAction">Төслүүдийг харах <b aria-hidden="true">↗</b></span></span>
-              <span class="home-bento-art home-art-about" aria-hidden="true">
-                <svg viewBox="0 0 210 180" focusable="false">
-                  <defs><linearGradient id="about-shield" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#d1cbff"/><stop offset=".52" stop-color="#8678f4"/><stop offset="1" stop-color="#3c69b7"/></linearGradient><filter id="about-shadow"><feGaussianBlur stdDeviation="8"/></filter></defs>
-                  <ellipse cx="106" cy="151" rx="44" ry="10" fill="#070811" opacity=".65" filter="url(#about-shadow)"/>
-                  <ellipse cx="105" cy="88" rx="79" ry="32" fill="none" stroke="#70def6" stroke-opacity=".36" stroke-width="2" transform="rotate(-20 105 88)"/>
-                  <path d="M105 27 151 42v34c0 27-18 49-46 64-28-15-46-37-46-64V42l46-15Z" fill="url(#about-shield)" stroke="#e0dbff" stroke-opacity=".78" stroke-width="2"/>
-                  <path d="m84 78 15 15 29-33" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
-                  <circle cx="28" cy="62" r="5" fill="#70e4ff"/><circle cx="178" cy="108" r="6" fill="#e1c0ff"/>
-                </svg>
-              </span>
+              <span class="home-bento-art home-art-about" aria-hidden="true"><svg class="gnwaa-card-art" viewBox="0 0 160 128" focusable="false"><g fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M21 22h118v84H21Z" opacity=".35"/><circle cx="109" cy="40" r="12" fill="#D9364F" stroke="none"/><path d="m31 90 49-55 49 55M65 52l15 10 12-10"/><g class="card-anim" stroke="#D9364F"><path d="M30 98h100"/></g></g></svg></span>
             </a>
           </nav>
 
-          <section class="home-admin-shortcuts" data-admin-only hidden aria-labelledby="home-admin-title">
+          <section class="jm-creator-teaser"><img src="/images/ganwaa-anime-avatar.webp" width="160" height="160" alt="GANWAA" loading="lazy"><div><span>05 / GNWAA</span><h2 data-i18n="about.creatorTitle">Meet the Creator</h2><p data-i18n="about.creatorIntroOne"></p><a href="/about" data-page-link="about" data-i18n="nav.about">About GNWAA</a></div></section><section class="home-admin-shortcuts" data-admin-only hidden aria-labelledby="home-admin-title">
             <h2 id="home-admin-title" data-i18n="home.adminTitle">Эзэмшигчийн ажлын хэсэг</h2>
             <div class="home-admin-grid">
               <a class="home-card crm-home-card" href="/admin#customers" data-page-link="customers" data-admin-only hidden>
@@ -420,12 +363,6 @@
               <p class="about-creator-paragraph" data-i18n="about.creatorIntroOne">Би шинэ санаа, технологи, бүтээлч туршилтад дуртай. Аливаа зүйл хэрхэн ажилладгийг ойлгож, сонирхолтой санааг бодит бүтээл болгох нь надад хамгийн их урам өгдөг.</p>
               <p class="about-creator-paragraph" data-i18n="about.creatorIntroTwo">GNWAA бол миний сониуч зан, бүтээлч сэтгэлгээ, туршилтуудыг нэг дор цуглуулсан хувийн дижитал орон зай. Энд би бусадтай мэдлэг, санаа болон сонирхолтой туршлагуудыг хуваалцахыг хүсдэг.</p>
               <p class="about-creator-quote" data-i18n="about.creatorQuote">Curious by nature. Creative by choice.</p>
-              <a class="about-creator-github" href="https://github.com/gnbaeu" target="_blank" rel="noopener noreferrer">
-                <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 .8a11.2 11.2 0 0 0-3.54 21.83c.56.1.77-.24.77-.54v-2.1c-3.14.68-3.8-1.33-3.8-1.33-.5-1.3-1.24-1.65-1.24-1.65-1.02-.7.08-.69.08-.69 1.13.08 1.72 1.17 1.72 1.17 1 .1.74 2.12 3.32 1.62.1-.73.4-1.23.72-1.51-2.5-.28-5.13-1.25-5.13-5.56 0-1.23.44-2.24 1.16-3.03-.12-.28-.5-1.44.1-3 0 0 .95-.3 3.08 1.16a10.7 10.7 0 0 1 5.6 0c2.14-1.45 3.08-1.16 3.08-1.16.61 1.56.23 2.72.12 3 .72.79 1.15 1.8 1.15 3.03 0 4.32-2.63 5.27-5.14 5.55.4.35.76 1.04.76 2.1v3.4c0 .3.2.65.78.54A11.2 11.2 0 0 0 12 .8Z"/></svg>
-                <span data-i18n="about.creatorGithub">GitHub профайл</span>
-                <span class="about-creator-external" data-i18n="about.opensNewTab">Шинэ табд нээгдэнэ</span>
-                <svg class="about-external-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9"/><path d="M18 13v6H5V6h6"/></svg>
-              </a>
             </div>
           </section>
 
@@ -633,7 +570,7 @@
           <div class="footer-main">
             <div class="footer-brand-block">
               <a class="footer-brand" href="#home" data-page-link="home" aria-label="GNWAA home">
-                <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 44 44" focusable="false"><path class="shield-outline" d="M22 3 37 8v12c0 9-5.7 16-15 21C12.7 36 7 29 7 20V8l15-5Z"/><path class="shield-inner" d="M22 7 33 10.7v9c0 6.9-4.1 12.3-11 16-6.9-3.7-11-9.1-11-16v-9L22 7Z"/><path class="shield-check" d="m16 21 4 4 8-9"/><circle class="logo-node" cx="22" cy="3" r="1.6"/></svg></span>
+                <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 44 44" focusable="false"><path class="shield-outline" d="M22 3 37 8v12c0 9-5.7 16-15 21C12.7 36 7 29 7 20V8l15-5Z"/><path class="shield-inner" d="M22 7 33 10.7v9c0 6.9-4.1 12.3-11 16-6.9-3.7-11-9.1-11-16v-9L22 7Z"/><path class="shield-check" d="m16 21 4 4 8-9"/><circle class="logo-node" cx="22" cy="3" r="1.6"/></svg></span><span class="gnwaa-public-symbol" aria-hidden="true"><svg viewBox="0 0 64 64" aria-hidden="true" focusable="false"><use href="/images/brand/gnwaa-symbol.svg#horizon"/></svg></span>
                 <span>GNWAA</span>
               </a>
               <p data-i18n="footer.tagline">Сониуч зан, технологи, жижиг дижитал ертөнц.</p>

@@ -1,3 +1,4 @@
+import { initJapanExperience, resolveJapanAppearance } from "./japan-experience.js";
 import { requestJson, resetCsrfToken } from "./api.js";
 import {
   DISCOVER_ARTICLES,
@@ -370,6 +371,26 @@ Object.assign(UI_TEXT.en, {
   "footer.language": "Switch language",
   "footer.appearance": "Switch appearance"
 });
+
+Object.assign(UI_TEXT.mn, {"home.heroTitle":"Үл мэдэхийн зүг.","home.heroText":"Сониуч сэтгэлгээнд зориулсан дижитал орон зай.","home.openDiscover":"Судалж эхлэх","home.openLab":"Лабораторид орох","home.catAria":"Фүжи уул, сар, тории хаалганы дүрслэл","jm.featured":"Онцлох нээлтүүд"});
+Object.assign(UI_TEXT.en, {"home.heroTitle":"Into the Unknown.","home.heroText":"A digital space for curious minds.","home.openDiscover":"Start exploring","home.openLab":"Enter the Lab","home.catAria":"An illustration of Mount Fuji, moonlight and a torii gate","jm.featured":"Featured discoveries"});
+Object.assign(UI_TEXT.mn, {"jm.lab":"Интерактив лаборатори", "jm.collections":"Мэдлэг ба цуглуулгууд"});
+Object.assign(UI_TEXT.en, {"jm.lab":"Interactive Lab preview", "jm.collections":"Knowledge & collections"});
+function renderJapaneseFeatures() {
+  const grid = document.querySelector('#jm-articles');
+  grid.replaceChildren();
+  DISCOVER_ARTICLES.filter(article => article.status === 'published').slice(0,3).forEach((article,index) => {
+    const copy = getDiscoverCopy(article,state.language);
+    if(!copy) return;
+    const link = document.createElement('a');
+    link.href='/discover/'+encodeURIComponent(article.slug);
+    link.dataset.discoverArticle=article.slug;
+    const number=document.createElement('span'); number.textContent='0'+(index+1);
+    const title=document.createElement('h3'); title.textContent=copy.title;
+    const summary=document.createElement('p'); summary.textContent=copy.summary;
+    link.append(number,title,summary); grid.append(link);
+  });
+}
 
 function installAdminContentMarkup() {
   const nav = document.querySelector(".side-nav");
@@ -1389,6 +1410,7 @@ function applyLanguage(language, persist = true) {
     node.setAttribute("title", t(node.dataset.i18nTitle));
   });
   applyLabLanguage();
+  renderJapaneseFeatures();
   applyPublishedContent();
   renderContentEditor();
   el.languageToggle.textContent = state.language === "mn" ? "EN" : "MN";
@@ -1426,6 +1448,8 @@ const PAGE_COPY = {
 };
 
 function updatePageCopy() {
+  window.dispatchEvent(new Event("gnwaa:public-view"));
+  document.body.classList.toggle("jm-public", !isAdminPath() && normalizedPath() !== "/login");
   const copy = PAGE_COPY[state.currentPage] || PAGE_COPY.home;
   el.pageTitle.textContent = t(copy.title);
   el.pageDescription.textContent = t(copy.description);
@@ -1834,6 +1858,7 @@ function introNavigationType() {
 function startMatrixRain() {
   const canvas = el.matrixCanvas;
   if (!canvas?.getContext) return null;
+  if (canvas?.dataset?.japaneseIntro === "true") {canvas.width=0;canvas.height=0;return null;}
   let context;
   try {
     context = canvas.getContext("2d", { alpha: true, desynchronized: true });
@@ -1975,7 +2000,7 @@ function startMatrixSplash() {
 
   let reducedMotion;
   try {
-    reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches || document.documentElement?.dataset?.motion === "off" || document.documentElement?.dataset?.motion === "reduced";
   } catch {
     hideWithoutAnimation();
     return;
@@ -2045,11 +2070,13 @@ function startMatrixSplash() {
       try { document.removeEventListener("keydown", onKeydown); } catch { /* Best-effort listener cleanup. */ }
       window.removeEventListener("popstate", hideSplash);
       window.removeEventListener("pagehide", hideSplash);
+      window.removeEventListener("gnwaa:intro-stop", hideSplash);
       try { stopMatrix?.(); } catch { /* Best-effort Canvas cleanup. */ }
     };
     document.addEventListener("keydown", onKeydown);
     window.addEventListener("popstate", hideSplash);
     window.addEventListener("pagehide", hideSplash);
+    window.addEventListener("gnwaa:intro-stop", hideSplash);
     loader.focus({ preventScroll: true });
 
     // Shared 8-second sequence: 7s animation + 1s fade, independent of API work.
@@ -2720,13 +2747,25 @@ function mobileDrawerFocusables() {
     .filter((node) => node.getClientRects().length > 0);
 }
 
+function usesCompactNavigation() {
+  return window.matchMedia(document.body.classList.contains("jm-public")
+    ? "(max-width: 1100px)" : "(max-width: 780px)").matches;
+}
+
 function setMobileNavOpen(open, { restoreFocus = false } = {}) {
   if (open) state.mobileNavReturnFocus = document.activeElement;
+  if (document.body.classList.contains("jm-public") && open) {
+    el.sidebar.setAttribute("role", "dialog");
+    el.sidebar.setAttribute("aria-modal", "true");
+  } else {
+    el.sidebar.removeAttribute("role");
+    el.sidebar.removeAttribute("aria-modal");
+  }
   el.sidebar.classList.toggle("is-mobile-open", open);
   el.mobileNavToggle.setAttribute("aria-expanded", String(open));
   el.mobileNavToggle.setAttribute("aria-label", t(open ? "nav.closeMenu" : "nav.openMenu"));
   el.mobileNavToggle.title = t(open ? "nav.closeMenu" : "nav.openMenu");
-  if (window.matchMedia("(max-width: 780px)").matches) {
+  if (usesCompactNavigation()) {
     const mobileLabel = open ? "nav.closeMenu" : "sidebar.collapse";
     el.sidebarToggle.setAttribute("aria-expanded", String(open));
     el.sidebarToggle.dataset.i18nAria = mobileLabel;
@@ -2737,11 +2776,12 @@ function setMobileNavOpen(open, { restoreFocus = false } = {}) {
   el.mobileNavBackdrop.hidden = !open;
   el.mainShell.inert = open;
   document.body.classList.toggle("mobile-nav-open", open);
-  if (open) window.requestAnimationFrame(() => {
+  // Let the responsive visibility transition and inert update settle before focus.
+  if (open) window.requestAnimationFrame(() => window.requestAnimationFrame(() => {
     if (!el.sidebar.classList.contains("is-mobile-open")) return;
     const focusable = mobileDrawerFocusables();
     (focusable.find((node) => node.closest(".side-nav")) || focusable[0])?.focus();
-  });
+  }));
   if (!open) {
     const returnFocus = state.mobileNavReturnFocus;
     state.mobileNavReturnFocus = null;
@@ -2750,7 +2790,7 @@ function setMobileNavOpen(open, { restoreFocus = false } = {}) {
 }
 
 el.sidebarToggle.addEventListener("click", () => {
-  if (window.matchMedia("(max-width: 780px)").matches && el.sidebar.classList.contains("is-mobile-open")) {
+  if (usesCompactNavigation() && el.sidebar.classList.contains("is-mobile-open")) {
     setMobileNavOpen(false, { restoreFocus: true });
     return;
   }
@@ -2778,7 +2818,7 @@ document.addEventListener("keydown", (event) => {
   }
 });
 window.addEventListener("resize", () => {
-  if (window.matchMedia("(min-width: 781px)").matches && el.sidebar.classList.contains("is-mobile-open")) {
+  if (!usesCompactNavigation() && el.sidebar.classList.contains("is-mobile-open")) {
     setMobileNavOpen(false);
     setSidebarCollapsed(el.sidebar.classList.contains("is-collapsed"), false);
   }
@@ -3015,7 +3055,7 @@ document.addEventListener("keydown", (event) => {
 });
 
 state.currentPage = pageFromCurrentLocation();
-applyTheme(readPreference(THEME_KEY, ["dark", "light"], "dark"), false);
+applyTheme(isAdminPath() || normalizedPath() === "/login" ? readPreference(THEME_KEY, ["dark", "light"], "dark") : resolveJapanAppearance(), false);
 applyAccentTheme(readPreference(ACCENT_THEME_KEY, ACCENT_THEME_IDS, "aurora-purple"), false);
 setSidebarCollapsed(readPreference(SIDEBAR_KEY, ["expanded", "collapsed"], "expanded") === "collapsed", false);
 applyLanguage(readPreference(LANGUAGE_KEY, ["mn", "en"], "mn"), false);
@@ -3034,3 +3074,14 @@ if (isAdminPath() || normalizedPath() === "/login") {
 }
 void initializeAuthentication();
 void loadPublicContent();
+
+// Complete the entrance once per document, not on language/filter interactions.
+const heroEntrance = document.querySelector('.home-hero');
+const finishHeroEntrance = event => {
+  if(event.animationName !== 'jm-hero-copy-enter' || !event.target.matches('h1')) return;
+  heroEntrance.classList.add('jm-hero-revealed');
+  heroEntrance.removeEventListener('animationend', finishHeroEntrance);
+};
+if(heroEntrance && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) heroEntrance.addEventListener('animationend', finishHeroEntrance);
+
+initJapanExperience({applyAppearance:applyTheme, articles:DISCOVER_ARTICLES, getCopy:getDiscoverCopy, openArticle:openDiscoverArticle, navigate:setActivePage, legacyText:t, closeLegacyAppearance:closeThemeStudio});
