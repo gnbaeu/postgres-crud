@@ -1,0 +1,122 @@
+/* GNWAA public design system. Owner/admin styling remains independent. */
+:root{
+ --mn-sky:#3C83C5;--mn-deep-blue:#153452;--mn-gold:#E5B85B;--mn-sand:#E9D9B8;--mn-ink:#172330;--mn-ivory:#F8F3E9;
+ --mn-gallery:#25313B;--mn-art-sky:#142C46;--mn-art-cloud:#476887;--mn-art-far:#304C65;--mn-art-near:#3F615F;--mn-art-grass:#314E4A;
+ --mn-moving-cloud:#6D86AA;--mn-moving-cloud-shade:#3A557E;--mn-rim:#648097;--mn-selected:#E5B85B;--mn-selected-ink:#172330;
+}
+:root[data-theme="light"]{
+ --mn-gallery:#E9D9B8;--mn-art-sky:#B5D8E9;--mn-art-cloud:#F8F3E9;--mn-art-far:#769DAF;--mn-art-near:#769487;--mn-art-grass:#A3AE84;
+ --mn-moving-cloud:#E2E6E8;--mn-moving-cloud-shade:#A9BDDA;--mn-rim:#9B865F;
+}
+.mn-icon{width:32px;height:32px;fill:currentColor;shape-rendering:crispEdges;flex:none}
+.jm-public .pz-header{border-bottom:1px solid var(--border)}
+.jm-public .pz-nav a{font-weight:400}
+.jm-public .pz-nav a[aria-current="page"]{color:var(--accent);border-bottom-color:var(--accent)}
+.jm-public :is(.pz-button,.button,.rz-button,.qd-type,select,input:not([type=checkbox]):not([type=radio]),textarea){border-radius:0;border-width:2px}
+.jm-public :is(.pz-button,.button,.rz-button){transition:background-color 150ms,color 150ms,border-color 150ms}
+.jm-public :is(.pz-button,.button,.rz-button):active:not(:disabled){transform:translateY(1px)}
+.jm-public :is(.pz-page-heading,.page-intro,.rz-page-header){position:relative;border-bottom:1px solid var(--border);margin-bottom:28px}
+.jm-public :is(.pz-page-heading,.page-intro,.rz-page-header)::after{content:"";position:absolute;left:0;bottom:-4px;width:96px;height:8px;background:var(--background) url('/images/mongol-ornament.svg') repeat-x;pointer-events:none}
+.jm-public .pz-micro,.jm-public .rz-kicker{color:var(--accent)}
+.jm-public .pz-page-heading h1{max-width:18ch;font-weight:400;line-height:1.24}
+.jm-public .pz-section-label{display:flex;align-items:center;gap:20px;margin-bottom:20px}
+.jm-public .pz-section-label>span{color:var(--accent)}
+/* Exhibition: real screenshots have a restrained sandstone frame and museum label. */
+.mn-gallery-heading{max-width:none;padding-right:90px}
+.mn-gallery-sign{position:absolute;right:4px;top:48px;color:var(--accent)}
+.mn-gallery-sign .mn-icon{width:48px;height:48px}
+.jm-public .pz-project-entry{padding:30px 0;gap:32px;border-top:0;border-bottom:1px solid var(--border);align-items:stretch}
+.jm-public .pz-project-media{border:2px solid var(--mn-rim);padding:8px;background:var(--mn-gallery);align-self:start}
+.jm-public .pz-project-visual{border:1px solid var(--border);background:var(--surface)}
+.jm-public .pz-project-media figcaption{border:0;padding:12px 4px 4px}
+.jm-public .pz-project-copy{padding:24px;background:var(--mn-gallery);border-left:3px solid var(--accent)}
+.jm-public .pz-project-copy h2{font-weight:400}
+.jm-public .pz-tech-list li{border-radius:0;background:var(--surface);border-color:var(--border);padding:3px 8px}
+.jm-public .pz-workbench{padding:24px;background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--accent)}
+.jm-public .pz-case-sections section{border-bottom-style:solid}
+/* Small decorative landscapes never cover copy or controls. */
+.mn-illustrated-heading{max-width:none;min-height:252px;padding-right:390px}
+.mn-illustrated-heading h1{max-width:20ch}
+.mn-landscape{position:absolute;right:0;bottom:24px;width:360px;max-width:100%;overflow:hidden;pointer-events:none;user-select:none}
+.mn-landscape svg{display:block;width:100%;height:auto;image-rendering:pixelated;shape-rendering:crispEdges}
+.mn-scene-caption{display:block;margin-top:20px;font-size:16px;color:var(--text-secondary)}
+.mn-camp-stars{opacity:.75;animation:mn-stars 8s ease-in-out infinite}
+@keyframes mn-stars{0%,100%{opacity:.6}50%{opacity:.85}}
+.mp-ambient-clouds{opacity:.7}
+.mp-ambient-cloud-one{--mn-drift-x:452px;--mn-drift-y:94px;animation:mn-world-cloud 48s -12s ease-in-out infinite}
+.mp-ambient-cloud-two{--mn-drift-x:762px;--mn-drift-y:142px;animation:mn-world-cloud 58s -28s ease-in-out infinite}
+@keyframes mn-world-cloud{0%,100%{transform:translate(var(--mn-drift-x),var(--mn-drift-y))}50%{transform:translate(calc(var(--mn-drift-x) + 18px),var(--mn-drift-y))}}
+:root[data-theme="light"] .mn-camp-stars{display:none}
+.mn-steppe-cloud{animation:mn-cloud-drift 52s ease-in-out infinite}
+.mn-fire-a{animation:mn-fire-flicker 1.8s steps(2,end) infinite;transform-origin:496px 196px}
+.mn-fire-b{animation:mn-fire-flicker 2.2s -.7s steps(2,end) infinite;transform-origin:496px 196px}
+@keyframes mn-cloud-drift{0%,100%{transform:translateX(0)}50%{transform:translateX(12px)}}
+@keyframes mn-fire-flicker{0%,100%{opacity:.75;transform:scaleY(.85)}50%{opacity:1;transform:scaleY(1)}}
+.jm-public .pz-quick{padding:28px;border:2px solid var(--mn-rim);background:var(--surface);margin-top:28px}
+.jm-public .qd-result{border:1px solid var(--border);border-left:3px solid var(--accent);background:var(--background)}
+.jm-public .qd-type button[aria-pressed="true"]{background:var(--mn-selected);color:var(--mn-selected-ink);border-color:var(--mn-selected)}
+.jm-public .pz-gacha-feature{gap:28px;padding:28px 0}
+.jm-public .pz-gacha-illustration{border:1px solid var(--border);background:var(--surface)}
+.jm-public .pz-experiments li{border:1px solid var(--border);border-left:3px solid var(--accent);padding:22px;margin-top:12px;background:var(--surface)}
+.jm-public .pz-experiments li a:hover{color:var(--accent)}
+.jm-public .pz-omikuji{padding:24px;border:1px solid var(--border);background:var(--surface)}
+.jm-public .about-creator-image picture{padding:6px;border:2px solid var(--mn-rim);background:var(--mn-gallery)}
+.jm-public .pz-biography{padding-top:16px}
+.jm-public .pz-about-notes{gap:40px}
+.jm-public :is(.id-case-card,.pl-question,.du-planet-field){border:1px solid var(--border);border-left:3px solid var(--accent);background:var(--surface)}
+.jm-public :is(.du-interest-card,.pl-option):has(input:checked){background:var(--mn-selected);color:var(--mn-selected-ink);border-color:var(--mn-selected)}
+.jm-public :is(.du-interest-card,.pl-option):has(input:focus-visible){outline:2px solid var(--accent);outline-offset:4px}
+.jm-public .pz-footer{border-top:2px solid var(--border)}
+/* RPG panels: preserve the existing semantic buttons and selection attributes. */
+.jm-public .randomizer-view{--rz-soft:#E5B85B16;--rz-paper:var(--surface)}
+.jm-public :is(.rz-choice,.rz-filters,.rz-result,.rz-collection,.rz-waiting){border:2px solid var(--mn-rim);border-radius:0;background:var(--surface)}
+.jm-public :is(.rz-filters,.rz-collection-heading){background-image:url('/images/mongol-ornament.svg');background-repeat:repeat-x;background-position:left top}
+.jm-public .rz-choice{padding-top:24px}
+.jm-public .rz-choice:hover{transform:translateY(-2px);border-color:var(--accent)}
+.jm-public .rz-choice-art{color:var(--accent)}
+.jm-public .mn-rpg-art{fill:currentColor;stroke:none;shape-rendering:crispEdges;image-rendering:pixelated}
+.jm-public .rz-choice-art .mn-rpg-art{height:140px;width:140px;margin:24px auto}
+.jm-public :is(.rz-chip,.rz-mode,.rz-mode button,.rz-tag,.rz-counter,.rz-heart,.rz-circle-arrow){border-radius:0}
+.jm-public .rz-chip[aria-pressed="true"],.jm-public .rz-mode button[aria-pressed="true"]{background:var(--mn-selected);border-color:var(--mn-selected);color:var(--mn-selected-ink)}
+.jm-public .rz-chip[aria-pressed="true"] .rz-chip-check{color:inherit}
+.jm-public .rz-heart[aria-pressed="true"]{color:var(--mn-selected-ink);background:var(--mn-selected);border-color:var(--mn-selected)}
+.jm-public .rz-result-art{border-bottom:1px solid var(--border);color:var(--accent)}
+.jm-public .rz-result-art .mn-rpg-art{height:112px;width:112px;margin-block:24px}
+.jm-public .rz-capsule.mn-rpg-art{height:80px;width:80px;color:var(--accent)}
+.jm-public .rz-collection-heading{padding-top:24px;background-color:var(--mn-gallery)}
+.jm-public .rz-collection li{align-items:center;background:var(--surface);border-bottom-style:dashed}
+.jm-public .rz-list-number{display:grid;place-items:center;width:32px;min-width:32px;height:32px;border:1px solid var(--border);background:var(--background)}
+.jm-public .rz-open-saved:focus-visible{outline-offset:-2px}
+/* Terminal styling only; lifecycle, focus, persistence and Enter logic are unchanged. */
+.terminal-welcome{border:2px solid var(--mn-rim);border-radius:0}
+.tw-bar{background:var(--surface);border-bottom:1px solid var(--border)}
+.tw-dots .mn-terminal-mark{width:28px;height:28px;fill:var(--accent)}
+.tw-bar>svg{flex:none}
+.tw-command{border-left:2px solid var(--accent);padding-left:12px}
+.tw-enter{border-radius:0}
+/* All ambient motion shares the existing public motion preference. */
+:root[data-motion="off"] :is(.mn-landscape,.mp-ambient-clouds) *,
+:root[data-motion="reduced"] :is(.mn-landscape,.mp-ambient-clouds) *{animation:none!important}
+:root[data-world-paused="true"] :is(.mn-landscape,.mp-ambient-clouds) *{animation-play-state:paused!important}
+@media(prefers-reduced-motion:reduce){.mn-landscape *,.mp-ambient-clouds *{animation:none!important}}
+@media(max-width:1000px){.mn-illustrated-heading{padding-right:300px}.mn-landscape{width:280px}.jm-public .pz-project-entry{gap:24px}}
+@media(max-width:768px){
+ .mn-illustrated-heading{padding-right:0;min-height:0}
+ .mn-landscape{position:relative;right:auto;bottom:auto;width:100%;max-width:480px;margin:24px 0 8px}
+ .mn-steppe-cloud{animation:none}
+ .jm-public .pz-project-entry{grid-template-columns:minmax(0,1fr)}
+}
+@media(max-width:600px){
+ .jm-public .pz-quick{padding:20px 16px}
+ .jm-public .pz-project-copy{padding:20px 16px}
+ .jm-public .pz-workbench{padding:20px 16px;grid-template-columns:minmax(0,1fr) 28px}
+ .jm-public .pz-workbench>.pz-micro{grid-column:1/-1}
+ .jm-public .pz-experiments li{padding:18px 12px;gap:10px;grid-template-columns:20px minmax(0,1fr) auto}
+ .jm-public .pz-omikuji{padding:20px 16px;gap:12px}
+ .mn-gallery-sign .mn-icon{width:32px;height:32px}
+ .mn-gallery-heading{padding-right:52px}
+ .mn-landscape{margin-top:18px}
+ .mn-fire-b,.mn-camp-stars,.mp-ambient-cloud-two{animation:none}
+ .jm-public .rz-result-art .mn-rpg-art{height:90px;width:90px}
+ .tw-dots .mn-terminal-mark{width:24px;height:24px}
+}

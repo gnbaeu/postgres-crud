@@ -12,7 +12,7 @@ import {
 
 const html = await readFile(new URL("../index.html", import.meta.url), "utf8");
 const app = await readFile(new URL("../app.js", import.meta.url), "utf8");
-const styles = await readFile(new URL("../style.css", import.meta.url), "utf8");
+const styles = await readFile(new URL("../pixel-zen.css", import.meta.url), "utf8");
 const vercel = JSON.parse(await readFile(new URL("../vercel.json", import.meta.url), "utf8"));
 
 assert.equal(DISCOVER_ARTICLES.length, 9, "Discover must start with nine sample articles.");
@@ -78,10 +78,10 @@ const englishUnavailable = [{ ...DISCOVER_ARTICLES[0], slug: "mn-only", content:
 assert.equal(selectSurpriseArticle(englishUnavailable, "en"), null, "Articles without the selected language must be excluded.");
 assert.equal(selectSurpriseArticle([], "mn"), null, "An empty public catalog should return an empty result safely.");
 
-assert.match(html, /href="\/discover"[^>]*data-page-link="discover"/u, "Discover must be in the public navigation.");
+assert.match(html, /href="\/discover"[^>]*data-page-link="discover"/u, "Discover archive compatibility link remains in the owner navigation.");
 assert.match(html, /id="discover-search" type="search"/u, "Discover needs an accessible title-search control.");
 assert.match(html, /id="discover-surprise" type="button"/u, "The Discover hero needs a keyboard-accessible Surprise Me button.");
-const discoverMarkup = html.slice(html.indexOf('<section class="discover-view"'), html.indexOf('<section class="about-view"'));
+const discoverMarkup = html.slice(html.indexOf('<section class="discover-view"'), html.indexOf('<section class="pz-about"'));
 assert.match(discoverMarkup, /aria-labelledby="page-title"/u, "Discover should use the shared page-level H1.");
 assert.doesNotMatch(discoverMarkup, /<h1\b/u, "Discover listing markup should not add another page-level H1.");
 assert.doesNotMatch(discoverMarkup, /discover-page-heading|id="discover-surprise"/u,
@@ -136,13 +136,9 @@ assert.match(app, /target = "_blank";[\s\S]*rel = "noopener noreferrer"/u, "Exte
 const articleRenderer = app.slice(app.indexOf("function renderDiscoverArticle("), app.indexOf("function updateDiscoverReadingProgress("));
 assert.match(articleRenderer, /textContent/u, "Article copy must be inserted as text.");
 assert.doesNotMatch(articleRenderer, /innerHTML/u, "Article copy must not be rendered as raw HTML.");
-assert.match(styles, /\.discover-article-grid\s*\{[^}]*repeat\(3/u, "Discover needs a desktop card grid.");
-assert.match(styles, /@media \(max-width: 1080px\)[\s\S]*\.discover-article-grid/u, "Discover needs tablet layout rules.");
-assert.match(styles, /@media \(max-width: 600px\)[\s\S]*\.discover-article-grid\s*\{ grid-template-columns: 1fr/u,
-  "Discover needs a single-column mobile layout.");
-assert.match(styles, /\.discover-surprise-button[^\{]*\{[^}]*linear-gradient/u, "Surprise controls must use the Aurora gradient style.");
-assert.match(styles, /@media \(prefers-reduced-motion: reduce\)[\s\S]*\.discover-featured/u,
-  "Surprise and Discover animations must respect reduced-motion preferences.");
+assert.match(styles, /\.discover-article-grid[^}]*repeat\(2/u, "Archive keeps an editorial desktop grid.");
+assert.match(styles, /@media\(max-width:600px\)[\s\S]*\.discover-article-grid\{grid-template-columns:1fr/u, "Archive stacks on mobile.");
+assert.match(styles, /\.discover-surprise-button[^}]*min-height:44px/u, "Archive actions keep touch targets.");
 assert.ok(vercel.rewrites.some((rewrite) => rewrite.source === "/discover" && rewrite.destination === "/"),
   "Vercel must serve the SPA entry point for /discover.");
 assert.ok(vercel.rewrites.some((rewrite) => rewrite.source === "/discover/:path*" && rewrite.destination === "/"),

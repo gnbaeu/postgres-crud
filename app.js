@@ -1,14 +1,30 @@
+import { initWorldMotion } from "./mongol-scene.js";
+import { initPixelInteractions } from "./pixel-interactions.js";
+import { initWelcome } from "./welcome.js";
+import { initQuickDraw } from "./quick-draw.js";
+import { initPortfolio } from "./portfolio.js";
+import { PORTFOLIO_COPY } from "./portfolio-copy.js";
+import legacyStyleUrl from "./style.css?url";
 import { initJapanExperience, resolveJapanAppearance } from "./japan-experience.js";
+import { initRandomizer } from "./randomizer-ui.js";
+import { RANDOMIZER_COPY } from "./randomizer-copy.js";
 import { requestJson, resetCsrfToken } from "./api.js";
 import {
   DISCOVER_ARTICLES,
   DISCOVER_CATEGORIES,
   FEATURED_ARTICLE_SLUG,
   getDiscoverArticle,
-  getDiscoverCopy,
+  getDiscoverCopy as getOriginalDiscoverCopy,
   resolveDiscoverRoute,
-  selectSurpriseArticle
+  selectSurpriseArticle as selectOriginalSurpriseArticle
 } from "./discover/articles.js";
+
+const legacyStyles = document.createElement("link");
+legacyStyles.rel = "stylesheet";
+legacyStyles.href = legacyStyleUrl;
+legacyStyles.id = "legacy-admin-styles";
+legacyStyles.disabled = true;
+document.head.append(legacyStyles);
 
 const API_PAGE_SIZE = 100;
 const PAGE_SIZE = 10;
@@ -39,21 +55,21 @@ const UI_TEXT = {
     "auth.checkingSession": "Сесс шалгаж байна…",
     "page.title": "Хэрэглэгчийн удирдлага · GANBAT", "page.overviewTitle": "Тойм", "page.overviewDescription": "Хэрэглэгчдийн ерөнхий мэдээлэл.", "page.customersTitle": "Хэрэглэгчид", "page.customersDescription": "Харилцагчдын мэдээллээ нэг дороос удирдаарай.", "page.analyticsTitle": "Аналитик", "page.analyticsDescription": "Хэрэглэгчдийн бүтэц, төлөвийг шинжлээрэй.", "page.settingsTitle": "Тохиргоо", "page.settingsDescription": "Dashboard-ийн харагдац болон хэлийг өөрчилнө.", "page.overviewEyebrow": "ТОЙМ", "page.customersEyebrow": "ХЭРЭГЛЭГЧИЙН БҮРТГЭЛ", "page.analyticsEyebrow": "ӨГӨГДЛИЙН ШИНЖИЛГЭЭ", "page.settingsEyebrow": "ТАНЫ СОНГОЛТ",
     "overview.recentTitle": "Сүүлд бүртгэгдсэн", "overview.recentSubtitle": "Хамгийн сүүлд нэмэгдсэн хэрэглэгчид", "overview.viewAll": "Бүгдийг харах", "overview.empty": "Хэрэглэгчийн мэдээлэл алга байна.",
-    "settings.themeTitle": "Загвар", "settings.themeDescription": "Цайвар болон бараан горимын хооронд сонгоно.", "settings.languageTitle": "Хэл", "settings.languageDescription": "Dashboard-ийн хэлийг сонгоно.", "settings.dataTitle": "Өгөгдлийн холболт", "settings.dataDescription": "Customer мэдээллийг Supabase Data API-аар удирдана.", "settings.themeAction": "Загвар солих", "settings.languageAction": "Хэл солих",
+    "settings.themeTitle": "Загвар", "settings.themeDescription": "Цайвар болон бараан горимын хооронд сонгоно.", "settings.languageTitle": "Хэл", "settings.languageDescription": "Dashboard-ийн хэлийг сонгоно.", "settings.dataTitle": "Өгөгдлийн холболт", "settings.dataDescription": "Customer мэдээллийг хамгаалалттай GNWAA REST API-аар удирдана.", "settings.themeAction": "Загвар солих", "settings.languageAction": "Хэл солих",
     "actions.refresh": "Шинэчлэх", "actions.add": "Хэрэглэгч нэмэх", "actions.cancel": "Болих", "actions.close": "Цонх хаах", "actions.delete": "Устгах", "actions.deleting": "Устгаж байна…", "actions.edit": "Засах", "actions.save": "Хадгалах", "actions.saveEdit": "Өөрчлөлт хадгалах", "actions.saving": "Хадгалж байна…", "actions.retry": "Дахин оролдох",
     "stats.total": "Нийт хэрэглэгч", "stats.totalHint": "Бүртгэлтэй бүх хэрэглэгч", "stats.active": "Идэвхтэй", "stats.activeHint": "Үйлчилгээ авч буй", "stats.inactive": "Идэвхгүй", "stats.inactiveHint": "Түр зогсоосон бүртгэл",
     "table.title": "Бүх хэрэглэгч", "table.subtitle": "Хэрэглэгчдийн бүртгэл болон төлөв", "table.customer": "ХЭРЭГЛЭГЧ", "table.customerId": "CUSTOMER ID", "table.storeId": "STORE ID", "table.addressId": "ADDRESS ID", "table.status": "ТӨЛӨВ", "table.actions": "Үйлдэл",
     "analytics.aria": "Хэрэглэгчийн статистикийн графикууд", "analytics.storeTitle": "Store ID-аар хэрэглэгчид", "analytics.storeSubtitle": "Бүртгэлтэй хэрэглэгчдийн хуваарилалт", "analytics.storeChartAria": "Store бүрийн хэрэглэгчийн тоо", "analytics.activeTitle": "Идэвхийн түвшин", "analytics.activeSubtitle": "Нийт хэрэглэгчдийн төлөв", "analytics.empty": "График харуулах хэрэглэгчийн өгөгдөл алга.", "analytics.storeLabel": "Store {id}", "analytics.storeCount": "{count} хэрэглэгч", "analytics.storeUnknown": "Store ID байхгүй", "analytics.activeAria": "Идэвхтэй хэрэглэгч {percent}%",
     "search.placeholder": "Нэр эсвэл email хайх…", "pagination.previous": "Өмнөх хуудас", "pagination.next": "Дараагийн хуудас",
-    "footer.title": "Хэрэглэгчийн удирдлага", "footer.source": "Өгөгдөл Supabase Data API-аар удирдагдана",
+    "footer.title": "Хэрэглэгчийн удирдлага", "footer.source": "Өгөгдөл GNWAA REST API-аар удирдагдана",
     "form.firstName": "Нэр", "form.lastName": "Овог", "form.optional": "Сонголтоор", "form.firstPlaceholder": "Жишээ: Бат", "form.lastPlaceholder": "Жишээ: Эрдэнэ", "form.emailPlaceholder": "name@example.com", "form.activeStatus": "Идэвхтэй төлөв", "form.activeHint": "Энэ хэрэглэгч идэвхтэй хэвээр байна.",
     "modal.createTitle": "Хэрэглэгч нэмэх", "modal.editTitle": "Хэрэглэгч засах", "modal.createDescription": "Шинэ бүртгэлийн мэдээллийг оруулна уу.", "modal.editDescription": "Хэрэглэгч #{id} мэдээллийг шинэчилнэ үү.",
     "delete.title": "Хэрэглэгч устгах уу?", "delete.description": "“{name}” бүртгэлийг устгах гэж байна. Энэ үйлдлийг буцаах боломжгүй.",
     "state.loadingTitle": "Өгөгдөл ачаалж байна", "state.loadingDescription": "PostgreSQL өгөгдлийг API-аас татаж байна…", "state.loadErrorTitle": "Өгөгдөл ачаалж чадсангүй", "state.noSearchTitle": "Хайлтын үр дүн олдсонгүй", "state.noSearchDescription": "Нэр, овог эсвэл email-ээ өөрчлөөд дахин хайна уу.", "state.emptyTitle": "Одоогоор хэрэглэгч бүртгэгдээгүй байна", "state.emptyDescription": "Шинэ хэрэглэгч нэмж эхлүүлээрэй.",
     "status.active": "Идэвхтэй", "status.inactive": "Идэвхгүй", "row.noEmail": "Email байхгүй", "row.noName": "Нэргүй хэрэглэгч", "row.edit": "{name} мэдээлэл засах", "row.delete": "{name} устгах", "range.label": "{from}–{to} / {total} хэрэглэгч", "range.empty": "0 хэрэглэгч",
     "toast.success": "Амжилттай", "toast.error": "Алдаа", "toast.created": "Шинэ хэрэглэгч амжилттай нэмэгдлээ.", "toast.updated": "Хэрэглэгчийн мэдээлэл шинэчлэгдлээ.", "toast.deleted": "Хэрэглэгч #{id} устгагдлаа.",
-    "connection.checking": "Шалгаж байна…", "connection.connected": "API холбогдсон", "connection.disconnected": "API холболтгүй", "connection.detail": "Supabase Data API", "connection.failedDetail": "Supabase тохиргоогоо шалгана уу",
-    "errors.foreignKey": "Холбоотой бүртгэл олдсонгүй. Мэдээллээ шалгана уу.", "errors.required": "Заавал бөглөх талбар дутуу байна. Нэр, овог, Store ID, Address ID-г шалгана уу.", "errors.numeric": "ID талбарт зөв, боломжит тоон утга оруулна уу.", "errors.duplicate": "Ижил утгатай бүртгэл аль хэдийн байна. Мэдээллээ шалгаад дахин оролдоно уу.", "errors.schema": "Supabase хүснэгтийн баганатай холбоотой алдаа гарлаа. Migration болон customer_records хүснэгтийг шалгана уу.", "errors.network": "Supabase Data API-д холбогдож чадсангүй. Төслийн URL болон холболтоо шалгана уу.", "errors.access": "Энэ бүртгэлд хандах эрхгүй эсвэл RLS бодлого үйлдлийг хориглолоо.", "errors.session": "Session хүчингүй болсон. Дахин нэвтэрнэ үү.", "errors.generic": "Хүсэлтийг боловсруулах үед алдаа гарлаа. Дахин оролдоно уу.", "errors.nameRequired": "Нэр болон овог заавал бөглөх талбар.", "errors.idsRequired": "Store ID болон Address ID нь 0-ээс их бүхэл тоо байх ёстой.", "errors.email": "Email хаягийн форматыг шалгана уу."
+    "connection.checking": "Шалгаж байна…", "connection.connected": "API холбогдсон", "connection.disconnected": "API холболтгүй", "connection.detail": "GNWAA REST API", "connection.failedDetail": "Express API холболтоо шалгана уу",
+    "errors.foreignKey": "Холбоотой бүртгэл олдсонгүй. Мэдээллээ шалгана уу.", "errors.required": "Заавал бөглөх талбар дутуу байна. Нэр, овог, Store ID, Address ID-г шалгана уу.", "errors.numeric": "ID талбарт зөв, боломжит тоон утга оруулна уу.", "errors.duplicate": "Ижил утгатай бүртгэл аль хэдийн байна. Мэдээллээ шалгаад дахин оролдоно уу.", "errors.schema": "Өгөгдлийн хүснэгтийн алдаа гарлаа. Backend migration төлөвийг шалгана уу.", "errors.network": "GNWAA REST API-д холбогдож чадсангүй. Backend холболтоо шалгана уу.", "errors.access": "Энэ бүртгэлд хандах эрхгүй.", "errors.session": "Session хүчингүй болсон. Дахин нэвтэрнэ үү.", "errors.generic": "Хүсэлтийг боловсруулах үед алдаа гарлаа. Дахин оролдоно уу.", "errors.nameRequired": "Нэр болон овог заавал бөглөх талбар.", "errors.idsRequired": "Store ID болон Address ID нь 0-ээс их бүхэл тоо байх ёстой.", "errors.email": "Email хаягийн форматыг шалгана уу."
   },
   en: {
     "sidebar.collapse": "Collapse menu", "sidebar.expand": "Expand menu",
@@ -67,21 +83,21 @@ const UI_TEXT = {
     "auth.checkingSession": "Checking session…",
     "page.title": "Customer Management · GANBAT", "page.overviewTitle": "Overview", "page.overviewDescription": "A quick look at your customer base.", "page.customersTitle": "Customers", "page.customersDescription": "Manage your customer records in one place.", "page.analyticsTitle": "Analytics", "page.analyticsDescription": "Explore customer distribution and account status.", "page.settingsTitle": "Settings", "page.settingsDescription": "Customize the dashboard appearance and language.", "page.overviewEyebrow": "OVERVIEW", "page.customersEyebrow": "CUSTOMER DIRECTORY", "page.analyticsEyebrow": "DATA INSIGHTS", "page.settingsEyebrow": "PREFERENCES",
     "overview.recentTitle": "Recently added", "overview.recentSubtitle": "Your latest customer records", "overview.viewAll": "View all", "overview.empty": "There are no customer records yet.",
-    "settings.themeTitle": "Appearance", "settings.themeDescription": "Choose between light and dark mode.", "settings.languageTitle": "Language", "settings.languageDescription": "Choose the dashboard language.", "settings.dataTitle": "Data connection", "settings.dataDescription": "Manage customer records through the Supabase Data API.", "settings.themeAction": "Change theme", "settings.languageAction": "Change language",
+    "settings.themeTitle": "Appearance", "settings.themeDescription": "Choose between light and dark mode.", "settings.languageTitle": "Language", "settings.languageDescription": "Choose the dashboard language.", "settings.dataTitle": "Data connection", "settings.dataDescription": "Manage customer records through the GNWAA REST API.", "settings.themeAction": "Change theme", "settings.languageAction": "Change language",
     "actions.refresh": "Refresh", "actions.add": "Add customer", "actions.cancel": "Cancel", "actions.close": "Close dialog", "actions.delete": "Delete", "actions.deleting": "Deleting…", "actions.edit": "Edit", "actions.save": "Save customer", "actions.saveEdit": "Save changes", "actions.saving": "Saving…", "actions.retry": "Try again",
     "stats.total": "Total customers", "stats.totalHint": "All registered customers", "stats.active": "Active", "stats.activeHint": "Currently active accounts", "stats.inactive": "Inactive", "stats.inactiveHint": "Paused accounts",
     "table.title": "All customers", "table.subtitle": "Customer records and account status", "table.customer": "CUSTOMER", "table.customerId": "CUSTOMER ID", "table.storeId": "STORE ID", "table.addressId": "ADDRESS ID", "table.status": "STATUS", "table.actions": "Actions",
     "analytics.aria": "Customer analytics charts", "analytics.storeTitle": "Customers by store", "analytics.storeSubtitle": "Distribution of registered customers", "analytics.storeChartAria": "Customer count by store", "analytics.activeTitle": "Active rate", "analytics.activeSubtitle": "Account status across all customers", "analytics.empty": "No customer data available to chart.", "analytics.storeLabel": "Store {id}", "analytics.storeCount": "{count} customers", "analytics.storeUnknown": "No store ID", "analytics.activeAria": "{percent}% of customers are active",
     "search.placeholder": "Search name or email…", "pagination.previous": "Previous page", "pagination.next": "Next page",
-    "footer.title": "Customer Management", "footer.source": "Manage records through the Supabase Data API",
+    "footer.title": "Customer Management", "footer.source": "Manage records through the GNWAA REST API",
     "form.firstName": "First name", "form.lastName": "Last name", "form.optional": "Optional", "form.firstPlaceholder": "e.g. Alex", "form.lastPlaceholder": "e.g. Morgan", "form.emailPlaceholder": "name@example.com", "form.activeStatus": "Active status", "form.activeHint": "This customer account is active.",
     "modal.createTitle": "Add customer", "modal.editTitle": "Edit customer", "modal.createDescription": "Enter the new customer details.", "modal.editDescription": "Update details for customer #{id}.",
     "delete.title": "Delete this customer?", "delete.description": "You are about to delete “{name}”. This action cannot be undone.",
     "state.loadingTitle": "Loading customers", "state.loadingDescription": "Fetching customer data from PostgreSQL…", "state.loadErrorTitle": "Could not load customers", "state.noSearchTitle": "No matching customers", "state.noSearchDescription": "Try another name, surname, or email address.", "state.emptyTitle": "No customers yet", "state.emptyDescription": "Add a customer to get started.",
     "status.active": "Active", "status.inactive": "Inactive", "row.noEmail": "No email provided", "row.noName": "Unnamed customer", "row.edit": "Edit {name}", "row.delete": "Delete {name}", "range.label": "{from}–{to} of {total} customers", "range.empty": "0 customers",
     "toast.success": "Success", "toast.error": "Error", "toast.created": "Customer added successfully.", "toast.updated": "Customer details updated.", "toast.deleted": "Customer #{id} was deleted.",
-    "connection.checking": "Checking…", "connection.connected": "API connected", "connection.disconnected": "API unavailable", "connection.detail": "Supabase Data API", "connection.failedDetail": "Check the Supabase configuration",
-    "errors.foreignKey": "A related record could not be found. Check the details.", "errors.required": "A required value is missing. Check first name, last name, Store ID, and Address ID.", "errors.numeric": "Enter a valid numeric value for each ID field.", "errors.duplicate": "A record with the same value already exists. Check the details and try again.", "errors.schema": "The Supabase table reported a column error. Check the migration and customer_records table.", "errors.network": "Could not connect to the Supabase Data API. Check the project URL and connection.", "errors.access": "You are not allowed to access this record, or an RLS policy blocked the action.", "errors.session": "The session is invalid or expired. Please sign in again.", "errors.generic": "The request could not be completed. Please try again.", "errors.nameRequired": "First name and last name are required.", "errors.idsRequired": "Store ID and Address ID must be positive whole numbers.", "errors.email": "Check the email address format."
+    "connection.checking": "Checking…", "connection.connected": "API connected", "connection.disconnected": "API unavailable", "connection.detail": "GNWAA REST API", "connection.failedDetail": "Check the Express API connection",
+    "errors.foreignKey": "A related record could not be found. Check the details.", "errors.required": "A required value is missing. Check first name, last name, Store ID, and Address ID.", "errors.numeric": "Enter a valid numeric value for each ID field.", "errors.duplicate": "A record with the same value already exists. Check the details and try again.", "errors.schema": "The database reported a table error. Check the backend migration status.", "errors.network": "Could not connect to the GNWAA REST API. Check the backend connection.", "errors.access": "You are not allowed to access this record.", "errors.session": "The session is invalid or expired. Please sign in again.", "errors.generic": "The request could not be completed. Please try again.", "errors.nameRequired": "First name and last name are required.", "errors.idsRequired": "Store ID and Address ID must be positive whole numbers.", "errors.email": "Check the email address format."
   }
 };
 
@@ -173,8 +189,8 @@ UI_TEXT.mn["errors.schema"] = "GNWAA өгөгдлийн сангийн хүсн�
 UI_TEXT.en["errors.schema"] = "A GNWAA database table is missing. Check the local migration state.";
 UI_TEXT.mn["errors.network"] = "GNWAA API-д холбогдож чадсангүй. Backend холболтоо шалгана уу.";
 UI_TEXT.en["errors.network"] = "Could not connect to the GNWAA API. Check the backend connection.";
-UI_TEXT.mn["errors.access"] = "Энэ бүртгэлд хандах эрхгүй эсвэл RLS бодлого үйлдлийг хориглолоо.";
-UI_TEXT.en["errors.access"] = "You are not allowed to access this record, or an RLS policy blocked the action.";
+UI_TEXT.mn["errors.access"] = "Энэ бүртгэлд хандах эрхгүй.";
+UI_TEXT.en["errors.access"] = "You are not allowed to access this record.";
 UI_TEXT.mn["errors.session"] = "Session хүчингүй болсон. Дахин нэвтэрнэ үү.";
 UI_TEXT.en["errors.session"] = "The session is invalid or expired. Please sign in again.";
 UI_TEXT.mn["errors.recordMissing"] = "Бүртгэл олдсонгүй эсвэл хандах эрхгүй байна.";
@@ -376,22 +392,6 @@ Object.assign(UI_TEXT.mn, {"home.heroTitle":"Үл мэдэхийн зүг.","hom
 Object.assign(UI_TEXT.en, {"home.heroTitle":"Into the Unknown.","home.heroText":"A digital space for curious minds.","home.openDiscover":"Start exploring","home.openLab":"Enter the Lab","home.catAria":"An illustration of Mount Fuji, moonlight and a torii gate","jm.featured":"Featured discoveries"});
 Object.assign(UI_TEXT.mn, {"jm.lab":"Интерактив лаборатори", "jm.collections":"Мэдлэг ба цуглуулгууд"});
 Object.assign(UI_TEXT.en, {"jm.lab":"Interactive Lab preview", "jm.collections":"Knowledge & collections"});
-function renderJapaneseFeatures() {
-  const grid = document.querySelector('#jm-articles');
-  grid.replaceChildren();
-  DISCOVER_ARTICLES.filter(article => article.status === 'published').slice(0,3).forEach((article,index) => {
-    const copy = getDiscoverCopy(article,state.language);
-    if(!copy) return;
-    const link = document.createElement('a');
-    link.href='/discover/'+encodeURIComponent(article.slug);
-    link.dataset.discoverArticle=article.slug;
-    const number=document.createElement('span'); number.textContent='0'+(index+1);
-    const title=document.createElement('h3'); title.textContent=copy.title;
-    const summary=document.createElement('p'); summary.textContent=copy.summary;
-    link.append(number,title,summary); grid.append(link);
-  });
-}
-
 function installAdminContentMarkup() {
   const nav = document.querySelector(".side-nav");
   const beforeAbout = nav?.querySelector('[data-page-link="about"]');
@@ -448,6 +448,25 @@ const AUTH_COPY = {
   }
 };
 
+// Extend the shared dictionary without changing the existing MN/EN copy.
+Object.assign(UI_TEXT.mn, RANDOMIZER_COPY.mn);
+Object.assign(UI_TEXT.en, RANDOMIZER_COPY.en);
+UI_TEXT.ja = {
+  ...UI_TEXT.en, ...RANDOMIZER_COPY.ja,
+  "nav.home": "ホーム", "nav.discover": "Discover", "nav.lab": "ラボ", "nav.about": "GNWAAについて",
+  "nav.openMenu": "ナビゲーションを開く", "nav.closeMenu": "ナビゲーションを閉じる",
+  "theme.toLight": "ライトモードに切り替える", "theme.toDark": "ダークモードに切り替える",
+  "language.toMongolian": "モンゴル語に切り替える"
+};
+
+for (const locale of ["mn", "en", "ja"]) {
+  Object.assign(UI_TEXT[locale], PORTFOLIO_COPY[locale], {
+    "home.heroTitle": PORTFOLIO_COPY[locale]["pz.headline"],
+    "home.heroText": PORTFOLIO_COPY[locale]["pz.intro"],
+    "about.description": PORTFOLIO_COPY[locale]["pz.bioTwo"]
+  });
+}
+
 const state = {
   customers: [],
   contentRecords: [],
@@ -475,13 +494,6 @@ const state = {
   mobileNavReturnFocus: null,
   language: "mn",
   connection: null,
-  matrixFrame: null,
-  matrixCleanup: null,
-  splashSeen: false,
-  splashRun: 0,
-  splashHideTimer: null,
-  splashFailsafeTimer: null,
-  splashCleanup: null,
   formError: null,
   toast: null,
   session: null,
@@ -500,8 +512,6 @@ const el = {
   mobileNavToggle: document.querySelector("#mobile-nav-toggle"),
   mobileNavBackdrop: document.querySelector("#mobile-nav-backdrop"),
   pageIntro: document.querySelector(".page-intro"),
-  matrixLoader: document.querySelector("#matrix-loader"),
-  matrixCanvas: document.querySelector("#matrix-canvas"),
   rows: document.querySelector("#customer-rows"),
   customerTable: document.querySelector(".customer-table"),
   tableState: document.querySelector("#table-state"),
@@ -723,11 +733,11 @@ function t(key, values = {}) {
 }
 
 function authText(key) {
-  return AUTH_COPY[state.language]?.[key] || AUTH_COPY.mn[key] || key;
+  return AUTH_COPY[state.language]?.[key] || AUTH_COPY.en[key] || key;
 }
 
 function labValue(copy) {
-  if (copy && typeof copy === "object") return copy[state.language] || copy.mn || "";
+  if (copy && typeof copy === "object") return copy[state.language] || copy.en || copy.mn || "";
   return String(copy ?? "");
 }
 
@@ -948,7 +958,7 @@ function renderPersonality() {
     document.querySelector(".pl-result-mark").textContent = profile.icon;
     const tags = document.querySelector("#pl-result-tags");
     tags.replaceChildren();
-    profile.traits[state.language].forEach((trait) => {
+    (profile.traits[state.language] || profile.traits.en).forEach((trait) => {
       const tag = document.createElement("span");
       tag.textContent = trait;
       tags.append(tag);
@@ -1381,7 +1391,7 @@ function toggleAppearance() {
 function applyTheme(theme, persist = true) {
   state.theme = theme === "light" ? "light" : "dark";
   document.documentElement.dataset.theme = state.theme;
-  document.querySelector('meta[name="theme-color"]').content = state.theme === "light" ? "#f2f5ff" : "#080c18";
+  document.querySelector('meta[name="theme-color"]').content = state.theme === "light" ? "#F8F3E9" : "#111F2E";
   const nextThemeLabel = t(state.theme === "dark" ? "theme.toLight" : "theme.toDark");
   el.themeToggle.setAttribute("aria-label", nextThemeLabel);
   el.themeToggle.title = nextThemeLabel;
@@ -1390,7 +1400,7 @@ function applyTheme(theme, persist = true) {
 }
 
 function applyLanguage(language, persist = true) {
-  state.language = language === "en" ? "en" : "mn";
+  state.language = ["mn", "en", "ja"].includes(language) ? language : "mn";
   document.documentElement.lang = state.language;
   document.title = t("page.title");
   applyTheme(state.theme, false);
@@ -1410,14 +1420,13 @@ function applyLanguage(language, persist = true) {
     node.setAttribute("title", t(node.dataset.i18nTitle));
   });
   applyLabLanguage();
-  renderJapaneseFeatures();
   applyPublishedContent();
   renderContentEditor();
   el.languageToggle.textContent = state.language === "mn" ? "EN" : "MN";
   const nextLanguageLabel = t(state.language === "mn" ? "language.toEnglish" : "language.toMongolian");
   el.languageToggle.setAttribute("aria-label", nextLanguageLabel);
   el.languageToggle.title = nextLanguageLabel;
-  el.todayLabel.textContent = new Intl.DateTimeFormat(state.language === "mn" ? "mn-MN" : "en-US", { dateStyle: "medium" }).format(new Date());
+  el.todayLabel.textContent = new Intl.DateTimeFormat({ mn: "mn-MN", en: "en-US", ja: "ja-JP" }[state.language], { dateStyle: "medium" }).format(new Date());
   if (state.connection === null) {
     el.connectionLabel.textContent = t("connection.checking");
     el.connectionDetail.textContent = t("connection.detail");
@@ -1437,6 +1446,11 @@ function applyLanguage(language, persist = true) {
 }
 
 const PAGE_COPY = {
+  projects: { title: "pz.projects", description: "pz.projectIntro", eyebrow: "pz.projects", breadcrumb: "pz.projects" },
+  randomizerCase: { title: "pz.randomizerLabel", description: "pz.projectRandomizerDescription", eyebrow: "pz.caseStudy", breadcrumb: "pz.randomizerLabel" },
+  projectCase: { title: "pz.platform", description: "pz.platformText", eyebrow: "pz.caseStudy", breadcrumb: "pz.platform" },
+  playground: { title: "pz.playground", description: "pz.playgroundIntro", eyebrow: "pz.playground", breadcrumb: "pz.playground" },
+  randomizer: { title: "randomizer.title", description: "randomizer.pageDescription", eyebrow: "randomizer.eyebrow", breadcrumb: "nav.randomizer" },
   home: { title: "page.homeTitle", description: "page.homeDescription", eyebrow: "page.homeEyebrow", breadcrumb: "nav.home" },
   discover: { title: "page.discoverTitle", description: "page.discoverDescription", eyebrow: "page.discoverEyebrow", breadcrumb: "nav.discover" },
   about: { title: "page.aboutTitle", description: "page.aboutDescription", eyebrow: "page.aboutEyebrow", breadcrumb: "nav.about" },
@@ -1448,8 +1462,8 @@ const PAGE_COPY = {
 };
 
 function updatePageCopy() {
-  window.dispatchEvent(new Event("gnwaa:public-view"));
   document.body.classList.toggle("jm-public", !isAdminPath() && normalizedPath() !== "/login");
+  legacyStyles.disabled = document.body.classList.contains("jm-public");
   const copy = PAGE_COPY[state.currentPage] || PAGE_COPY.home;
   el.pageTitle.textContent = t(copy.title);
   el.pageDescription.textContent = t(copy.description);
@@ -1457,8 +1471,8 @@ function updatePageCopy() {
   el.breadcrumbCurrent.textContent = t(copy.breadcrumb);
   const isDiscoverListing = state.currentPage === "discover" && !state.discoverSlug;
   const isDiscoverArticle = state.currentPage === "discover" && Boolean(state.discoverSlug);
-  el.pageIntro.hidden = state.currentPage === "home" || state.currentPage === "about" || isDiscoverArticle;
-  el.pageActions.hidden = state.currentPage === "lab";
+  el.pageIntro.hidden = ["home", "projects", "projectCase", "randomizerCase", "playground", "about", "randomizer"].includes(state.currentPage) || isDiscoverArticle;
+  el.pageActions.hidden = state.currentPage === "lab" || state.currentPage === "randomizer";
   el.refreshButton.hidden = !["customers", "analytics", "content"].includes(state.currentPage);
   el.discoverSurpriseButton.hidden = !isDiscoverListing;
   const isOwner = state.user?.role === "owner";
@@ -1468,7 +1482,7 @@ function updatePageCopy() {
     node.hidden = !isOwner;
   });
   document.querySelectorAll("[data-page-view]").forEach((view) => {
-    view.hidden = view.dataset.pageView !== state.currentPage ||
+    view.hidden = view.dataset.pageView !== state.currentPage || (isAdminPath() && view.dataset.pageView === "home") ||
       (view.hasAttribute("data-admin-only") && !isOwner);
   });
   document.querySelectorAll("[data-page-action]").forEach((action) => {
@@ -1480,7 +1494,10 @@ function updatePageCopy() {
     if (active) link.setAttribute("aria-current", "page");
     else link.removeAttribute("aria-current");
   });
+  document.querySelector("#admin-home").hidden = !(isAdminPath() && state.currentPage === "home" && isOwner);
   renderDiscoverPage();
+  window.dispatchEvent(new Event("gnwaa:public-view"));
+  applyPublishedContent();
 }
 
 function discoverCategory(categoryId) {
@@ -1530,7 +1547,16 @@ function surpriseMe() {
 }
 
 function discoverLocalizedText(text) {
-  return text?.[state.language] || "";
+  return text?.[state.language] || (state.language === "ja" ? text?.en : "") || "";
+}
+
+// Existing editorial content has MN/EN editions. Keep those features usable in JA.
+function getDiscoverCopy(article, language) {
+  return getOriginalDiscoverCopy(article, language === "ja" ? "en" : language);
+}
+
+function selectSurpriseArticle(articles, language, recent, current) {
+  return selectOriginalSurpriseArticle(articles, language === "ja" ? "en" : language, recent, current);
 }
 
 function discoverWordCount(articleCopy) {
@@ -1774,6 +1800,12 @@ function returnToDiscover() {
 }
 
 function pageFromCurrentLocation() {
+  const portfolioRoutes = { "/projects": "projects", "/projects/gnwaa": "projectCase", "/projects/randomizer": "randomizerCase", "/playground": "playground" };
+  if (portfolioRoutes[normalizedPath()]) { state.discoverSlug = null; return portfolioRoutes[normalizedPath()]; }
+  if (/^\/randomizer(?:\/(?:movie|food))?$/.test(normalizedPath())) {
+    state.discoverSlug = null;
+    return "randomizer";
+  }
   if (normalizedPath() === "/about") {
     state.discoverSlug = null;
     return "about";
@@ -1795,7 +1827,20 @@ function pageFromCurrentLocation() {
 }
 
 function setActivePage(page, updateUrl = true, preserveAdminPath = false) {
+  const portfolioPaths = { home: "/", projects: "/projects", projectCase: "/projects/gnwaa", randomizerCase: "/projects/randomizer", playground: "/playground" };
+  if (portfolioPaths[page] && updateUrl) {
+    if (normalizedPath() !== portfolioPaths[page] || window.location.hash) window.history.pushState({}, "", portfolioPaths[page]);
+    updateUrl = false;
+  }
+  const randomizerPaths = { randomizer: "/randomizer", randomizerMovie: "/randomizer/movie", randomizerFood: "/randomizer/food" };
+  const randomizerPath = randomizerPaths[page];
+  if (randomizerPath) {
+    if (updateUrl && normalizedPath() !== randomizerPath) window.history.pushState({}, "", randomizerPath);
+    page = "randomizer";
+    updateUrl = false;
+  }
   if (!Object.prototype.hasOwnProperty.call(PAGE_COPY, page)) page = "home";
+  const pageChanged = state.currentPage !== page;
   if (!el.profileDropdown.hidden) setProfileMenuOpen(false, { restoreFocus: false });
   const adminPages = new Set(["customers", "analytics", "settings", "content"]);
   if (page === "lab") {
@@ -1819,7 +1864,7 @@ function setActivePage(page, updateUrl = true, preserveAdminPath = false) {
     window.history.pushState({}, "", nextUrl);
     updateUrl = false;
   } else if (updateUrl && !preserveAdminPath &&
-      (isAdminPath() || resolveDiscoverRoute(normalizedPath()) || ["/lab", "/about", "/login"].includes(normalizedPath())) && page === "home") {
+      (isAdminPath() || resolveDiscoverRoute(normalizedPath()) || ["/lab", "/about", "/login"].includes(normalizedPath()) || normalizedPath().startsWith("/randomizer")) && page === "home") {
     window.history.pushState({}, "", `/${page === "home" ? "#home" : "#about"}`);
     updateUrl = false;
   }
@@ -1828,6 +1873,7 @@ function setActivePage(page, updateUrl = true, preserveAdminPath = false) {
   if (enteringLab) showLabTool(null);
   updatePageCopy();
   updateAuthenticatedView();
+  if (pageChanged) window.scrollTo?.({ top: 0, behavior: "auto" });
   if (updateUrl && window.location.hash !== `#${page}`) window.location.hash = page;
   if (state.user?.role === "owner" && isAdminPath() &&
       ["customers", "analytics"].includes(page) && !state.customers.length) {
@@ -1835,260 +1881,6 @@ function setActivePage(page, updateUrl = true, preserveAdminPath = false) {
   }
   if (state.user?.role === "owner" && isAdminPath() && page === "content") {
     void loadAdminContent();
-  }
-}
-
-function isMobileIntroDevice() {
-  const shortEdge = Math.min(window.innerWidth, window.innerHeight);
-  const longEdge = Math.max(window.innerWidth, window.innerHeight);
-  const touch = navigator.maxTouchPoints > 0 || window.matchMedia("(pointer: coarse)").matches;
-  // Phone-sized touch viewports, including landscape. Larger tablets keep desktop behavior.
-  return touch && shortEdge <= 600 && longEdge <= 1024;
-}
-
-function introNavigationType() {
-  try {
-    const entry = window.performance?.getEntriesByType?.("navigation")?.[0];
-    if (entry) return entry.type;
-    const legacy = window.performance?.navigation?.type;
-    return legacy === 1 ? "reload" : legacy === 2 ? "back_forward" : "navigate";
-  } catch { return "navigate"; }
-}
-
-function startMatrixRain() {
-  const canvas = el.matrixCanvas;
-  if (!canvas?.getContext) return null;
-  if (canvas?.dataset?.japaneseIntro === "true") {canvas.width=0;canvas.height=0;return null;}
-  let context;
-  try {
-    context = canvas.getContext("2d", { alpha: true, desynchronized: true });
-  } catch { /* Some engines reject optional context settings. Try plain 2D below. */ }
-  if (!context) {
-    try { context = canvas.getContext("2d"); } catch { return null; }
-  }
-  if (!context) return null;
-
-  const glyphs = "01<>[]{}/*+-=ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-  const mobile = isMobileIntroDevice();
-  const frameInterval = 1000 / (mobile ? 20 : 24);
-  let active = true;
-  let width = 0;
-  let height = 0;
-  let fontSize = 20;
-  let columnWidth = 0;
-  let drops = [];
-  let lastPaintAt = 0;
-  let pointer = null;
-  const onPointerMove = (event) => { pointer = { x: event.clientX, y: event.clientY }; };
-  const onPointerLeave = () => { pointer = null; };
-
-  const cleanup = () => {
-    if (!active) return;
-    active = false;
-    if (state.matrixFrame !== null) window.cancelAnimationFrame(state.matrixFrame);
-    state.matrixFrame = null;
-    window.removeEventListener("resize", resize);
-    el.matrixLoader.removeEventListener("pointermove", onPointerMove);
-    el.matrixLoader.removeEventListener("pointerdown", onPointerMove);
-    el.matrixLoader.removeEventListener("pointerleave", onPointerLeave);
-    el.matrixLoader.removeEventListener("pointerup", onPointerLeave);
-    el.matrixLoader.removeEventListener("pointercancel", onPointerLeave);
-    try {
-      context.clearRect(0, 0, width, height);
-      canvas.width = 0;
-      canvas.height = 0;
-    } catch { /* Canvas cleanup is best-effort; the page must still be revealed. */ }
-    if (state.matrixCleanup === cleanup) state.matrixCleanup = null;
-  };
-
-  const resize = () => {
-    if (!active) return;
-    try {
-      const bounds = canvas.getBoundingClientRect();
-      width = Math.max(0, bounds.width);
-      height = Math.max(0, bounds.height);
-      if (!width || !height) return;
-      const maxRatio = mobile ? 1.25 : 1.5;
-      const pixelBudgetRatio = Math.sqrt((mobile ? 900_000 : 1_600_000) / (width * height));
-      const ratio = Math.min(window.devicePixelRatio || 1, maxRatio, pixelBudgetRatio);
-      canvas.width = Math.round(width * ratio);
-      canvas.height = Math.round(height * ratio);
-      context.setTransform(ratio, 0, 0, ratio, 0, 0);
-      fontSize = mobile ? 16 : 20;
-      const maxColumns = mobile ? 52 : 64;
-      const columns = Math.max(1, Math.min(Math.ceil(width / fontSize), maxColumns));
-      columnWidth = width / columns;
-      drops = Array.from({ length: columns }, () => Math.random() * (height / fontSize));
-      context.clearRect(0, 0, width, height);
-    } catch {
-      cleanup();
-    }
-  };
-
-  const draw = (timestamp = 0) => {
-    if (!active) return;
-    try {
-      state.matrixFrame = window.requestAnimationFrame(draw);
-      if (timestamp - lastPaintAt < frameInterval) return;
-      lastPaintAt = timestamp;
-      context.fillStyle = "rgba(8, 12, 24, 0.13)";
-      context.fillRect(0, 0, width, height);
-      context.font = fontSize + "px ui-monospace, Consolas, monospace";
-      const gradient = context.createLinearGradient(0, 0, width, height);
-      gradient.addColorStop(0, "#7c3aed");
-      gradient.addColorStop(0.4, "#f6f8ff");
-      gradient.addColorStop(0.7, "#a5d8ff");
-      gradient.addColorStop(1, "#38bdf8");
-      for (let index = 0; index < drops.length; index += 1) {
-        const glyph = glyphs[Math.floor(Math.random() * glyphs.length)];
-        const x = index * columnWidth + (mobile ? Math.sin(timestamp / 900 + index) * 2 : 0);
-        const y = drops[index] * fontSize;
-        const nearPointer = pointer && Math.hypot(x - pointer.x, y - pointer.y) < 120;
-        context.fillStyle = nearPointer ? "#f6f8ff" : gradient;
-        if (mobile) {
-          context.shadowColor = nearPointer ? "#a5d8ff" : "#7c3aed";
-          context.shadowBlur = nearPointer ? 5 : 1;
-        }
-        context.fillText(glyph, x, y);
-        if (drops[index] * fontSize > height && Math.random() > 0.975) drops[index] = 0;
-        drops[index] += 0.3 + Math.random() * 0.35;
-      }
-    } catch {
-      cleanup();
-    }
-  };
-
-  try {
-    state.matrixCleanup?.();
-    state.matrixCleanup = cleanup;
-    window.addEventListener("resize", resize, { passive: true });
-    // Passive pointer events include iPhone touch input without blocking gestures.
-    el.matrixLoader.addEventListener("pointermove", onPointerMove, { passive: true });
-    el.matrixLoader.addEventListener("pointerdown", onPointerMove, { passive: true });
-    el.matrixLoader.addEventListener("pointerleave", onPointerLeave);
-    el.matrixLoader.addEventListener("pointerup", onPointerLeave);
-    el.matrixLoader.addEventListener("pointercancel", onPointerLeave);
-    resize();
-    if (!active) return null;
-    state.matrixFrame = window.requestAnimationFrame(draw);
-    return cleanup;
-  } catch {
-    cleanup();
-    return null;
-  }
-}
-
-function startMatrixSplash() {
-  const loader = el.matrixLoader;
-  if (!loader) {
-    document.body.classList.remove("splash-active");
-    return;
-  }
-  // One instance per document, even if initialization is accidentally invoked twice.
-  if (state.splashSeen) return;
-  const mobile = isMobileIntroDevice();
-  const navigationType = introNavigationType();
-  if (mobile) loader.classList.add("is-mobile-intro");
-  else loader.classList.remove("is-mobile-intro");
-
-  const splashKey = "gnwaa-welcome-intro-seen-v1";
-  const hideWithoutAnimation = () => {
-    loader.hidden = true;
-    loader.classList.remove("is-exiting");
-    document.body.classList.remove("splash-active");
-  };
-
-  let reducedMotion;
-  try {
-    reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches || document.documentElement?.dataset?.motion === "off" || document.documentElement?.dataset?.motion === "reduced";
-  } catch {
-    hideWithoutAnimation();
-    return;
-  }
-  let seen = false;
-  let storageUnavailable = false;
-  try {
-    seen ||= window.sessionStorage.getItem(splashKey) === "shown";
-  } catch { storageUnavailable = true; }
-  try { window.sessionStorage.setItem(splashKey, "shown"); } catch { storageUnavailable = true; }
-  // History survives a reload when sessionStorage is blocked. Navigation timing
-  // also covers reloads of a later SPA route, whose history entry has no marker.
-  try { seen ||= window.history?.state?.gnwaaWelcomeIntroSeen === true; } catch { /* Optional fallback. */ }
-  if (storageUnavailable) {
-    try {
-      seen ||= navigationType === "reload" || navigationType === "back_forward";
-    } catch { /* A first visit must still work without navigation timing. */ }
-  }
-  // Real phone reloads replay, while SPA transitions and history traversal do not.
-  if (mobile && navigationType === "reload") seen = false;
-  if (navigationType === "back_forward") seen = true;
-  state.splashSeen = true;
-  if (storageUnavailable) {
-    try {
-      window.history.replaceState({ ...window.history.state, gnwaaWelcomeIntroSeen: true }, "");
-    } catch { /* Memory still prevents repeats within this document. */ }
-  }
-  if (reducedMotion || seen) {
-    hideWithoutAnimation();
-    return;
-  }
-
-  state.splashRun += 1;
-  const currentRun = state.splashRun;
-  let finished = false;
-  window.clearTimeout(state.splashHideTimer);
-  window.clearTimeout(state.splashFailsafeTimer);
-
-  const hideSplash = () => {
-    if (finished || currentRun !== state.splashRun) return;
-    finished = true;
-    window.clearTimeout(state.splashHideTimer);
-    window.clearTimeout(state.splashFailsafeTimer);
-    state.splashHideTimer = null;
-    state.splashFailsafeTimer = null;
-    try { state.splashCleanup?.(); } catch { /* Cleanup errors must never keep the site covered. */ }
-    state.splashCleanup = null;
-    hideWithoutAnimation();
-    // Visibility can blur the dialog at the end of the CSS fade, before this timer runs.
-    if (loader.contains(document.activeElement) || document.activeElement === document.body) {
-      try { el.mainShell?.focus({ preventScroll: true }); } catch { /* Focus restoration is best-effort. */ }
-    }
-  };
-
-  try {
-    loader.hidden = false;
-    loader.classList.remove("is-exiting");
-    document.body.classList.add("splash-active");
-    const stopMatrix = startMatrixRain();
-    const onKeydown = (event) => {
-      if (event.key === "Tab" && !loader.hidden) {
-        event.preventDefault();
-        loader.focus({ preventScroll: true });
-      }
-    };
-    state.splashCleanup = () => {
-      try { document.removeEventListener("keydown", onKeydown); } catch { /* Best-effort listener cleanup. */ }
-      window.removeEventListener("popstate", hideSplash);
-      window.removeEventListener("pagehide", hideSplash);
-      window.removeEventListener("gnwaa:intro-stop", hideSplash);
-      try { stopMatrix?.(); } catch { /* Best-effort Canvas cleanup. */ }
-    };
-    document.addEventListener("keydown", onKeydown);
-    window.addEventListener("popstate", hideSplash);
-    window.addEventListener("pagehide", hideSplash);
-    window.addEventListener("gnwaa:intro-stop", hideSplash);
-    loader.focus({ preventScroll: true });
-
-    // Shared 8-second sequence: 7s animation + 1s fade, independent of API work.
-    state.splashHideTimer = window.setTimeout(() => {
-      if (currentRun !== state.splashRun) return;
-      loader.classList.add("is-exiting");
-      state.splashHideTimer = window.setTimeout(hideSplash, 1000);
-    }, 7000);
-
-    state.splashFailsafeTimer = window.setTimeout(hideSplash, 8200);
-  } catch {
-    hideSplash();
   }
 }
 
@@ -2209,7 +2001,7 @@ async function loadPublicContent() {
 }
 
 function applyPublishedContent() {
-  const pageCopy = state.publicContent[state.language] || {};
+  const pageCopy = state.publicContent[state.language === "ja" ? "en" : state.language] || {};
   const home = pageCopy.home;
   const about = pageCopy.about;
   const homeHeading = document.querySelector('[data-i18n="home.heroTitle"]');
@@ -3048,40 +2840,36 @@ document.addEventListener("keydown", (event) => {
     if (!el.deleteModal.hidden) closeDeleteModal();
     else if (!el.customerModal.hidden) closeCustomerModal();
   }
-  if (event.key === "/" && el.customerModal.hidden && el.deleteModal.hidden && document.activeElement.tagName !== "INPUT") {
+  if (event.key === "/" && el.customerModal.hidden && el.deleteModal.hidden && !["INPUT", "SELECT", "TEXTAREA"].includes(document.activeElement.tagName) && isAdminPath()) {
     event.preventDefault();
     el.search.focus();
   }
 });
 
+initRandomizer({
+  root: document.querySelector("#randomizer-view"),
+  getLanguage: () => state.language,
+  setLanguage: applyLanguage,
+  navigate: setActivePage,
+  translate: t
+});
+initPortfolio({translate:t, getLanguage:()=>state.language, setLanguage:applyLanguage, getPage:()=>state.currentPage, navigate:setActivePage, openLab:tool=>{setActivePage("lab");showLabTool(tool);}});
+initQuickDraw({container:document.querySelector('[data-page-view="playground"]'), translate:t, getLanguage:()=>state.language, getPage:()=>state.currentPage, navigate:setActivePage});
 state.currentPage = pageFromCurrentLocation();
 applyTheme(isAdminPath() || normalizedPath() === "/login" ? readPreference(THEME_KEY, ["dark", "light"], "dark") : resolveJapanAppearance(), false);
 applyAccentTheme(readPreference(ACCENT_THEME_KEY, ACCENT_THEME_IDS, "aurora-purple"), false);
 setSidebarCollapsed(readPreference(SIDEBAR_KEY, ["expanded", "collapsed"], "expanded") === "collapsed", false);
-applyLanguage(readPreference(LANGUAGE_KEY, ["mn", "en"], "mn"), false);
+applyLanguage(readPreference(LANGUAGE_KEY, ["mn", "en", "ja"], "mn"), false);
 el.footerYear.textContent = String(new Date().getFullYear());
 showLabTool(null);
 setActivePage(state.currentPage, false);
-const welcomeIntroKey = "gnwaa-welcome-intro-seen-v1";
-if (isAdminPath() || normalizedPath() === "/login") {
-  try { window.sessionStorage.setItem(welcomeIntroKey, "shown"); } catch { /* Intro storage is optional. */ }
-  el.matrixLoader.hidden = true;
-} else {
-  try { startMatrixSplash(); } catch {
-    el.matrixLoader.hidden = true;
-    document.body.classList.remove("splash-active");
-  }
-}
 void initializeAuthentication();
 void loadPublicContent();
 
-// Complete the entrance once per document, not on language/filter interactions.
-const heroEntrance = document.querySelector('.home-hero');
-const finishHeroEntrance = event => {
-  if(event.animationName !== 'jm-hero-copy-enter' || !event.target.matches('h1')) return;
-  heroEntrance.classList.add('jm-hero-revealed');
-  heroEntrance.removeEventListener('animationend', finishHeroEntrance);
-};
-if(heroEntrance && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) heroEntrance.addEventListener('animationend', finishHeroEntrance);
-
 initJapanExperience({applyAppearance:applyTheme, articles:DISCOVER_ARTICLES, getCopy:getDiscoverCopy, openArticle:openDiscoverArticle, navigate:setActivePage, legacyText:t, closeLegacyAppearance:closeThemeStudio});
+
+initWelcome({translate:t, getLanguage:()=>state.language, setLanguage:applyLanguage, navigate:setActivePage, getPage:()=>state.currentPage});
+
+initPixelInteractions({translate:t});
+
+initWorldMotion();

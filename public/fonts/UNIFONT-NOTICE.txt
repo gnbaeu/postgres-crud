@@ -1,0 +1,9 @@
+GNU Unifont Japanese 16.0.04
+Source: https://unifoundry.com/pub/unifont/unifont-16.0.04/font-builds/unifont_jp-16.0.04.otf
+Local WOFF container conversion; glyphs unmodified.
+
+Copyright © 1998-2025 Roman Czyborra, Paul Hardy, Qianqian Fang, Andrew Miller, Johnnie Weaver, David Corbett, Nils Moskopp, Rebecca Bettencourt, Ho-Seok Ee, et al.
+
+Dual license: SIL Open Font License version 1.1, and GNU GPL version 2 or later with the GNU Font Embedding Exception.
+
+https://gnu.org/licenses/gpl.html, https://scripts.sil.org/OFL

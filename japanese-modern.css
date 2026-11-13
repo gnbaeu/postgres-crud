@@ -145,11 +145,11 @@ html:root[data-theme][data-accent-theme] body.jm-public .jm-navigation a:is(.act
 html:root[data-theme][data-accent-theme] body.jm-public :is(.utility-button,.jm-search) {width:44px;min-width:44px;height:44px;min-height:44px}
 html:root[data-theme][data-accent-theme] body.jm-public .topbar #login-link {padding:0 14px;width:auto;border-radius:24px}
 html:root[data-theme][data-accent-theme] body.jm-public .page-content {padding-top:48px}
-@media(min-width:1101px) {
+@media(min-width:1281px) {
  html:root[data-theme][data-accent-theme] body.jm-public .sidebar {display:none}
  html:root[data-theme][data-accent-theme] body.jm-public .mobile-nav-toggle {display:none}
 }
-@media(max-width:1100px) {
+@media(max-width:1280px) {
  html:root[data-theme][data-accent-theme] body.jm-public .topbar {width:fit-content;max-width:calc(100% - 24px);min-height:64px;margin-top:16px;padding:8px 14px;gap:8px}
  html:root[data-theme][data-accent-theme] body.jm-public .jm-wordmark {margin-right:auto;padding-right:12px}
  html:root[data-theme][data-accent-theme] body.jm-public .jm-navigation {display:none}

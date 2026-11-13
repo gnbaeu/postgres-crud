@@ -1,0 +1,17 @@
+node_modules/
+dist/
+.env
+.env.*
+!.env.example
+
+# Approved local design reference; never publish with the site.
+/design-reference.png
+
+# Local QA output and backups (not application source).
+/artifacts/
+/gnwaa-backup.patch
+.vercel/
+*.log
+
+# Local visual references (never bundled).
+/design-reference/

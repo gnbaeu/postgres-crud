@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 
 const html = readFileSync(new URL("../index.html", import.meta.url), "utf8");
+const portfolio = readFileSync(new URL("../portfolio.js", import.meta.url), "utf8");
 const app = readFileSync(new URL("../app.js", import.meta.url), "utf8");
 const api = readFileSync(new URL("../api.js", import.meta.url), "utf8");
 const css = readFileSync(new URL("../style.css", import.meta.url), "utf8");
@@ -24,7 +25,7 @@ assert.deepEqual([...new Set(usedElements)].filter(name => !declaredElements.has
   "Every el property must be declared: stale references can abort startup and leave the app inert.");
 const vercel = JSON.parse(readFileSync(new URL("../vercel.json", import.meta.url), "utf8"));
 const ids = [...html.matchAll(/\bid="([^"]+)"/g)].map((match) => match[1]);
-const dynamicallyCreatedIds = [...app.matchAll(/\bid="([^"]+)"/g)].map((match) => match[1]);
+const dynamicallyCreatedIds = [...(app + portfolio).matchAll(/\bid="([^"]+)"/g)].map((match) => match[1]);
 const idSet = new Set(ids);
 const duplicateIds = ids.filter((id, index) => ids.indexOf(id) !== index);
 const selectorIds = [...app.matchAll(/document\.querySelector(?:All)?\(\s*["']#([\w-]+)["']/g)].map((match) => match[1]);
@@ -40,26 +41,6 @@ assert.match(app, /requestJson\("\/auth\/me"\)/);
 assert.match(app, /error\?\.status === 403 && \/owner access required\/i\.test\(error\?\.message \|\| ""\)/);
 assert.doesNotMatch(app, /if \(error\?\.status === 403\) return t\("auth\.ownerOnly"\)/);
 assert.match(html, /id="gnwaa-labs"/);
-assert.match(html, /class="brand-mark brand-mark-electric"[^>]*aria-hidden="true"/,
-  "The sidebar GNWAA mark should be decorative and use its electric logo treatment.");
-assert.match(html, /class="brand-electric-shield"[\s\S]*class="brand-electric-arc/,
-  "The electric mark should preserve the shield identity and include lightning arcs.");
-assert.match(css, /\.sidebar-header \.brand-mark-electric[\s\S]*?var\(--accent\)/,
-  "The electric treatment should be scoped to the sidebar brand and follow the active accent palette.");
-assert.match(css, /@keyframes gnwaa-electric-flow[\s\S]*@keyframes gnwaa-electric-spark/);
-assert.match(css, /@media \(prefers-reduced-motion: reduce\)[\s\S]*\.brand-electric-arc, \.brand-electric-spark \{ animation: none; \}/,
-  "The electric logo should stop animation when reduced motion is requested.");
-assert.match(html, /id="du-form"/);
-assert.match(app, /data-detective-answer/);
-assert.match(html, /id="pl-form"/);
-assert.match(app, /function createUniverse\(/);
-assert.match(app, /function answerDetective\(/);
-assert.match(app, /function advancePersonality\(/);
-assert.match(app, /function applyTheme\(/);
-assert.match(app, /querySelector\('meta\[name="theme-color"\]'\)\.content = state\.theme === "light" \? "#f2f5ff" : "#080c18"/,
-  "Browser chrome color must follow the Aurora light and dark surfaces.");
-assert.match(app, /function startMatrixRain\(\)[\s\S]*frameInterval = 1000 \/ \(mobile \? 20 : 24\)[\s\S]*removeEventListener\("resize", resize\)/,
-  "The decorative Canvas renderer must be frame-limited and expose cleanup.");
 assert.match(app, /function applyLanguage\(/);
 assert.match(html, /id="theme-toggle"/);
 assert.match(html, /id="language-toggle"/);
@@ -140,346 +121,7 @@ assert.match(app, /el\.refreshButton\.addEventListener\("click", refreshCurrentP
 assert.match(app, /function render\(\)[\s\S]*updateContentActionState\(\)/,
   "General renders must preserve CMS loading and write-disabled state.");
 
-assert.match(html, /id="matrix-loader"[^>]*\shidden/,
-  "The Welcome Intro must start hidden so initialization or failure cannot block the site.");
-assert.match(html, /role="dialog" aria-modal="true" aria-label="GNWAA Welcome Intro"/);
-assert.doesNotMatch(html + css + app, /skip-intro|loader-skip|skipIntroButton|splash\.skip/,
-  "Removed control markup, styles, DOM references and translations must stay absent.");
-assert.match(html, /class="matrix-loader-content" aria-hidden="true"/,
-  "Decorative text must not be read repeatedly by screen readers.");
-assert.match(html, /class="loader-gnwaa"[^>]*>GNWAA[\s\S]*INITIALIZING EXPERIENCE[\s\S]*WELCOME TO GNWAA/);
-assert.match(html, /id="matrix-loader"[^>]*tabindex="-1"/);
-assert.match(css, /loader-aurora-violet 8s/);
-assert.match(css, /loader-aurora-cyan 8s/);
-assert.match(css, /intro-progress 8s linear/);
-assert.match(css, /intro-initializing 6s/);
-assert.match(css, /intro-welcome \.6s 6s/);
-assert.match(css, /transition: opacity 1000ms ease, visibility 1000ms ease/);
-assert.match(css, /--intro-purple: #7c3aed[\s\S]*--intro-white: #f6f8ff[\s\S]*--intro-sky: #a5d8ff[\s\S]*--intro-cyan: #38bdf8/,
-  "The intro keeps its requested palette independently of the site's saved accent.");
-assert.match(app, /createLinearGradient[\s\S]*addColorStop\(0, "#7c3aed"\)[\s\S]*addColorStop\(1, "#38bdf8"\)/);
-assert.match(app, /removeEventListener\("pointermove", onPointerMove\)/,
-  "Intro cleanup must also remove mouse interaction listeners.");
-const startupSplash = app.slice(app.indexOf("state.currentPage = pageFromCurrentLocation()"));
-assert.match(startupSplash, /const welcomeIntroKey = "gnwaa-welcome-intro-seen-v1"[\s\S]*if \(isAdminPath\(\) \|\| normalizedPath\(\) === "\/login"\)[\s\S]*sessionStorage\.setItem\(welcomeIntroKey, "shown"\)[\s\S]*startMatrixSplash\(\)[\s\S]*void initializeAuthentication\(\)/,
-  "Only the initial public entry may show the intro, protected/login entries mark it seen, and auth initialization remains independent.");
-const splashFunction = extractFunction(app, "startMatrixSplash", "refreshCustomers");
-const matrixRainSource = extractFunction(app, "startMatrixRain", "startMatrixSplash");
-assert.match(matrixRainSource, /frameInterval = 1000 \/ \(mobile \? 20 : 24\)/);
-assert.match(matrixRainSource, /devicePixelRatio || 1, maxRatio, pixelBudgetRatio/);
-assert.ok(matrixRainSource.includes("fontSize = mobile ? 16 : 20") && matrixRainSource.includes("maxColumns = mobile ? 52 : 64"));
-assert.ok(matrixRainSource.includes("cancelAnimationFrame") && matrixRainSource.includes("removeEventListener(\"resize\", resize)") &&
-  matrixRainSource.includes("canvas.width = 0") && matrixRainSource.includes("canvas.height = 0"),
-  "The Canvas animation must cap mobile load and release its frame, listener, and backing store when stopped.");
-assert.match(matrixRainSource, /const glyphs = "01<>\[\]{}\/\*\+-=ABCDEFGHIJKLMNOPQRSTUVWXYZ"/,
-  "The decorative character stream should remain ASCII and not include expensive sprites or fonts.");
-const canvasCalls = { fillText: 0, transforms: [], clears: 0 };
-let canvasCssWidth = 375;
-let canvasCssHeight = 800;
-const canvasContext = {
-  clearRect() { canvasCalls.clears += 1; },
-  setTransform(...values) { canvasCalls.transforms.push(values); },
-  fillRect() {},
-  createLinearGradient() { return { addColorStop() {} }; },
-  fillText() { canvasCalls.fillText += 1; }
-};
-const testCanvas = {
-  width: 0,
-  height: 0,
-  getContext: () => canvasContext,
-  getBoundingClientRect: () => ({ width: canvasCssWidth, height: canvasCssHeight })
-};
-let rafSequence = 0;
-const rafCallbacks = new Map();
-const cancelledFrames = [];
-const windowListeners = new Map();
-const canvasWindow = {
-  devicePixelRatio: 3,
-  matchMedia: (query) => ({ matches: query === "(max-width: 600px)" }),
-  requestAnimationFrame(callback) {
-    const id = ++rafSequence;
-    rafCallbacks.set(id, callback);
-    return id;
-  },
-  cancelAnimationFrame(id) { cancelledFrames.push(id); rafCallbacks.delete(id); },
-  addEventListener(type, callback) { windowListeners.set(type, callback); },
-  removeEventListener(type) { windowListeners.delete(type); }
-};
-const canvasState = { matrixFrame: null, matrixCleanup: null };
-const pointerListeners = new Map();
-const testMatrixLoader = {
-  addEventListener(type, callback) { pointerListeners.set(type, callback); },
-  removeEventListener(type) { pointerListeners.delete(type); }
-};
-const startCanvasRain = new Function("state", "el", "window", "isMobileIntroDevice", matrixRainSource + "; return startMatrixRain;")(
-  canvasState, { matrixCanvas: testCanvas, matrixLoader: testMatrixLoader }, canvasWindow, () => true
-);
-const stopCanvasRain = startCanvasRain();
-assert.ok(testCanvas.width <= 470 && testCanvas.height <= 1000,
-  "Mobile backing resolution should be capped even on a high-DPR device.");
-assert.ok(canvasCalls.transforms[0][0] <= 1.25, "Mobile Canvas DPR should not exceed 1.25.");
-assert.equal(windowListeners.has("resize"), true);
-assert.equal(pointerListeners.has("pointerdown"), true, "Touch must work even without hover/fine pointer support.");
-pointerListeners.get("pointerdown")({ clientX: 20, clientY: 20, pointerType: "touch" });
-const firstCanvasFrame = rafCallbacks.entries().next().value;
-rafCallbacks.delete(firstCanvasFrame[0]);
-firstCanvasFrame[1](50);
-const paintedGlyphs = canvasCalls.fillText;
-assert.ok(paintedGlyphs > 0 && paintedGlyphs <= 28, "Portrait mobile ASCII density should stay below 28 columns.");
-const nextCanvasFrame = [...rafCallbacks.entries()].at(-1);
-rafCallbacks.delete(nextCanvasFrame[0]);
-nextCanvasFrame[1](60);
-assert.equal(canvasCalls.fillText, paintedGlyphs, "The mobile renderer should skip paints above the 20 FPS cap.");
-canvasCssWidth = 1920;
-canvasCssHeight = 1080;
-windowListeners.get("resize")();
-assert.ok(testCanvas.width * testCanvas.height <= 910_000,
-  "Mobile Canvas should stay close to its 0.9-megapixel backing-store budget.");
-stopCanvasRain();
-assert.ok(cancelledFrames.length > 0);
-assert.equal(windowListeners.has("resize"), false);
-assert.equal(testCanvas.width, 0);
-assert.equal(testCanvas.height, 0);
-assert.equal(canvasState.matrixFrame, null);
-assert.equal(canvasState.matrixCleanup, null);
-assert.equal(pointerListeners.size, 0, "All touch/mouse listeners must be removed on cleanup.");
-let plainContextCalls = 0;
-testCanvas.getContext = (_type, options) => {
-  if (options) throw new TypeError("Optional context settings unsupported");
-  plainContextCalls += 1;
-  return canvasContext;
-};
-const stopFallbackCanvas = startCanvasRain();
-assert.equal(plainContextCalls, 1, "Canvas must retry with plain 2D if optional settings throw.");
-assert.equal(typeof stopFallbackCanvas, "function");
-stopFallbackCanvas();
-assert.match(splashFunction, /matchMedia\("\(prefers-reduced-motion: reduce\)"\)[\s\S]*hideWithoutAnimation\(\)[\s\S]*return/,
-  "Reduced-motion users should skip the intro immediately.");
-assert.match(splashFunction, /sessionStorage\.getItem\(splashKey\)[\s\S]*sessionStorage\.setItem\(splashKey, "shown"\)/,
-  "The intro should run once per tab and stay skipped on refresh.");
-assert.match(splashFunction, /event\.key === "Tab"[\s\S]*loader\.focus/);
-assert.doesNotMatch(splashFunction, /event\.key === "Escape"|onSkip/);
-assert.match(splashFunction, /removeEventListener\("keydown", onKeydown\)[\s\S]*stopMatrix\?\.\(\)/);
-assert.match(splashFunction, /loader\.contains\(document\.activeElement\)[\s\S]*mainShell\?\.focus/);
-assert.match(splashFunction, /setTimeout\(hideSplash, 1000\)/);
-assert.match(splashFunction, /\}, 7000\)/);
-assert.match(splashFunction, /setTimeout\(hideSplash, 8200\)/);
-const deviceSource = extractFunction(app, "isMobileIntroDevice", "introNavigationType");
-const navigationSource = extractFunction(app, "introNavigationType", "startMatrixRain");
-const classifyIntro = (width, height, touch) => new Function("window", "navigator", deviceSource + ";return isMobileIntroDevice();")(
-  { innerWidth: width, innerHeight: height, matchMedia: () => ({matches:false}) }, {maxTouchPoints:touch ? 5 : 0});
-assert.equal(classifyIntro(390, 844, true), true);
-assert.equal(classifyIntro(844, 390, true), true);
-assert.equal(classifyIntro(390, 844, false), false, "A narrow desktop window is still desktop.");
-assert.equal(classifyIntro(768, 1024, true), false, "Large tablets retain desktop behavior.");
-const legacyNavigation = new Function("window", navigationSource + ";return introNavigationType();")({performance:{navigation:{type:1}}});
-assert.equal(legacyNavigation, "reload");
-
-function createSplashHarness(storage, { reducedMotion = false, failTimers = false, failCanvas = false,
-  navigationType = "navigate", historyState = {}, failHistory = false, mobile = false } = {}) {
-  const loaderClasses = new Set();
-  const bodyClasses = new Set();
-  const documentListeners = new Map();
-  const lifecycleListeners = new Map();
-  let activeElement = null;
-  let matrixCleanupCount = 0;
-  let matrixStartCount = 0;
-  const loader = {
-    hidden: true,
-    contains: (node) => node === loader,
-    focus() { activeElement = this; },
-    classList: {
-      add(value) { loaderClasses.add(value); },
-      remove(value) { loaderClasses.delete(value); }
-    }
-  };
-  const timers = [];
-  const state = {
-    splashRun: 0,
-    splashHideTimer: null,
-    splashFailsafeTimer: null,
-    splashCleanup: null,
-    splashFrame: null,
-    matrixFrame: null
-  };
-  const fakeWindow = {
-    matchMedia: () => ({ matches: reducedMotion }),
-    sessionStorage: storage,
-    history: {
-      get state() { return historyState; },
-      replaceState(next) {
-        if (failHistory) throw new Error("history unavailable");
-        Object.assign(historyState, next);
-      }
-    },
-    performance: { getEntriesByType: () => [{ type: navigationType }] },
-    addEventListener(type, callback) { lifecycleListeners.set(type, callback); },
-    removeEventListener(type) { lifecycleListeners.delete(type); },
-    clearTimeout() {},
-    cancelAnimationFrame() {},
-    setTimeout(callback, delay) {
-      if (failTimers) throw new Error("timer failure");
-      timers.push({ callback, delay });
-      return timers.length;
-    }
-  };
-  const mainShell = { focus() { activeElement = this; } };
-  const fakeDocument = {
-    get activeElement() { return activeElement; },
-    addEventListener(type, callback) { documentListeners.set(type, callback); },
-    removeEventListener(type) { documentListeners.delete(type); },
-    body: { classList: {
-      add(value) { bodyClasses.add(value); },
-      remove(value) { bodyClasses.delete(value); }
-    } }
-  };
-  const start = new Function("state", "el", "window", "document", "startMatrixRain", "isMobileIntroDevice", "introNavigationType", splashFunction + "; return startMatrixSplash;")(
-    state, { matrixLoader: loader, mainShell }, fakeWindow, fakeDocument,
-    () => {
-      matrixStartCount += 1;
-      if (failCanvas) throw new Error("Canvas unavailable");
-      return () => { matrixCleanupCount += 1; };
-    }, () => mobile, () => navigationType
-  );
-  return {
-    start, loader, loaderClasses, bodyClasses, state, timers, documentListeners, lifecycleListeners, mainShell,
-    get matrixCleanupCount() { return matrixCleanupCount; },
-    get matrixStartCount() { return matrixStartCount; },
-    get activeElement() { return activeElement; },
-    loseFocus() { activeElement = fakeDocument.body; }
-  };
-}
-
-const splashStorageValues = new Map();
-const splashStorage = {
-  getItem(key) { return splashStorageValues.get(key) ?? null; },
-  setItem(key, value) { splashStorageValues.set(key, value); }
-};
-const firstVisitSplash = createSplashHarness(splashStorage);
-firstVisitSplash.start();
-assert.equal(firstVisitSplash.loader.hidden, false);
-assert.equal(firstVisitSplash.matrixStartCount, 1);
-assert.deepEqual(firstVisitSplash.timers.map(({ delay }) => delay), [7000, 8200]);
-
-assert.equal(firstVisitSplash.documentListeners.has("keydown"), true);
-assert.equal(firstVisitSplash.activeElement, firstVisitSplash.loader, "The decorative dialog should receive initial focus.");
-firstVisitSplash.timers[0].callback();
-assert.equal(firstVisitSplash.loaderClasses.has("is-exiting"), true);
-assert.equal(firstVisitSplash.timers.at(-1).delay, 1000);
-firstVisitSplash.timers.at(-1).callback();
-assert.equal(firstVisitSplash.loader.hidden, true, "The normal animation should hide after its 1000ms exit transition.");
-assert.equal(firstVisitSplash.bodyClasses.has("splash-active"), false);
-
-assert.equal(firstVisitSplash.documentListeners.size, 0);
-assert.equal(firstVisitSplash.matrixCleanupCount, 1, "Closing the intro should stop the Canvas renderer once.");
-assert.equal(firstVisitSplash.activeElement, firstVisitSplash.mainShell, "Focus should return to the site after the intro closes.");
-
-const refreshedSplash = createSplashHarness(splashStorage);
-refreshedSplash.start();
-assert.equal(refreshedSplash.loader.hidden, true, "A refresh in the same tab should not replay the splash.");
-assert.equal(refreshedSplash.timers.length, 0);
-assert.equal(refreshedSplash.matrixStartCount, 0, "Refreshing in the same tab should not allocate a Canvas context.");
-for (const storage of [splashStorage, {getItem(){throw new Error("blocked")},setItem(){throw new Error("blocked")}}]) {
-  const mobileReload = createSplashHarness(storage, {mobile:true, navigationType:"reload"});
-  mobileReload.start();
-  assert.equal(mobileReload.loader.hidden, false, "Phone reload must replay even after a previous completion or storage denial.");
-  assert.deepEqual(mobileReload.timers.map(timer => timer.delay), [7000,8200]);
-  mobileReload.start();
-  assert.equal(mobileReload.matrixStartCount, 1, "A second initialization must not create another instance.");
-  assert.equal(mobileReload.loader.hidden, false, "Duplicate initialization must not dismiss the current instance.");
-  mobileReload.timers.find(({delay}) => delay === 8200).callback();
-  assert.equal(mobileReload.lifecycleListeners.size, 0);
-  assert.equal(mobileReload.bodyClasses.has("splash-active"), false);
-  const mobileBack = createSplashHarness(storage, {mobile:true,navigationType:"back_forward"});
-  mobileBack.start();
-  assert.equal(mobileBack.loader.hidden, true, "History traversal never replays the intro.");
-}
-const leavingSplash = createSplashHarness({getItem:()=>null,setItem(){}}, {mobile:true});
-leavingSplash.start();
-leavingSplash.lifecycleListeners.get("pagehide")();
-assert.equal(leavingSplash.loader.hidden, true, "A BFCache snapshot must not retain a visible overlay.");
-assert.equal(leavingSplash.matrixCleanupCount, 1);
-const newBrowserSessionSplash = createSplashHarness({ getItem: () => null, setItem() {} });
-newBrowserSessionSplash.start();
-assert.equal(newBrowserSessionSplash.loader.hidden, false, "A new browser session may show the intro again.");
-newBrowserSessionSplash.timers.find(({delay}) => delay === 8200).callback();
-const reducedMotionSplash = createSplashHarness(splashStorage, { reducedMotion: true });
-reducedMotionSplash.start();
-assert.equal(reducedMotionSplash.loader.hidden, true, "Reduced motion should skip the splash immediately.");
-assert.equal(reducedMotionSplash.timers.length, 0);
-assert.equal(reducedMotionSplash.matrixStartCount, 0, "Reduced motion should not start the Canvas renderer.");
-const failedAnimationSplash = createSplashHarness({ getItem: () => null, setItem() {} }, { failTimers: true });
-failedAnimationSplash.start();
-assert.equal(failedAnimationSplash.loader.hidden, true, "A timer error should close the overlay instead of leaving it stuck.");
-const failsafeSplash = createSplashHarness({ getItem: () => null, setItem() {} });
-failsafeSplash.start();
-failsafeSplash.timers.find(({ delay }) => delay === 8200).callback();
-assert.equal(failsafeSplash.loader.hidden, true, "The failsafe should close the overlay if the normal exit callback does not run.");
-const unavailableStorageSplash = createSplashHarness({ getItem() { throw new Error("storage unavailable"); }, setItem() {} });
-unavailableStorageSplash.start();
-assert.equal(unavailableStorageSplash.loader.hidden, false, "Storage read errors must not suppress a first visit.");
-unavailableStorageSplash.timers.find(({delay}) => delay === 8200).callback();
-unavailableStorageSplash.start();
-assert.equal(unavailableStorageSplash.loader.hidden, true, "Memory prevents a repeat in the same document.");
-const blockedStorage = { getItem() { throw new Error("SecurityError"); }, setItem() { throw new Error("QuotaExceededError"); } };
-const fallbackHistory = { existingRouterValue: "preserved" };
-const privateSplash = createSplashHarness(blockedStorage, { historyState: fallbackHistory });
-privateSplash.start();
-assert.equal(privateSplash.loader.hidden, false);
-assert.equal(fallbackHistory.existingRouterValue, "preserved");
-assert.equal(fallbackHistory.gnwaaWelcomeIntroSeen, true);
-privateSplash.timers.find(({ delay }) => delay === 8200).callback();
-assert.equal(privateSplash.loader.hidden, true);
-assert.equal(privateSplash.matrixCleanupCount, 1);
-const privateRefresh = createSplashHarness(blockedStorage, { historyState: fallbackHistory });
-privateRefresh.start();
-assert.equal(privateRefresh.loader.hidden, true, "History marker survives blocked-storage refresh.");
-for (const navigationType of ["reload", "back_forward"]) {
-  const returning = createSplashHarness(blockedStorage, { navigationType });
-  returning.start();
-  assert.equal(returning.loader.hidden, true, "Reload/back after an SPA route should not replay without a history marker.");
-}
-const quotaStorage = { getItem: () => null, setItem() { throw new Error("QuotaExceededError"); } };
-const quotaSplash = createSplashHarness(quotaStorage);
-quotaSplash.start();
-assert.equal(quotaSplash.loader.hidden, false, "A write-only failure must still allow the first visit.");
-quotaSplash.timers.find(({delay}) => delay === 8200).callback();
-const quotaRefresh = createSplashHarness(quotaStorage, { navigationType: "reload" });
-quotaRefresh.start();
-assert.equal(quotaRefresh.loader.hidden, true, "Write-only failure must also honor reload detection.");
-const fullyBlocked = createSplashHarness(blockedStorage, { failHistory: true });
-fullyBlocked.start();
-assert.equal(fullyBlocked.loader.hidden, false, "Storage/history denial must not prevent the initial animation.");
-fullyBlocked.timers.find(({delay}) => delay === 8200).callback();
-assert.equal(fullyBlocked.loader.hidden, true);
-const privateReduced = createSplashHarness(blockedStorage, { reducedMotion: true });
-privateReduced.start();
-assert.equal(privateReduced.matrixStartCount, 0, "Reduced motion is respected even when storage throws.");
-const keyboardSplash = createSplashHarness({ getItem: () => null, setItem() {} });
-keyboardSplash.start();
-let tabPrevented = false;
-keyboardSplash.documentListeners.get("keydown")({key:"Tab",preventDefault(){tabPrevented=true}});
-assert.equal(tabPrevented,true);
-assert.equal(keyboardSplash.activeElement,keyboardSplash.loader);
-keyboardSplash.documentListeners.get("keydown")({key:"Escape",preventDefault(){throw new Error("Escape must not dismiss the intro")}});
-assert.equal(keyboardSplash.loader.hidden,false);
-keyboardSplash.timers.find(({delay})=>delay===8200).callback();
-assert.equal(keyboardSplash.activeElement,keyboardSplash.mainShell);
-const canvasErrorSplash = createSplashHarness({ getItem: () => null, setItem() {} }, { failCanvas: true });
-canvasErrorSplash.start();
-assert.equal(canvasErrorSplash.loader.hidden, true, "A Canvas error must reveal the site instead of leaving an intro overlay.");
-const blurredSplash = createSplashHarness({getItem:()=>null,setItem(){}});
-blurredSplash.start();
-blurredSplash.loseFocus();
-blurredSplash.timers.find(({delay})=>delay===8200).callback();
-assert.equal(blurredSplash.activeElement, blurredSplash.mainShell, "A CSS visibility blur must still restore focus after the fade.");
-const internalRouteSplash = extractFunction(app, "setActivePage", "startMatrixRain");
-assert.doesNotMatch(internalRouteSplash, /startMatrixSplash|startMatrixRain/,
-  "SPA navigation must not replay or restart the Welcome Intro.");
-const refreshCustomers = extractFunction(app, "refreshCustomers", "refreshCurrentPage");
-assert.doesNotMatch(refreshCustomers, /startMatrixSplash/,
-  "Refresh must not replay the initial public splash.");
-const pageNavigation = extractFunction(app, "setActivePage", "startMatrixRain");
+const pageNavigation = extractFunction(app, "setActivePage", "refreshCustomers");
 assert.match(pageNavigation, /if \(page === "discover"\)[\s\S]*pushState\(\{\}, "", "\/discover"\)[\s\S]*else if \(adminPages\.has\(page\) && !isAdminPath\(\)\)[\s\S]*pushState[\s\S]*resolveDiscoverRoute\(normalizedPath\(\)\)/,
   "Discover and admin navigation, including returns to public pages, must use in-app history transitions.");
 assert.match(pageNavigation, /if \(page === "lab"\)[\s\S]*normalizedPath\(\) !== "\/lab"[\s\S]*window\.history\[updateUrl \? "pushState" : "replaceState"\][\s\S]*"\/lab"/,
@@ -497,38 +139,12 @@ assert.equal(navRoutes.indexOf("analytics"), navRoutes.indexOf("lab") + 1,
 assert.match(html, /href="\/lab" data-page-link="lab"[^>]*data-i18n-aria="nav\.lab"/);
 assert.match(html, /<h1[^>]*id="page-title"/,
   "Public page views should share the page-level H1 so only the active route is visible.");
-assert.match(html, /<section class="about-view"[^>]*aria-labelledby="about-heading">[\s\S]*?<h1 id="about-heading" data-i18n="about\.title">/,
-  "The About view should expose its project hero as the page-level H1.");
-assert.match(html, /class="about-creator" aria-labelledby="about-creator-title"[\s\S]*?<h2 id="about-creator-title" data-i18n="about\.creatorTitle">Meet the Creator<\/h2>/,
-  "The About view should include one accessible Meet the Creator section.");
-assert.match(html, new RegExp(`<picture class="about-creator-picture">\\s*<source srcset="/images/ganwaa-anime-avatar\\.webp" type="image/webp">\\s*<img src="/images/ganwaa-anime-avatar\\.png" width="${creatorAvatarWidth}" height="${creatorAvatarHeight}"[^>]*data-i18n-alt="about\\.creatorAlt" loading="lazy" decoding="async">\\s*</picture>`),
-  "The creator portrait should prefer WebP and keep a dimensioned, translated PNG fallback.");
-assert.doesNotMatch(html, /class="about-creator-github"/,
-  "The Japanese Modern creator profile must not contain a GitHub profile link.");
-assert.match(html, /class="about-building" aria-labelledby="about-building-title"[\s\S]*?<h2 id="about-building-title" data-i18n="about\.buildingTitle">Одоо бүтээж буй зүйлс<\/h2>/,
-  "Now Building should follow the creator section with an accessible heading.");
-assert.equal((html.match(/class="about-building-card"/g) || []).length, 3,
-  "Now Building should contain exactly its three real public-project cards.");
-for (const [route, page] of [["#home", "home"], ["/discover", "discover"], ["/lab", "lab"]]) {
-  assert.ok(html.includes(`href="${route}" data-page-link="${page}"`),
-    `The ${page} card should use its existing public route.`);
-}
-assert.doesNotMatch(html, /about\.coming|about-next-card/,
-  "The replaced future-project tile should not leave an unverified In Progress status.");
-assert.match(app, /document\.querySelectorAll\("\[data-i18n-alt\]"\)/,
-  "Image alternative text should follow the selected MN/EN language.");
-assert.match(html, /class="about-signoff"[\s\S]*?<\/section>\s*<section class="about-labs lab-view" id="gnwaa-labs" data-page-view="lab"/,
-  "The About view should close before the original Lab section begins as a standalone page.");
 assert.equal((html.match(/data-page-view="lab"/g) || []).length, 1,
   "The Laboratory content should exist as one independent page view.");
 const labHubMarkup = html.match(/<div class="about-labs-grid" id="about-labs-hub">([\s\S]*?)<\/div>/);
 assert.ok(labHubMarkup, "The standalone Laboratory hub should remain in the markup.");
 assert.equal((labHubMarkup[1].match(/data-lab-open="(?:universe|detective|personality)"/g) || []).length, 3,
   "All three existing interactive launch controls must remain on the Laboratory page.");
-assert.match(html, /data-lab-mn="Сонирхолтой лаборатори" data-lab-en="Interactive Lab"/,
-  "The Laboratory heading should use the requested Mongolian and English labels.");
-assert.match(app, /"nav\.lab": "Сонирхолтой лаборатори"[\s\S]*"page\.labTitle": "Сонирхолтой лаборатори"/);
-assert.match(app, /"nav\.lab": "Interactive Lab"[\s\S]*"page\.labTitle": "Interactive Lab"/);
 const labLanguage = extractFunction(app, "applyLabLanguage", "showLabTool");
 assert.match(labLanguage, /data-lab-mn[\s\S]*data-lab-en/,
   "The existing lab content should continue to use the shared Mongolian/English language switch.");
@@ -545,9 +161,16 @@ const runPageFromLocation = new Function(
 );
 const publicRouteCases = [
   ["/", "", "home"],
+  ["/projects", "", "projects"],
+  ["/projects/gnwaa", "", "projectCase"],
+  ["/projects/randomizer", "", "randomizerCase"],
+  ["/playground", "", "playground"],
   ["/discover", "", "discover"],
   ["/lab", "", "lab"],
-  ["/about", "", "about"]
+  ["/about", "", "about"],
+  ["/randomizer", "", "randomizer"],
+  ["/randomizer/movie", "", "randomizer"],
+  ["/randomizer/food", "", "randomizer"]
 ];
 for (const [path, hash, expectedPage] of publicRouteCases) {
   const routeState = { discoverSlug: null };
@@ -645,7 +268,7 @@ assert.equal([...html.matchAll(/<[^>]+data-admin-only[^>]*>/g)].filter(([markup]
 assert.match(app, /data-admin-only hidden[\s\S]*data-admin-only hidden/,
   "Dynamically inserted content navigation and CMS editor must also start hidden.");
 
-const activePageSource = extractFunction(app, "setActivePage", "startMatrixRain");
+const activePageSource = extractFunction(app, "setActivePage", "refreshCustomers");
 let activePath = "/";
 let activeHash = "#about";
 const navigationHistory = [];
@@ -677,7 +300,7 @@ const runSetActivePage = new Function(
   "loadCustomers", "loadAdminContent",
   `${activePageSource}; return setActivePage;`
 )(
-  { about: {}, lab: {}, home: {}, discover: {}, customers: {}, analytics: {}, settings: {}, content: {} },
+  { about: {}, lab: {}, home: {}, projects: {}, projectCase: {}, randomizerCase: {}, playground: {}, discover: {}, randomizer: {}, customers: {}, analytics: {}, settings: {}, content: {} },
   { profileDropdown: { hidden: true } }, () => {}, navigationWindow, () => activePath,
   () => false, () => null, navigationState, () => { labHubResets += 1; }, () => {}, () => {}, () => {}, () => {}
 );
@@ -692,6 +315,20 @@ activeHash = "";
 runSetActivePage(resolvePageFrom(navigationWindow, activePath, activeHash), false);
 assert.equal(navigationState.currentPage, "lab", "Browser Forward should restore the Laboratory page.");
 assert.equal(labHubResets, 2, "Entering the Lab view should show its launcher without resetting feature data.");
+runSetActivePage("randomizerMovie");
+assert.equal(activePath, "/randomizer/movie");
+assert.equal(activeHash, "");
+assert.equal(navigationState.currentPage, "randomizer");
+runSetActivePage("randomizerFood");
+assert.equal(activePath, "/randomizer/food");
+runSetActivePage("home");
+assert.equal(activePath, "/", "Leaving a nested Randomizer route must not strand Home under that URL.");
+assert.equal(activeHash, "");
+activePath = "/randomizer/movie";
+activeHash = "";
+runSetActivePage("randomizer", false);
+assert.equal(activePath, "/randomizer/movie", "Back/Forward resolution preserves the nested Randomizer URL.");
+assert.equal(navigationState.currentPage, "randomizer");
 
 function resolvePageFrom(windowObject, pathname, hash) {
   activePath = pathname;
@@ -887,55 +524,9 @@ assert.match(app, /mobileNavReturnFocus = document\.activeElement[\s\S]*restoreF
 assert.match(app, /if \(usesCompactNavigation\(\) && el\.sidebar\.classList\.contains\("is-mobile-open"\)\)[\s\S]*setMobileNavOpen\(false, \{ restoreFocus: true \}\)/,
   "The mobile sidebar control closes the drawer and returns focus.");
 
-assert.match(html, /class="home-hero"[\s\S]*class="home-visual"[\s\S]*class="home-cat"/,
-  "The editorial hero should retain the GNWAA mascot illustration.");
-assert.equal((html.match(/class="home-bento-card home-bento-card--[a-z]+"/g) || []).length, 6,
-  "The public homepage should show six topic cards.");
-assert.equal((html.match(/class="home-card(?: [^"]*)?"/g) || []).length, 2,
-  "Owner-only CRM and analytics shortcuts should remain available.");
-assert.match(html, /data-page-link="discover"[\s\S]*home-bento-card--universe[\s\S]*data-lab-open="universe"/);
-assert.match(html, /home-bento-card--detective[\s\S]*data-lab-open="detective"/);
-assert.match(html, /home-bento-card--personality[\s\S]*data-lab-open="personality"/);
-assert.match(html, /data-discover-article="how-suica-works"/,
-  "Japan Explained should open an existing bilingual Discover article.");
-assert.match(html, /home-bento-card--about[\s\S]*href="\/about"/);
-assert.match(app, /if \(link\.dataset\.discoverArticle\)[\s\S]*openDiscoverArticle\(link\.dataset\.discoverArticle\)[\s\S]*showLabTool\(link\.dataset\.labOpen\)/,
-  "Homepage cards should use the existing deep-link and Lab entry points.");
-assert.match(css, /\.home-hero \{ min-height: 286px/);
-assert.match(css, /@media \(max-width: 600px\)[\s\S]*\.home-hero \{ grid-template-columns: minmax\(0, 1fr\)/,
-  "The hero illustration should stack below the copy on mobile.");
-assert.match(css, /\.home-bento-grid \{[^}]*grid-template-areas/,
-  "The landing page should use an asymmetric editorial grid.");
-assert.match(css, /@media \(max-width: 1020px\)[\s\S]*\.home-bento-grid/,
-  "The bento grid should reflow to two columns at tablet widths.");
-assert.match(css, /@media \(max-width: 640px\)[\s\S]*\.home-bento-grid/,
-  "The bento grid should stack in one column on mobile.");
-assert.match(css, /\.home-bento-card:focus-visible[\s\S]*outline/,
-  "Bento navigation should have a visible keyboard focus state.");
-assert.match(css, /\.home-bento-card:active/,
-  "Bento cards should have touch feedback.");
-assert.match(css, /\.home-bento-card:active\s*\{[^}]*box-shadow/,
-  "Bento touch feedback should remain visible when motion is reduced.");
-assert.match(css, /@media \(prefers-reduced-motion: reduce\)[\s\S]*\.home-bento-card/,
-  "Bento interactions should respect reduced motion.");
-assert.match(css, /--editorial-bg: #101114;[\s\S]*--editorial-surface: #1b1d22;[\s\S]*--editorial-elevated: #24262c;/,
-  "Public pages should use the shared minimalist editorial surface tokens.");
-assert.match(css, /\.discover-article-section p, \.discover-article-section li \{ color: var\(--editorial-muted\); font-size: 17px;/,
-  "Article body copy should use a comfortable desktop reading size.");
-assert.match(css, /@media \(max-width: 640px\)[\s\S]*\.discover-article-section p, \.discover-article-section li \{ font-size: 16px;/,
-  "Article body copy should remain at least 16px on mobile.");
-assert.match(css, /\.discover-category-button \{ min-height: 44px;/,
-  "Discover filters should provide mobile-size touch targets.");
-assert.match(css, /@supports \(padding: env\(safe-area-inset-top\)\)/,
-  "Mobile public pages should respect device safe areas.");
-assert.match(html, /name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/,
-  "The viewport should expose device safe-area insets.");
-assert.match(css, /\.home-card \{[^}]*height: 100%/);
-assert.match(css, /\.footer-main \{ display: grid/);
-assert.match(html, /data-page-link="discover" data-i18n="nav\.discover"[\s\S]*data-i18n="footer\.projects"[\s\S]*data-i18n="nav\.about"/);
 assert.doesNotMatch(html, /footer-navigation[\s\S]*Contact|mailto:/i,
   "Footer must not invent a contact link.");
 assert.match(app, /footerYear\.textContent = String\(new Date\(\)\.getFullYear\(\)\)/,
   "Footer copyright must use the current year.");
 
-process.stdout.write(`Static markup, Welcome Intro, CMS, Aurora Theme Studio, header, navigation, and profile-menu checks passed (${idSet.size} unique IDs; creator avatar ${creatorAvatarWidth}x${creatorAvatarHeight}).\n`);
+process.stdout.write(`Static markup, CMS security, owner appearance, routing, navigation, and profile-menu checks passed (${idSet.size} unique IDs; creator avatar ${creatorAvatarWidth}x${creatorAvatarHeight}).\n`);

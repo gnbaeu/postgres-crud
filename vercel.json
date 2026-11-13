@@ -1,11 +1,60 @@
 {
   "rewrites": [
-    { "source": "/admin", "destination": "/" },
-    { "source": "/admin/:path*", "destination": "/" },
-    { "source": "/login", "destination": "/" },
-    { "source": "/lab", "destination": "/" },
-    { "source": "/about", "destination": "/" },
-    { "source": "/discover", "destination": "/" },
-    { "source": "/discover/:path*", "destination": "/" }
+    {
+      "source": "/projects/randomizer",
+      "destination": "/"
+    },
+    {
+      "source": "/playground",
+      "destination": "/"
+    },
+    {
+      "source": "/projects/gnwaa",
+      "destination": "/"
+    },
+    {
+      "source": "/projects",
+      "destination": "/"
+    },
+    {
+      "source": "/randomizer",
+      "destination": "/"
+    },
+    {
+      "source": "/randomizer/movie",
+      "destination": "/"
+    },
+    {
+      "source": "/randomizer/food",
+      "destination": "/"
+    },
+    {
+      "source": "/admin",
+      "destination": "/"
+    },
+    {
+      "source": "/admin/:path*",
+      "destination": "/"
+    },
+    {
+      "source": "/login",
+      "destination": "/"
+    },
+    {
+      "source": "/lab",
+      "destination": "/"
+    },
+    {
+      "source": "/about",
+      "destination": "/"
+    },
+    {
+      "source": "/discover",
+      "destination": "/"
+    },
+    {
+      "source": "/discover/:path*",
+      "destination": "/"
+    }
   ]
 }
