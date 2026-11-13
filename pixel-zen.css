@@ -506,8 +506,8 @@ body.pz-home-active{background:var(--scene-sky)}
 .mp-scene{overflow:hidden;shape-rendering:crispEdges;image-rendering:pixelated;pointer-events:none;user-select:none}
 .mp-route{transform:translate(var(--from-x),var(--from-y)) scale(var(--from-scale));opacity:1}
 .mp-sprite{overflow:hidden}
-:is(.pz-home-active .pz-home,.welcome-open .tw-ambient) .mp-route{animation:mp-route var(--walk-duration) var(--walk-delay) linear infinite}
-:is(.pz-home-active .pz-home,.welcome-open .tw-ambient) .mp-sprite-strip{animation:mp-sprite var(--step-duration) var(--step-delay) steps(4,end) infinite}
+.pz-home-active .pz-home .mp-route{animation:mp-route var(--walk-duration) var(--walk-delay) linear infinite}
+.pz-home-active .pz-home .mp-sprite-strip{animation:mp-sprite var(--step-duration) var(--step-delay) steps(4,end) infinite}
 @keyframes mp-route{0%{transform:translate(var(--from-x),var(--from-y)) scale(var(--from-scale));opacity:0}6%,94%{opacity:1}100%{transform:translate(var(--to-x),var(--to-y)) scale(var(--to-scale));opacity:0}}
 @keyframes mp-sprite{to{transform:translateX(-64px)}}
 :root[data-world-paused="true"] .mp-scene *{animation-play-state:paused!important}
@@ -525,3 +525,22 @@ body.pz-home-active{background:var(--scene-sky)}
  .mp-person-2,.mp-person-3,.mp-person-5,.mp-person-7,.mp-person-8,.mp-person-9,.mp-person-11{display:none}
  .pz-intro .pz-actions{margin-top:12px;gap:8px 16px}.pz-intro .pz-button{padding:8px 12px}
 }
+
+/* Welcome owns its night-steppe palette and geometry, independently of Home. */
+.welcome-view{padding:24px 16px;background:#101b30;box-sizing:border-box}
+.tw-ambient{background:#101b30;--tw-sky:#101b30;--tw-far:#26334b;--tw-near:#1d2b3c;--tw-ground:#15272d}
+:root[data-theme="light"] .tw-ambient{--tw-sky:#263650;--tw-far:#3b4a60;--tw-near:#2c3e4c;--tw-ground:#223a3e}
+.tw-steppe{display:block;width:100%;height:100%;pointer-events:none}
+.tw-sky{fill:var(--tw-sky)}.tw-stars{fill:#cad4dc}.tw-moon{fill:#d4d6bc}.tw-moon-shade{fill:#a3afa9}
+.tw-cloud{fill:#627185;opacity:.16}.tw-mountain-far{fill:var(--tw-far)}.tw-mountain-near{fill:var(--tw-near)}.tw-ground{fill:var(--tw-ground)}
+.tw-ger-shadow{fill:#0c1c24}.tw-ger-roof{fill:#89918c}.tw-ger-wall{fill:#a5a89b}.tw-ger-band{fill:#56646a}.tw-ger-door{fill:#3f4444}.tw-ger-window{fill:#c3a365}.tw-ger-frame{fill:#65716a}
+.welcome-open .tw-star{animation:tw-star-glimmer 7s var(--star-delay) ease-in-out infinite}
+.welcome-open .tw-ger-window{animation:tw-window-glow 9s ease-in-out infinite}
+.welcome-open .tw-cloud{animation:tw-cloud-drift 90s ease-in-out infinite alternate}
+@keyframes tw-star-glimmer{0%,100%{opacity:.35}50%{opacity:.8}}
+@keyframes tw-window-glow{0%,100%{opacity:.65}50%{opacity:.85}}
+@keyframes tw-cloud-drift{to{transform:translateX(24px)}}
+:root[data-motion="off"] .tw-ambient *,:root[data-motion="reduced"] .tw-ambient *, :root[data-world-paused="true"] .tw-ambient *{animation:none!important}
+@media(prefers-reduced-motion:reduce){.tw-ambient *{animation:none!important}}
+@media(max-width:600px){.welcome-view{padding:20px 16px}.tw-steppe{width:100%;height:100%}}
+@media(max-width:600px){.tw-steppe .tw-ger{transform:translate(424px,500px)}.tw-steppe :is(.tw-moon,.tw-moon-shade){transform:translateX(-300px)}}

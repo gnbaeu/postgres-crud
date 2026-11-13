@@ -492,7 +492,7 @@ const state = {
   accentTheme: "aurora-purple",
   themeStudioStart: null,
   mobileNavReturnFocus: null,
-  language: "mn",
+  language: "en",
   connection: null,
   formError: null,
   toast: null,
@@ -2859,7 +2859,7 @@ state.currentPage = pageFromCurrentLocation();
 applyTheme(isAdminPath() || normalizedPath() === "/login" ? readPreference(THEME_KEY, ["dark", "light"], "dark") : resolveJapanAppearance(), false);
 applyAccentTheme(readPreference(ACCENT_THEME_KEY, ACCENT_THEME_IDS, "aurora-purple"), false);
 setSidebarCollapsed(readPreference(SIDEBAR_KEY, ["expanded", "collapsed"], "expanded") === "collapsed", false);
-applyLanguage(readPreference(LANGUAGE_KEY, ["mn", "en", "ja"], "mn"), false);
+applyLanguage(readPreference(LANGUAGE_KEY, ["mn", "en", "ja"], "en"), false);
 el.footerYear.textContent = String(new Date().getFullYear());
 showLabTool(null);
 setActivePage(state.currentPage, false);

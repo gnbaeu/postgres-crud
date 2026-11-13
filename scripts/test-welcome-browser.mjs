@@ -31,7 +31,7 @@ try {
     for(const width of [320,360,390,430,768,1440]){
       await viewport(width);
       assert.equal(await evaluate("(()=>{const d=document.querySelector('#terminal-welcome');return d.scrollWidth<=d.clientWidth && document.documentElement.scrollWidth<=innerWidth})()"),true);
-      assert.equal(await evaluate("(()=>{const r=document.querySelector('.tw-ambient .mp-scene').getBoundingClientRect(),d=document.querySelector('#terminal-welcome').getBoundingClientRect();return r.right>0 && r.left<innerWidth && r.bottom>d.bottom && r.top<innerHeight})()"),true,'Square scene extends below terminal');
+      assert.equal(await evaluate("(()=>{const r=document.querySelector('.tw-ambient .tw-steppe').getBoundingClientRect(),d=document.querySelector('#terminal-welcome').getBoundingClientRect();return r.right>0 && r.left<innerWidth && r.bottom>d.bottom && r.top<innerHeight})()"),true,'Independent steppe fills welcome viewport');
     }
   }
   await select('[data-welcome-theme]','system');
