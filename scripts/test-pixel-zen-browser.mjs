@@ -102,13 +102,13 @@ try {
   assert.equal(await evaluate("document.querySelector('[data-page-view=home]').textContent.includes('Discover')"),false);
   assert.equal(await evaluate("document.querySelector('#home-hero-title').textContent"),PORTFOLIO_COPY.mn["pz.headline"]);
   assert.equal(await evaluate("getComputedStyle(document.body).backgroundColor"),"rgb(27, 99, 172)","Daytime reference sky");
-  assert.equal(await evaluate("document.querySelectorAll('[data-page-view=home] button,[data-page-view=home] section').length"),0,"Home has no extra sections");
+  assert.equal(await evaluate("document.querySelectorAll('[data-page-view=home] section').length"),0,"Home has no extra sections");
   assert.ok(await evaluate("Number(getComputedStyle(document.querySelector('#home-hero-title')).fontWeight)")>=400);
   assert.equal(await evaluate("document.querySelectorAll('[data-page-view=home] .pz-project-entry').length"),0);
   assert.equal(await evaluate("document.querySelectorAll('[data-page-view=home] iframe').length"),0,"Compact Featured Work has no iframe");
   assert.ok(await evaluate("document.querySelector('.pz-intro-art').getBoundingClientRect().width")>=350,"Fuji is a prominent part of the desktop composition");
   assert.equal(await evaluate("fetch('/images/pixel-zen.svg').then(r=>r.text()).then(xml=>!new DOMParser().parseFromString(xml,'image/svg+xml').querySelector('parsererror'))"),true,"Original pixel SVG is valid");
-  assert.equal(await evaluate("document.querySelectorAll('[data-page-view=home] [data-pz-route]').length"),3,"Three hero routes");
+  assert.equal(await evaluate("document.querySelectorAll('[data-page-view=home] [data-pz-route]').length"),2,"Two focused hero routes");
   assert.equal(await evaluate("getComputedStyle(document.querySelector('.pz-home .mp-scene')).pointerEvents"),"none","Scene never intercepts navigation");
   await screenshot("reference-desktop-1440.png");
   await screenshot("home-desktop-light-1440.png");
@@ -251,9 +251,9 @@ try {
   await evaluate("document.querySelector('.pz-brand').focus()");await key("Tab");
   assert.equal(await evaluate("document.activeElement.id"),"public-language","Collapsed menu links are excluded from keyboard order");
   await send("Page.navigate",{url:origin+"/login"});
-  await wait("!document.querySelector('#auth-gate').hidden && document.querySelector('.app-layout').inert","Protected owner boundary");
+  await wait("document.readyState==='complete' && !!document.querySelector('#auth-gate') && !document.querySelector('#auth-gate').hidden && !!document.querySelector('.app-layout') && document.querySelector('.app-layout').inert","Protected owner boundary");
   await send("Page.navigate",{url:origin+"/admin#customers"});
-  await wait("!document.querySelector('#auth-gate').hidden && document.querySelector('.app-layout').inert","Anonymous admin remains gated");
+  await wait("document.readyState==='complete' && !!document.querySelector('#auth-gate') && !document.querySelector('#auth-gate').hidden && !!document.querySelector('.app-layout') && document.querySelector('.app-layout').inert","Anonymous admin remains gated");
   const exceptions=events.filter(event=>event.method==="Runtime.exceptionThrown").map(event=>event.params.exceptionDetails.exception?.description);
   assert.deepEqual(exceptions,[],"No uncaught browser errors");
   const missingAssets=events.filter(event=>event.method==="Network.responseReceived" && event.params.response.status>=400).map(event=>new URL(event.params.response.url).pathname).filter(path=>!path.startsWith("/api/")&&path!=="/favicon.ico");

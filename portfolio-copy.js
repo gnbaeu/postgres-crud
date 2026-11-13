@@ -272,4 +272,10 @@ const universeCopy={
  ja:{campCaption:'小さな実験のキャンプ',steppeCaption:'モンゴルの草原 / 私の場所',projects:'ポートフォリオ'}
 };
 for(const locale of ['mn','en','ja'])Object.assign(copy[locale],universeCopy[locale]);
+const polishCopy={
+ mn:{intro:"Миний веб төслүүд, хэрэгтэй жижиг хэрэгслүүд болон интерактив туршилтуудтай танилцаарай.",viewProjects:"Төслүүдийг үзэх",tryPlayground:"Playground турших",visitSite:"Сайт үзэх",tryDemo:"Демо турших"},
+ en:{intro:"Explore my web projects, useful little tools, and interactive experiments.",viewProjects:"View Projects",tryPlayground:"Try Playground",visitSite:"Visit Site",tryDemo:"Try Demo"},
+ ja:{intro:"Web制作のプロジェクトや便利なツール、インタラクティブな実験を紹介しています。",viewProjects:"作品を見る",tryPlayground:"Playgroundを試す",visitSite:"サイトを見る",tryDemo:"デモを試す"}
+};
+for(const locale of ['mn','en','ja'])Object.assign(copy[locale],polishCopy[locale]);
 export const PORTFOLIO_COPY = Object.fromEntries(Object.entries(copy).map(([locale, values]) => [locale,Object.fromEntries(Object.entries(values).map(([key,value])=>["pz."+key,value]))]));

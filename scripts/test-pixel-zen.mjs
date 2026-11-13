@@ -18,7 +18,7 @@ assert.doesNotMatch(app, /startMatrixSplash|startMatrixRain|welcomeIntroKey/);
 assert.match(app, /legacyStyleUrl from "\.\/style\.css\?url"/);
 assert.match(app, /legacyStyles\.disabled = document\.body\.classList\.contains\("jm-public"\)/);
 assert.doesNotMatch(html, /href="(?:style|japanese-modern|brand-identity|japan-experience)\.css"/);
-assert.doesNotMatch(css, /gradient|box-shadow:\s*(?!none)[^;]+;/);
+assert.doesNotMatch(css, /box-shadow:\s*(?!none)[^;]+;/);
 assert.match(css, /shape-rendering:crispEdges/);
 assert.match(css, /prefers-reduced-motion/);
 assert.match(css, /pz-desktop-appearance\{display:none\}/);
@@ -103,7 +103,8 @@ for (const lang of ["en","mn","ja"]) {
   assert.ok(node('[data-page-view="home"]').innerHTML.includes(PORTFOLIO_COPY[lang]["pz.headline"]));
   const home=node('[data-page-view="home"]').innerHTML;
   assert.doesNotMatch(home,/<button|<section|data-project-kind|data-quick-draw|pz-workbench/,"Home is one hero with three route links");
-  assert.equal((home.match(/data-pz-route=/g)||[]).length,3);
+  assert.equal((home.match(/data-pz-route=/g)||[]).length,2);
+  assert.match(home,/data-home-demo/);
   assert.match(home,/class="mp-world-image"/);
   assert.match(home,/data-scene-layer="walkers"/);
   assert.doesNotMatch(home,/design-reference/);

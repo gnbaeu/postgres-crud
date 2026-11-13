@@ -1,3 +1,4 @@
+import {uxText,shareResult} from "./pixel-ux.js";
 // Keep this module name distinct from /randomizer so Vite serves the SPA at that URL.
 import { MOVIE_GENRES, FOOD_CATEGORIES, MOVIES, FOODS, DATASET_SOURCES } from "./randomizer-data.js";
 import { eligibleItems, toggleSelection, pickItem, readCollection, writeCollection, rememberDraw, toggleFavorite } from "./randomizer-core.js";
@@ -29,7 +30,7 @@ export function initRandomizer({ root, getLanguage, setLanguage, navigate, trans
       openedSaved: false, fresh: false, error: false, ...saved
     }];
   }));
-  const tr = (key, values) => translate("randomizer." + key, values);
+  const tr = (key, values) => key==="addFavorite"?uxText("save",getLanguage()):key==="removeFavorite"?uxText("remove",getLanguage()):key==="favorites"?uxText("save",getLanguage()):translate("randomizer." + key, values);
   const text = value => typeof value === "string" ? value : value?.[getLanguage()] || value?.en || value?.mn || "";
   const name = (item, type) => type === "movie" ? item.title : text(item.names);
   const routeType = () => location.pathname.replace(/\/+$/, "").split("/")[2] || "landing";
@@ -75,7 +76,7 @@ export function initRandomizer({ root, getLanguage, setLanguage, navigate, trans
       ${type === "movie" ? `<p class="rz-release-year">${item.year}</p>` : `<p class="rz-food-names" aria-label="${escape(tr("allNames"))}">${Object.entries(item.names).filter(([locale]) => locale !== getLanguage()).map(([locale,value]) => `<span lang="${locale}">${escape(value)}</span>`).join('<span aria-hidden="true"> / </span>')}</p>`}
       <div class="rz-tags">${tagList(item,type)}</div><p class="rz-synopsis">${escape(text(item.summary || item.description))}</p>
       ${item.detailUrl ? `<a class="rz-details-link" href="${escape(item.detailUrl)}" target="_blank" rel="noopener noreferrer">${escape(tr("details"))} ↗</a>` : ""}
-      <div class="rz-result-actions"><button type="button" class="rz-button rz-button--primary" data-rz-action="draw" data-rz-focus="again">${escape(tr("tryAgain"))} ${arrow}</button><button type="button" class="rz-text-button" data-rz-action="change" data-rz-focus="change">${escape(tr(type === "movie" ? "changeGenres" : "changeCategories"))}</button></div></div></article>`;
+      <div class="rz-share-actions"><button type="button" data-rz-action="favorite" data-id="${item.id}" data-rz-focus="save" aria-pressed="${model.favorites.includes(item.id)}">${escape(tr(model.favorites.includes(item.id)?"removeFavorite":"addFavorite"))}</button><button type="button" data-rz-action="copy" data-rz-focus="copy">${escape(uxText("copy",getLanguage()))}</button>${typeof navigator!=="undefined"&&navigator.share?`<button type="button" data-rz-action="share" data-rz-focus="share">${escape(uxText("share",getLanguage()))}</button>`:""}</div><div class="rz-result-actions"><button type="button" class="rz-button rz-button--primary" data-rz-action="draw" data-rz-focus="again">${escape(tr("tryAgain"))} ${arrow}</button><button type="button" class="rz-text-button" data-rz-action="change" data-rz-focus="change">${escape(tr(type === "movie" ? "changeGenres" : "changeCategories"))}</button></div></div></article>`;
   }
 
   function categoryPage(type) {
@@ -91,7 +92,7 @@ export function initRandomizer({ root, getLanguage, setLanguage, navigate, trans
       <div class="rz-draw-row"><button id="rz-draw" type="button" class="rz-button rz-button--primary" data-rz-action="draw" data-rz-focus="draw" ${disabled}>${escape(tr(model.busy ? "drawing" : "draw"))} ${arrow}</button><button type="button" class="rz-text-button" data-rz-action="clear" data-rz-focus="clear" ${!model.selected.length || model.busy ? "disabled" : ""}>${escape(tr("clear"))}</button></div>
       <p id="rz-eligible-count" class="rz-eligible" data-count="${pool.length}">${escape(tr("eligible",{count:pool.length,total:DATA[type].length}))}</p></section>
       <section id="rz-result-region" class="rz-result-region" aria-label="${escape(tr("yourPick"))}">${result(type,pool)}</section></div>
-      <div class="rz-collection-grid">${collectionPanel(type,"favorites")}${collectionPanel(type,"history")}</div>
+      <p class="rz-device-note">${escape(uxText("device",getLanguage()))}</p><div class="rz-collection-grid">${collectionPanel(type,"favorites")}${collectionPanel(type,"history")}</div>
       <div class="rz-data-note"><p>${escape(tr(type+"Note",{count:DATA[type].length}))}</p>${storageFailed ? `<p class="rz-storage-notice" role="status">${escape(tr("storageNotice"))}</p>` : ""}<details><summary>${escape(tr("sourceTitle"))}</summary><p>${escape(tr("sourceText"))}</p><ul>${DATASET_SOURCES[type === "movie" ? "movies" : "foods"].map(source => `<li><a href="${escape(source.url)}" target="_blank" rel="noopener noreferrer">${escape(source.label)} ↗</a></li>`).join("")}</ul></details></div>`;
   }
 
@@ -131,7 +132,7 @@ export function initRandomizer({ root, getLanguage, setLanguage, navigate, trans
     }
   }
 
-  root.addEventListener("click", event => {
+  root.addEventListener("click", async event => {
     const link = event.target.closest("[data-rz-route]");
     if (link && !event.ctrlKey && !event.metaKey && !event.shiftKey && !event.altKey && event.button === 0) {
       event.preventDefault(); navigate(link.dataset.rzRoute); return;
@@ -143,6 +144,12 @@ export function initRandomizer({ root, getLanguage, setLanguage, navigate, trans
     const action = button.dataset.rzAction;
     if (model.busy) return;
     model.fresh = false;
+    if(action==="copy"||action==="share"){
+      if(!model.result)return;
+      const message=name(model.result,type)+(type==="movie"?" ("+model.result.year+")":"")+" — GNWAA Randomizer";
+      const ok=await shareResult(message,{share:action==="share"});
+      announce(uxText(ok?(action==="share"?"shared":"copied"):"failed",getLanguage()));return;
+    }
     if (action === "draw") { draw(type); return; }
     if (action === "change") {
       const chip = content.querySelector('.rz-chip[aria-pressed="true"]') || content.querySelector(".rz-chip");

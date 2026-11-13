@@ -12,7 +12,7 @@
     "check:randomizer": "node scripts/test-randomizer.mjs",
     "check:randomizer:browser": "node scripts/test-randomizer-browser.mjs",
     "check:randomizer:preview": "node scripts/test-randomizer-preview.mjs",
-    "check": "npm run check:env && npm run check:markup && npm run check:discover && npm run check:randomizer && npm run check:portfolio && npm run check:quick-draw && npm run check:welcome && npm run check:welcome:background && npm run check:architecture && npm run check:pixel-font && npm run check:pixel-interactions && npm run check:universe",
+    "check": "npm run check:env && npm run check:markup && npm run check:discover && npm run check:randomizer && npm run check:portfolio && npm run check:quick-draw && npm run check:welcome && npm run check:welcome:background && npm run check:architecture && npm run check:pixel-font && npm run check:pixel-interactions && npm run check:universe && npm run check:ux",
     "check:portfolio": "node scripts/test-pixel-zen.mjs",
     "check:portfolio:browser": "node scripts/test-pixel-zen-browser.mjs",
     "check:portfolio:preview": "node scripts/test-pixel-zen-preview.mjs",
@@ -27,7 +27,9 @@
     "check:pixel-interactions:browser": "node scripts/test-pixel-interactions-browser.mjs",
     "check:world:browser": "node scripts/test-mongol-world-browser.mjs",
     "check:universe": "node scripts/test-mongolian-universe.mjs",
-    "check:universe:browser": "node scripts/test-mongolian-universe-browser.mjs"
+    "check:universe:browser": "node scripts/test-mongolian-universe-browser.mjs",
+    "check:ux": "node scripts/test-pixel-ux.mjs",
+    "check:ux:browser": "node scripts/test-pixel-ux-browser.mjs"
   },
   "devDependencies": {
     "vite": "^8.3.5"

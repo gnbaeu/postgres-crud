@@ -22,25 +22,26 @@ export function initPortfolio({translate, getLanguage, setLanguage, getPage, nav
   const techList = (project,compact=false) => `<ul class="pz-tech-list" aria-label="${escape(t("technologies"))}">${(compact?project.technologies.slice(-4):project.technologies).map(value=>`<li>${escape(value)}</li>`).join("")}</ul>`;
   const featureList = project => `<ul class="pz-project-features">${project.features.map(key=>`<li>${escape(t(key))}</li>`).join("")}</ul>`;
   const fallback = project => `<div class="pz-preview-fallback" data-preview-fallback ${project.preview?"hidden":""}>
-    ${icon(project.icon)}<strong>${escape(project.title)}</strong><p data-preview-missing>${escape(t("previewMissing"))}</p><span>${escape(t("previewPending"))}</span>
+    ${icon(project.icon)}<strong>${escape(project.title)}</strong>
     ${link(project.livePage,"viewProject")}
   </div>`;
   const projectMedia = project => {
     const media = project.preview;
+    if(!media)return "";
     return `<figure class="pz-project-media" data-project-media="${project.id}" data-media-state="${media?"image":"fallback"}">
       <div class="pz-project-visual">
         ${media ? `<a class="pz-project-image-link" href="${project.livePath}" data-pz-route="${project.livePage}" data-project-image-link aria-label="${escape(t("viewProject")+": "+project.title)}"><img data-project-screenshot src="${escape(media.src)}" width="${media.width}" height="${media.height}" alt="${escape(project.title+" — "+t("previewAlt"))}" loading="lazy" decoding="async"></a>` : ""}
         ${fallback(project)}
       </div>
-      <figcaption data-preview-caption>${escape(t(media?"previewCaptured":"previewMissing"))}</figcaption>
+      <figcaption data-preview-caption>${escape(t("previewCaptured"))}</figcaption>
     </figure>`;
   };
   const projectActions = (project,compact=false) => `<div class="pz-project-links">
-    ${link(project.livePage,"viewProject",compact?"pz-project-open":"pz-button pz-button--outline")}
+    ${link(project.livePage,project.id==="gnwaa"?"visitSite":"tryDemo","pz-button pz-button--primary")}
     ${link(project.casePage,"caseStudy")}
     <a href="${project.source}" target="_blank" rel="noopener noreferrer">${escape(t("source"))}<span aria-hidden="true"> ↗</span></a>
   </div>`;
-  const projectEntry = (project,heading,context) => `<article class="pz-project-entry" data-project-id="${project.id}" data-project-kind="${project.kind}" aria-labelledby="${context}-${project.id}-title">
+  const projectEntry = (project,heading,context) => `<article class="pz-project-entry" data-project-id="${project.id}" data-project-kind="${project.kind}" data-has-preview="${Boolean(project.preview)}" aria-labelledby="${context}-${project.id}-title">
     ${projectMedia(project)}
     <div class="pz-project-copy">
       <p class="pz-micro">${project.number} / ${escape(t(project.category))}</p>
@@ -53,7 +54,7 @@ export function initPortfolio({translate, getLanguage, setLanguage, getPage, nav
   </article>`;
 
   function home() {
-    return `<header class="pz-intro"><div class="pz-intro-text"><p class="mp-eyebrow">${escape(t("worldSubtitle"))}</p><h1 id="home-hero-title" data-i18n="home.heroTitle" tabindex="-1">${escape(t("headline"))}</h1><p class="pz-intro-copy" data-i18n="home.heroText">${escape(t("intro"))}</p><nav class="pz-actions" aria-label="${escape(t("heroNavigation"))}">${link("projects","projects","pz-button pz-button--primary")}${link("playground","playground")}${link("about","about")}</nav></div><div class="pz-intro-art">${mongolScene()}</div><p class="mp-place-label">${escape(t("squareCaption"))}</p></header>`;
+    return `<header class="pz-intro"><div class="pz-intro-text"><p class="mp-eyebrow">${escape(t("worldSubtitle"))}</p><h1 id="home-hero-title" data-i18n="home.heroTitle" tabindex="-1">${escape(t("headline"))}</h1><p class="pz-intro-copy" data-i18n="home.heroText">${escape(t("intro"))}</p><nav class="pz-actions" aria-label="${escape(t("heroNavigation"))}">${link("projects","viewProjects","pz-button pz-button--primary")}${link("playground","tryPlayground")}</nav><aside class="ux-home-demo" data-home-demo></aside></div><div class="pz-intro-art">${mongolScene()}</div><p class="mp-place-label">${escape(t("squareCaption"))}</p></header>`;
   }
   function projects() {
     return `<header class="pz-page-heading mn-gallery-heading"><div class="mn-gallery-sign" aria-hidden="true">${mongolIcon("knot")}</div><p class="pz-micro">01 / ${escape(t("projects"))}</p><h1 tabindex="-1">${escape(t("projectHeading"))}</h1><p>${escape(t("projectIntro"))}</p></header><section class="pz-section pz-projects-list">${PROJECTS.map(project=>projectEntry(project,2,"work")).join("")}</section>${workbench()}`;
@@ -153,11 +154,9 @@ export function initPortfolio({translate, getLanguage, setLanguage, getPage, nav
     if(!event.target.matches?.("[data-project-screenshot]"))return;
     const media=event.target.closest("[data-project-media]");
     if(!media)return;
-    media.dataset.mediaState="fallback";
-    media.querySelector("[data-project-image-link]").hidden=true;
-    media.querySelector("[data-preview-fallback]").hidden=false;
-    media.querySelector("[data-preview-missing]").textContent=t("previewUnavailable");
-    media.querySelector("[data-preview-caption]").textContent=t("previewUnavailable");
+    media.hidden=true;
+    const card=media.closest('[data-project-id]');
+    if(card)card.dataset.hasPreview="false";
   },true);
   window.addEventListener("gnwaa:public-view",render);
   render();

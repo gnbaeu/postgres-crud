@@ -1,3 +1,4 @@
+import {initPixelUX} from "./pixel-ux.js";
 import { initWorldMotion } from "./mongol-scene.js";
 import { initPixelInteractions } from "./pixel-interactions.js";
 import { initWelcome } from "./welcome.js";
@@ -2873,3 +2874,5 @@ initWelcome({translate:t, getLanguage:()=>state.language, setLanguage:applyLangu
 initPixelInteractions({translate:t});
 
 initWorldMotion();
+
+initPixelUX({navigate:setActivePage, getPage:()=>state.currentPage, openLab:tool=>{setActivePage("lab");showLabTool(tool);}});
