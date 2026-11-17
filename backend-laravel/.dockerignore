@@ -1,0 +1,7 @@
+vendor
+.env
+.env.*
+.git
+node_modules
+storage/logs/*
+storage/framework/sessions/*

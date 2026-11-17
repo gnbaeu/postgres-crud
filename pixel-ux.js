@@ -17,7 +17,7 @@ export function initPixelUX({navigate,openLab,getPage}){
  const palette=document.createElement('dialog');palette.className='ux-dialog';palette.id='command-palette';document.body.append(palette);
  const popover=document.createElement('dialog');popover.className='ux-dialog ux-popover';popover.id='square-popover';document.body.append(popover);
  const close=dialog=>{dialog.close();restore?.focus({preventScroll:true});};
- for(const dialog of [palette,popover]){dialog.addEventListener('cancel',event=>{event.preventDefault();close(dialog);});dialog.addEventListener('click',event=>{if(event.target===dialog||event.target.closest('[data-ux-close]'))close(dialog);});dialog.addEventListener('keydown',event=>{if(event.key!=='Tab')return;const controls=[...dialog.querySelectorAll('input,button')].filter(el=>!el.disabled),first=controls[0],last=controls.at(-1);if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus();}else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus();}});}
+ for(const dialog of [palette,popover]){dialog.addEventListener('cancel',event=>{event.preventDefault();close(dialog);});dialog.addEventListener('click',event=>{if(event.target===dialog||event.target.closest('[data-ux-close]'))close(dialog);});dialog.addEventListener('keydown',event=>{if(event.key==='Escape')event.stopPropagation();if(event.key!=='Tab')return;const controls=[...dialog.querySelectorAll('input,button')].filter(el=>!el.disabled),first=controls[0],last=controls.at(-1);if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus();}else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus();}});}
  const matches=()=>{const q=palette.querySelector('input').value.trim().toLowerCase();return routes.filter(item=>[item[1],...Object.values(UX_COPY).map(locale=>locale[item[0]])].join(' ').toLowerCase().includes(q));};
  function results(){const items=matches();index=Math.max(0,Math.min(index,items.length-1));palette.querySelector('[data-command-list]').innerHTML=items.length?items.map((item,i)=>`<button type="button" data-command="${routes.indexOf(item)}" ${i===index?'aria-current="true"':''}>${esc(t(item[0]))}<small>${item[1]}</small></button>`).join(''):`<p role="status">${esc(t('empty'))}</p>`;palette.querySelector('input').setAttribute('aria-describedby','command-hint');palette.querySelector('[data-command-status]').textContent=items[index]?t(items[index][0]):t('empty');}
  function openPalette(){if(!document.body.classList.contains('jm-public')||document.documentElement.classList.contains('welcome-open')||document.querySelector('dialog[open]'))return;restore=document.activeElement;palette.innerHTML=`<h2 id="command-title">${esc(t('palette'))}</h2><label>${esc(t('search'))}<input type="search" autocomplete="off"/></label><p id="command-hint">↑ ↓ · Enter · Esc</p><div data-command-list></div><p class="visually-hidden" data-command-status role="status" aria-live="polite"></p><button type="button" data-ux-close>${esc(t('close'))}</button>`;palette.setAttribute('aria-labelledby','command-title');index=0;results();palette.showModal();palette.querySelector('input').focus();}
@@ -25,6 +25,14 @@ export function initPixelUX({navigate,openLab,getPage}){
  palette.addEventListener('keydown',event=>{if(['ArrowDown','ArrowUp'].includes(event.key)){event.preventDefault();const n=matches().length;if(!n)return;index=(index+(event.key==='ArrowDown'?1:-1)+n)%n;results();palette.querySelector('[aria-current]')?.scrollIntoView({block:'nearest'});}if(event.key==='Enter'&&event.target.matches('input')){event.preventDefault();const item=matches()[index];if(item){close(palette);go(item);}}});
  palette.addEventListener('click',event=>{const button=event.target.closest('[data-command]');if(button){close(palette);go(routes[Number(button.dataset.command)]);}});
  document.addEventListener('keydown',event=>{if((event.ctrlKey||event.metaKey)&&event.key.toLowerCase()==='k'){if(event.target.closest('input,textarea,[contenteditable=true]'))return;event.preventDefault();palette.open?close(palette):openPalette();}});
+ const mobile=matchMedia('(max-width:768px)');
+ function arrange(){
+  const demo=document.querySelector('[data-home-demo]'), home=document.querySelector('.pz-intro-text'), playground=document.querySelector('[data-page-view=playground]');
+  if(demo&&home&&playground)(mobile.matches?playground:home).append(demo);
+  const search=document.querySelector('[data-palette-open]'), header=document.querySelector('#public-header'), menu=document.querySelector('#public-nav');
+  if(search&&header&&menu)(mobile.matches?menu:header).append(search);
+ }
+ mobile.addEventListener('change',arrange);
  function refresh(){
   if(palette.open)close(palette);if(popover.open)close(popover);
   const host=document.querySelector('[data-home-demo]');if(host&&!host.children.length)host.innerHTML=`<span>${esc(t('demo'))}</span><button type="button" data-home-draw>${esc(t('draw'))}</button><output aria-live="polite" data-home-result></output><a href="/randomizer/movie" data-ux-full>${esc(t('full'))} →</a>`;
@@ -32,6 +40,7 @@ export function initPixelUX({navigate,openLab,getPage}){
   const playground=document.querySelector('[data-page-view=playground]');if(playground&&!playground.querySelector('[data-surprise]'))playground.insertAdjacentHTML('beforeend',`<div class="ux-next"><button class="pz-button" type="button" data-surprise>${esc(t('surprise'))}</button><a href="/playground" data-ux-another>${esc(t('another'))} →</a></div>`);
   const projects=document.querySelector('[data-page-view=projects]');if(projects&&!projects.querySelector('[data-ux-explore]'))projects.insertAdjacentHTML('beforeend',`<div class="ux-next"><a class="pz-button pz-button--primary" href="/playground" data-ux-explore>${esc(t('explore'))} →</a></div>`);
   const header=document.querySelector('#public-header');if(header&&!header.querySelector('[data-palette-open]'))header.insertAdjacentHTML('beforeend',`<button type="button" data-palette-open aria-label="${esc(t('palette'))}">⌕ <span>Ctrl K</span></button>`);else header?.querySelector('[data-palette-open]')?.setAttribute('aria-label',t('palette'));
+  arrange();
  }
  document.addEventListener('click',event=>{
   if(event.target.closest('[data-palette-open]'))openPalette();

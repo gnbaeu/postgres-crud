@@ -1,0 +1,3 @@
+import {connectBrowser} from './browser-session.mjs';
+const b=await connectBrowser(),phase=process.argv[2]||'after';
+try{await b.send('Page.addScriptToEvaluateOnNewDocument',{source:"localStorage.setItem('gnwaa-welcome-v1','done');localStorage.setItem('language','en')"});for(const [w,h] of [[375,812],[390,844],[768,1024],[1024,768],[1440,900]]){await b.viewport(w,h);await b.navigate('http://127.0.0.1:5175/');await b.select('#public-language','en');for(const theme of ['light','dark']){await b.select('#public-appearance',theme);await b.evaluate('document.fonts.ready');await b.screenshot(`artifacts/mobile-6.3/${phase}-${w}-${theme}.png`);}}}finally{await b.close()}

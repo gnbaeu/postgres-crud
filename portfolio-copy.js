@@ -258,7 +258,7 @@ const welcomeCopy = {
   }
 };
 for (const locale of ["mn","en","ja"]) Object.assign(copy[locale], welcomeCopy[locale]);
-const minimalHomeCopy = {"mn":{"headline":"Санаа их. RAM бага.","intro":"Код, туршилт, хааяа нэг ажилладаг санаанууд."},"en":{"headline":"Too many ideas. Not enough RAM.","intro":"Code, experiments, and ideas that occasionally work."},"ja":{"headline":"アイデアは多い。RAMは足りない。","intro":"コード、実験、ときどきちゃんと動くアイデアたち。"}};
+const minimalHomeCopy = {"mn":{"headline":"Пиксел, төслүүд ба туршилтууд.","intro":"Код, туршилт, хааяа нэг ажилладаг санаанууд."},"en":{"headline":"Pixels, Projects & Experiments.","intro":"Code, experiments, and ideas that occasionally work."},"ja":{"headline":"ピクセル、プロジェクト、実験。","intro":"コード、実験、ときどきちゃんと動くアイデアたち。"}};
 for (const locale of ["mn","en","ja"]) Object.assign(copy[locale], minimalHomeCopy[locale]);
 const soundCopy = {"mn":{"soundEnable":"Дуу асаах","soundDisable":"Дуу унтраах"},"en":{"soundEnable":"Enable sound","soundDisable":"Disable sound"},"ja":{"soundEnable":"サウンドをオン","soundDisable":"サウンドをオフ"}};
 for (const locale of ["mn","en","ja"]) Object.assign(copy[locale], soundCopy[locale]);

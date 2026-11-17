@@ -100,7 +100,7 @@ initPortfolio({
 });
 for (const lang of ["en","mn","ja"]) {
   locale=lang; windowEvents["gnwaa:public-view"]();
-  assert.ok(node('[data-page-view="home"]').innerHTML.includes(PORTFOLIO_COPY[lang]["pz.headline"]));
+  assert.ok(node('[data-page-view="home"]').innerHTML.includes(PORTFOLIO_COPY[lang]["pz.headline"].replaceAll("&", "&amp;")));
   const home=node('[data-page-view="home"]').innerHTML;
   assert.doesNotMatch(home,/<button|<section|data-project-kind|data-quick-draw|pz-workbench/,"Home is one hero with three route links");
   assert.equal((home.match(/data-pz-route=/g)||[]).length,2);

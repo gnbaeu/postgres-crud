@@ -1,0 +1,24 @@
+<?php
+namespace App\Http\Controllers;
+use App\Http\Requests\ApiRequest;
+use App\Models\CustomerRecord;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Http\Exceptions\HttpResponseException;
+class AdminController {
+ const CONFLICT='Content changed. Reload and review the latest version.';
+ private function id(string $id):void{if(!preg_match('/^[1-9]\d{0,17}$/',$id))throw new HttpResponseException(response()->json(['error'=>'Invalid record ID.'],400));}
+ private function rows(array $rows,bool $content=false):array{return array_map(function($row)use($content){$r=(array)$row;foreach(['customer_id','content_id'] as $k)if(isset($r[$k]))$r[$k]=(string)$r[$k];foreach(['created_at','updated_at'] as $k)if(isset($r[$k]))$r[$k]=(new \DateTimeImmutable($r[$k]))->setTimezone(new \DateTimeZone('UTC'))->format($content&&$k==='updated_at'?'Y-m-d\TH:i:s.u\Z':'Y-m-d\TH:i:s.v\Z');return $r;},$rows);}
+ public function customers(Request $r){$page=max(1,min((int)$r->query('page',1)?:1,100000));$size=max(1,min((int)$r->query('pageSize',50)?:50,100));$search=mb_substr(trim((string)$r->query('search','')),0,100);$q=CustomerRecord::query();if($search!=='')$q->where(fn($q)=>$q->where('first_name','ilike',"%$search%")->orWhere('last_name','ilike',"%$search%")->orWhere('email','ilike',"%$search%"));$total=(clone $q)->count();return response()->json(['data'=>$this->rows($q->orderByDesc('customer_id')->offset(($page-1)*$size)->limit($size)->get()->toArray()),'page'=>$page,'pageSize'=>$size,'total'=>$total]);}
+ public function customer(Request $r,string $id){$this->id($id);$rows=DB::select('SELECT * FROM gnwaa_app.customer_records WHERE customer_id=?',[$id]);return $rows?response()->json(['data'=>$this->rows($rows)[0]]):response()->json(['error'=>'Customer record not found.'],404);}
+ private function insert(string $table,array $v):array{$cols=implode(',',array_keys($v));$marks=implode(',',array_fill(0,count($v),'?'));return DB::select("INSERT INTO gnwaa_app.$table ($cols) VALUES ($marks) RETURNING *",array_values($v));}
+ public function createCustomer(ApiRequest $r){return response()->json(['data'=>$this->rows($this->insert('customer_records',$r->payload('customer')))[0]],201);}
+ public function patchCustomer(ApiRequest $r,string $id){$this->id($id);$v=$r->payload('customer');$set=implode(',',array_map(fn($k)=>"$k=?",array_keys($v)));$rows=DB::select("UPDATE gnwaa_app.customer_records SET $set,updated_at=now() WHERE customer_id=? RETURNING *",[...array_values($v),$id]);return $rows?response()->json(['data'=>$this->rows($rows)[0]]):response()->json(['error'=>'Customer record not found.'],404);}
+ public function deleteCustomer(Request $r,string $id){return $this->remove('customer_records','customer_id',$id,'Customer record not found.');}
+ private function remove($table,$key,$id,$message){$this->id($id);$n=DB::delete("DELETE FROM gnwaa_app.$table WHERE $key=?",[$id]);return $n?response('',204):response()->json(['error'=>$message],404);}
+ public function content(){return response()->json(['data'=>$this->rows(DB::select('SELECT * FROM gnwaa_app.site_content ORDER BY slug,locale'),true)]);}
+ public function createContent(ApiRequest $r){return response()->json(['data'=>$this->rows($this->insert('site_content',$r->payload('content')),true)[0]],201);}
+ public function patchContent(ApiRequest $r,string $id){$this->id($id);$v=$r->payload('content');$version=$v['updated_at'];unset($v['updated_at']);$set=implode(',',array_map(fn($k)=>"$k=?",array_keys($v)));$rows=DB::select("UPDATE gnwaa_app.site_content SET $set,updated_at=clock_timestamp() WHERE content_id=? AND updated_at=?::timestamptz RETURNING *",[...array_values($v),$id,$version]);return $rows?response()->json(['data'=>$this->rows($rows,true)[0]]):response()->json(['error'=>self::CONFLICT],409);}
+ public function deleteContent(Request $r,string $id){return $this->remove('site_content','content_id',$id,'Content record not found.');}
+ public function bulk(ApiRequest $r){$v=$r->payload('bulk');$rows=DB::transaction(function()use($v){$out=[];foreach(['home','about'] as $slug){$e=$v[$slug];if($e['content_id']!==null)$row=DB::select('UPDATE gnwaa_app.site_content SET heading=?,description=?,status=?,updated_at=clock_timestamp() WHERE content_id=? AND slug=? AND locale=? AND updated_at=?::timestamptz RETURNING *',[$e['heading'],$e['description'],$v['status'],$e['content_id'],$slug,$v['locale'],$e['updated_at']]);else $row=DB::select('INSERT INTO gnwaa_app.site_content(slug,locale,heading,description,status) VALUES (?,?,?,?,?) ON CONFLICT(slug,locale) DO NOTHING RETURNING *',[$slug,$v['locale'],$e['heading'],$e['description'],$v['status']]);if(!$row)throw new HttpResponseException(response()->json(['error'=>self::CONFLICT],409));$out[]=$row[0];}return $out;});return response()->json(['data'=>$this->rows($rows,true)]);}
+}
